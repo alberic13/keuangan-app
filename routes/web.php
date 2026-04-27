@@ -31,10 +31,13 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
     Route::get('/expenses/create', [ExpenseController::class, 'create'])->name('expenses.create');
     Route::post('/expenses', [ExpenseController::class, 'store'])->name('expenses.store');
+    Route::get('/transactions/{transaction}/edit', [ExpenseController::class, 'edit'])->name('transactions.edit');
+    Route::put('/transactions/{transaction}', [ExpenseController::class, 'update'])->name('transactions.update');
+    Route::delete('/transactions/{transaction}', [ExpenseController::class, 'destroy'])->name('transactions.destroy');
 
     Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
     Route::get('/reports/export', [ReportController::class, 'export'])->name('reports.export');
+    Route::get('/reports/export/excel', [ReportController::class, 'exportExcel'])->name('reports.export.excel');
 
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 });
-

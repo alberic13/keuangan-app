@@ -94,7 +94,7 @@
         <h1>Laporan Keuangan MAN 2</h1>
         <p>Rekap transaksi sesuai filter yang sedang aktif pada sistem.</p>
         <div class="meta">
-            Periode: {{ $filters['start_date'] }} s.d. {{ $filters['end_date'] }} |
+            {{ $filterDescription }} |
             Dicetak: {{ now()->format('d-m-Y H:i') }}
         </div>
     </div>

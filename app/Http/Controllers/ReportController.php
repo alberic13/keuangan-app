@@ -9,6 +9,7 @@ use Carbon\Carbon;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\Response;
 
 class ReportController extends Controller
@@ -17,6 +18,7 @@ class ReportController extends Controller
     {
         $filters = $this->resolveFilters($request);
         $query = $this->baseQuery($filters);
+        $summary = $this->buildSummary(clone $query);
 
         $transactions = (clone $query)
             ->orderByDesc('tanggal')
@@ -26,9 +28,10 @@ class ReportController extends Controller
 
         return view('reports.index', [
             'transactions' => $transactions,
-            'summary' => $this->buildSummary(clone $query),
+            'summary' => $summary,
             'filters' => $filters,
             'categories' => KategoriTransaksi::query()->orderBy('nama_kategori')->get(),
+            'filterDescription' => $this->describeFilters($filters),
         ]);
     }
 
@@ -47,34 +50,64 @@ class ReportController extends Controller
             'rows' => $rows,
             'filters' => $filters,
             'summary' => $summary,
+            'filterDescription' => $this->describeFilters($filters),
         ])->setPaper('a4', 'landscape');
 
         return $pdf->download($fileName);
     }
 
+    public function exportExcel(Request $request): Response
+    {
+        $filters = $this->resolveFilters($request);
+        $rows = $this->baseQuery($filters)
+            ->orderByDesc('tanggal')
+            ->orderByDesc('id')
+            ->get();
+        $summary = $this->buildSummary(clone $this->baseQuery($filters));
+        $fileName = 'laporan-keuangan-' . now()->format('Ymd-His') . '.xls';
+
+        $content = view('reports.excel', [
+            'rows' => $rows,
+            'filters' => $filters,
+            'summary' => $summary,
+            'filterDescription' => $this->describeFilters($filters),
+        ])->render();
+
+        return response($content, 200, [
+            'Content-Type' => 'application/vnd.ms-excel; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename="' . $fileName . '"',
+        ]);
+    }
+
     private function resolveFilters(Request $request): array
     {
-        $period = $request->string('period')->toString() ?: 'monthly';
-        $startDate = $request->string('start_date')->toString() ?: now()->startOfMonth()->format('Y-m-d');
-        $endDate = $request->string('end_date')->toString() ?: now()->endOfMonth()->format('Y-m-d');
+        $preset = $request->string('preset')->toString() ?: 'bulan_ini';
+        $now = now();
+        $startDate = $request->string('start_date')->toString() ?: $now->copy()->startOfMonth()->format('Y-m-d');
+        $endDate = $request->string('end_date')->toString() ?: $now->copy()->endOfMonth()->format('Y-m-d');
 
-        if ($period === 'daily' && $request->filled('date')) {
-            $startDate = $request->string('date')->toString();
-            $endDate = $request->string('date')->toString();
+        if ($preset === 'hari_ini') {
+            $startDate = $now->format('Y-m-d');
+            $endDate = $now->format('Y-m-d');
+        } elseif ($preset === 'bulan_ini') {
+            $startDate = $now->copy()->startOfMonth()->format('Y-m-d');
+            $endDate = $now->copy()->endOfMonth()->format('Y-m-d');
+        } elseif ($preset === 'tahun_ini') {
+            $startDate = $now->copy()->startOfYear()->format('Y-m-d');
+            $endDate = $now->copy()->endOfYear()->format('Y-m-d');
         }
 
-        if ($period === 'yearly' && $request->filled('year')) {
-            $year = (int) $request->input('year');
-            $startDate = Carbon::create($year, 1, 1)->format('Y-m-d');
-            $endDate = Carbon::create($year, 12, 31)->format('Y-m-d');
+        $start = Carbon::parse($startDate);
+        $end = Carbon::parse($endDate);
+
+        if ($start->gt($end)) {
+            [$start, $end] = [$end, $start];
         }
 
         return [
-            'period' => in_array($period, ['daily', 'monthly', 'yearly'], true) ? $period : 'monthly',
-            'date' => $request->string('date')->toString() ?: now()->format('Y-m-d'),
-            'year' => $request->integer('year') ?: (int) now()->format('Y'),
-            'start_date' => $startDate,
-            'end_date' => $endDate,
+            'preset' => in_array($preset, ['hari_ini', 'bulan_ini', 'tahun_ini', 'custom'], true) ? $preset : 'bulan_ini',
+            'start_date' => $start->format('Y-m-d'),
+            'end_date' => $end->format('Y-m-d'),
             'category_id' => $request->integer('category_id') ?: null,
             'type' => $request->string('type')->toString() ?: null,
         ];
@@ -109,5 +142,26 @@ class ReportController extends Controller
             'balance' => $income - $expense,
             'count' => $rows->count(),
         ];
+    }
+
+    private function describeFilters(array $filters): string
+    {
+        $parts = [
+            'Periode ' . Carbon::parse($filters['start_date'])->translatedFormat('d M Y') . ' - ' . Carbon::parse($filters['end_date'])->translatedFormat('d M Y'),
+        ];
+
+        if ($filters['category_id']) {
+            $category = KategoriTransaksi::query()->find($filters['category_id']);
+
+            if ($category) {
+                $parts[] = 'Kategori ' . $category->nama_kategori;
+            }
+        }
+
+        if ($filters['type']) {
+            $parts[] = 'Tipe ' . Str::title($filters['type']);
+        }
+
+        return implode(' | ', $parts);
     }
 }
