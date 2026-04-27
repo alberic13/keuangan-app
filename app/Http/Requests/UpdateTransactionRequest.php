@@ -25,7 +25,7 @@ class UpdateTransactionRequest extends FormRequest
                 Rule::unique('transaksi', 'no_referensi')->ignore($transaction?->id),
             ],
             'deskripsi_kegiatan' => ['required', 'string', 'max:255'],
-            'nominal' => ['required', 'numeric', 'min:1'],
+
             'kategori_id' => ['required', 'integer', 'exists:kategori_transaksi,id'],
             'bukti_nota' => ['nullable', 'file', 'mimes:pdf,jpg,jpeg,png', 'max:5120'],
         ];
