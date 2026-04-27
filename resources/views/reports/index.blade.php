@@ -4,9 +4,8 @@
     <div class="topbar">
         <div>
             <h2>Laporan Keuangan</h2>
-            <p>Rekap transaksi berdasarkan periode, kategori, dan tipe transaksi.</p>
+            <p>Lihat ringkasan dan detail transaksi dengan filter yang lebih sederhana.</p>
         </div>
-        <div class="pill">Filter tanggal aktif: <strong>{{ $filters['start_date'] }}</strong> s.d. <strong>{{ $filters['end_date'] }}</strong></div>
     </div>
 
     <section class="grid cards">
@@ -32,42 +31,34 @@
         <div class="toolbar">
             <div>
                 <h3>Filter Laporan</h3>
-                <div class="muted">Gunakan filter ini sebelum ekspor agar hasil laporan tetap konsisten.</div>
+                <div class="muted">Pilih periode cepat atau atur rentang tanggal sendiri bila perlu.</div>
             </div>
             <div class="actions">
                 <a href="{{ route('reports.export', request()->query()) }}" class="btn">Ekspor PDF</a>
+                <a href="{{ route('reports.export.excel', request()->query()) }}" class="btn secondary">Export to Excel</a>
             </div>
         </div>
 
         <form action="{{ route('reports.index') }}" method="GET" class="grid">
-            <div class="filter-grid">
+            <div class="filter-grid" style="grid-template-columns: repeat(4, minmax(0, 1fr));">
                 <div class="field">
-                    <label for="period">Periode</label>
-                    <select name="period" id="period">
-                        <option value="daily" @selected($filters['period'] === 'daily')>Harian</option>
-                        <option value="monthly" @selected($filters['period'] === 'monthly')>Bulanan</option>
-                        <option value="yearly" @selected($filters['period'] === 'yearly')>Tahunan</option>
+                    <label for="preset">Periode Cepat</label>
+                    <select name="preset" id="preset">
+                        <option value="hari_ini" @selected($filters['preset'] === 'hari_ini')>Hari ini</option>
+                        <option value="bulan_ini" @selected($filters['preset'] === 'bulan_ini')>Bulan ini</option>
+                        <option value="tahun_ini" @selected($filters['preset'] === 'tahun_ini')>Tahun ini</option>
+                        <option value="custom" @selected($filters['preset'] === 'custom')>Custom</option>
                     </select>
                 </div>
 
                 <div class="field">
-                    <label for="date">Tanggal Harian</label>
-                    <input type="date" id="date" name="date" value="{{ $filters['date'] }}">
-                </div>
-
-                <div class="field">
-                    <label for="start_date">Mulai</label>
+                    <label for="start_date">Mulai Tanggal</label>
                     <input type="date" id="start_date" name="start_date" value="{{ $filters['start_date'] }}">
                 </div>
 
                 <div class="field">
-                    <label for="end_date">Sampai</label>
+                    <label for="end_date">Sampai Tanggal</label>
                     <input type="date" id="end_date" name="end_date" value="{{ $filters['end_date'] }}">
-                </div>
-
-                <div class="field">
-                    <label for="year">Tahun</label>
-                    <input type="number" id="year" name="year" value="{{ $filters['year'] }}" min="2000" max="2100">
                 </div>
 
                 <div class="field">
@@ -92,6 +83,12 @@
                 </div>
             </div>
 
+            <div class="actions" style="justify-content: space-between; align-items: center;">
+                <div class="muted">
+                    Filter aktif: {{ $filterDescription }}
+                </div>
+            </div>
+
             <div class="actions">
                 <button type="submit" class="btn">Terapkan Filter</button>
                 <a href="{{ route('reports.index') }}" class="btn secondary">Reset</a>
@@ -103,9 +100,13 @@
         <div class="toolbar">
             <div>
                 <h3>Detail Transaksi</h3>
-                <div class="muted">Tabel ini memakai sumber data yang sama dengan dashboard, jadi rekap selalu konsisten.</div>
+                <div class="muted">Urutan transaksi terbaru ditampilkan lebih dulu agar mudah dicek.</div>
             </div>
         </div>
+
+        @if (session('success'))
+            <div class="alert success">{{ session('success') }}</div>
+        @endif
 
         <div class="table-wrap">
             <table>
@@ -118,6 +119,7 @@
                         <th>Tipe</th>
                         <th>Nominal</th>
                         <th>Submitter</th>
+                        <th>Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -132,10 +134,34 @@
                                 Rp {{ number_format($transaksi->nominal, 0, ',', '.') }}
                             </td>
                             <td>{{ $transaksi->submitter?->name ?? '-' }}</td>
+                            <td>
+                                <div class="actions action-icons">
+                                    <a
+                                        href="{{ route('transactions.edit', ['transaction' => $transaksi->id, 'return_url' => request()->fullUrl()]) }}"
+                                        class="action-icon"
+                                        title="Edit transaksi"
+                                        aria-label="Edit transaksi"
+                                    >
+                                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                                            <path d="M4 20h4l10.5-10.5-4-4L4 16v4zm13.7-12.3 1.6-1.6a1.4 1.4 0 0 0 0-2l-1.4-1.4a1.4 1.4 0 0 0-2 0l-1.6 1.6 3.4 3.4z" fill="currentColor"/>
+                                        </svg>
+                                    </a>
+                                    <form action="{{ route('transactions.destroy', $transaksi->id) }}" method="POST" onsubmit="return confirm('Hapus transaksi ini?');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <input type="hidden" name="return_url" value="{{ request()->fullUrl() }}">
+                                        <button type="submit" class="action-icon danger" title="Hapus transaksi" aria-label="Hapus transaksi">
+                                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                                                <path d="M9 3h6l1 2h4v2H4V5h4l1-2zm1 7h2v8h-2v-8zm4 0h2v8h-2v-8zM7 8h10l-1 12H8L7 8z" fill="currentColor"/>
+                                            </svg>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="7">
+                            <td colspan="8">
                                 <div class="empty-state">Belum ada data transaksi untuk filter yang dipilih.</div>
                             </td>
                         </tr>

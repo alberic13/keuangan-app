@@ -6,7 +6,6 @@
             <h2>Input Kas Keluar</h2>
             <p>Masukkan transaksi pengeluaran secara tertib agar dashboard dan laporan selalu sinkron.</p>
         </div>
-        <div class="pill">Tabel tujuan: <strong>transaksi</strong></div>
     </div>
 
     @if (session('success'))
@@ -24,9 +23,9 @@
         </div>
     @endif
 
-    @if ($categories->isEmpty() || $submitters->isEmpty())
+    @if ($categories->isEmpty())
         <div class="alert warning">
-            Halaman input membutuhkan data kategori pengeluaran dan minimal satu user. Jalankan seeder awal atau isi tabelnya terlebih dahulu.
+            Halaman input membutuhkan data kategori pengeluaran. Jalankan seeder awal atau isi tabelnya terlebih dahulu.
         </div>
     @endif
 
@@ -69,13 +68,8 @@
                     </div>
 
                     <div class="field">
-                        <label for="submitter_id">Petugas Input</label>
-                        <select id="submitter_id" name="submitter_id" required>
-                            <option value="">Pilih petugas</option>
-                            @foreach ($submitters as $submitter)
-                                <option value="{{ $submitter->id }}" @selected(old('submitter_id') == $submitter->id)>{{ $submitter->name }}</option>
-                            @endforeach
-                        </select>
+                        <label>Petugas Input</label>
+                        <input type="text" value="Admin Keuangan" disabled>
                     </div>
 
                     <div class="field">
@@ -89,10 +83,10 @@
                     </div>
                 </div>
 
-                <div class="helper">Format nota yang didukung: PDF, JPG, JPEG, PNG. Maksimal 5 MB.</div>
+                <div class="helper">Petugas input diisi otomatis dari admin yang sedang login. Format nota yang didukung: PDF, JPG, JPEG, PNG. Maksimal 5 MB.</div>
 
                 <div class="actions">
-                    <button type="submit" class="btn" @disabled($categories->isEmpty() || $submitters->isEmpty())>Simpan Kas Keluar</button>
+                    <button type="submit" class="btn" @disabled($categories->isEmpty())>Simpan Kas Keluar</button>
                     <a href="{{ route('dashboard') }}" class="btn secondary">Kembali ke Dashboard</a>
                 </div>
             </form>

@@ -21,7 +21,6 @@ class StoreExpenseRequest extends FormRequest
             'deskripsi_kegiatan' => ['required', 'string', 'max:255'],
             'nominal' => ['required', 'numeric', 'min:1'],
             'kategori_id' => ['required', 'integer', 'exists:kategori_transaksi,id'],
-            'submitter_id' => ['required', 'integer', 'exists:users,id'],
             'bukti_nota' => ['nullable', 'file', 'mimes:pdf,jpg,jpeg,png', 'max:5120'],
         ];
     }

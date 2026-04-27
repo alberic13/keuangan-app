@@ -6,7 +6,6 @@
             <h2>Dashboard Alokasi Dana</h2>
             <p>Ringkasan pemasukan, pengeluaran, saldo, dan transaksi terbaru dalam satu tampilan.</p>
         </div>
-        <div class="pill">Update otomatis dari tabel <strong>transaksi</strong></div>
     </div>
 
     <section class="grid cards">
@@ -37,7 +36,7 @@
             <div class="toolbar">
                 <div>
                     <h3>Sumber Dana</h3>
-                    <div class="muted">Sumber dana adalah asal pemasukan madrasah. Pada sistem ini, `SPP` dihitung sebagai salah satu sumber dana.</div>
+                    <div class="muted">Sumber dana menampilkan seluruh pemasukan utama madrasah, termasuk SPP dan Siswa Boarding.</div>
                 </div>
             </div>
 
@@ -62,27 +61,35 @@
         </article>
 
         <article class="card">
-            <h3>Fokus SPP</h3>
-            <div class="muted">SPP adalah pembayaran rutin siswa dan biasanya menjadi sumber dana operasional utama.</div>
-
-            <div class="metric">Rp {{ number_format($sppTotal, 0, ',', '.') }}</div>
+            <h3>Fokus Dana Siswa</h3>
+            <div class="muted">Ringkasan ini membantu membandingkan kontribusi SPP dan Siswa Boarding terhadap total pemasukan.</div>
 
             @php
                 $sppPercentage = $incomeTotal > 0 ? round(($sppTotal / $incomeTotal) * 100, 1) : 0;
+                $boardingStudentPercentage = $incomeTotal > 0 ? round(($boardingStudentTotal / $incomeTotal) * 100, 1) : 0;
             @endphp
 
             <div class="progress-list">
                 <div class="progress-row">
                     <div class="progress-meta">
-                        <strong>Kontribusi SPP ke total pemasukan</strong>
+                        <strong>SPP</strong>
                         <span>{{ $sppPercentage }}%</span>
                     </div>
                     <div class="progress-track">
                         <div class="progress-value" style="width: {{ $sppPercentage }}%;"></div>
                     </div>
-                    <div class="muted">
-                        Kalau angka ini besar, berarti sebagian besar dana sekolah saat ini berasal dari SPP.
+                    <div class="muted">Rp {{ number_format($sppTotal, 0, ',', '.') }}</div>
+                </div>
+
+                <div class="progress-row">
+                    <div class="progress-meta">
+                        <strong>Siswa Boarding</strong>
+                        <span>{{ $boardingStudentPercentage }}%</span>
                     </div>
+                    <div class="progress-track">
+                        <div class="progress-value" style="width: {{ $boardingStudentPercentage }}%;"></div>
+                    </div>
+                    <div class="muted">Rp {{ number_format($boardingStudentTotal, 0, ',', '.') }}</div>
                 </div>
             </div>
         </article>

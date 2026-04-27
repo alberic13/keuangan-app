@@ -32,6 +32,7 @@ class DashboardController extends Controller
             'categoryExpenses' => $this->buildCategoryExpenses($expenseTotal),
             'fundingSources' => $this->buildFundingSources($incomeTotal),
             'sppTotal' => $this->sumCategoryIncome('SPP'),
+            'boardingStudentTotal' => $this->sumCategoryIncome('Siswa Boarding'),
         ]);
     }
 

@@ -248,6 +248,47 @@ select {
     flex-wrap: wrap;
 }
 
+.action-icons {
+    gap: 8px;
+    flex-wrap: nowrap;
+}
+
+.action-icon {
+    width: 38px;
+    height: 38px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    border: 1px solid rgba(13, 106, 90, 0.18);
+    background: rgba(13, 106, 90, 0.07);
+    color: var(--primary-strong);
+    cursor: pointer;
+    transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+
+.action-icon:hover {
+    background: rgba(13, 106, 90, 0.14);
+    border-color: rgba(13, 106, 90, 0.28);
+    transform: translateY(-1px);
+}
+
+.action-icon svg {
+    width: 18px;
+    height: 18px;
+}
+
+.action-icon.danger {
+    border-color: rgba(185, 71, 58, 0.18);
+    background: rgba(185, 71, 58, 0.08);
+    color: var(--danger);
+}
+
+.action-icon.danger:hover {
+    background: rgba(185, 71, 58, 0.15);
+    border-color: rgba(185, 71, 58, 0.3);
+}
+
 .btn {
     display: inline-flex;
     align-items: center;

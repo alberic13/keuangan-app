@@ -28,7 +28,7 @@
 
             <div class="sidebar-note">
                 <strong>Alur aman</strong>
-                <p>Mulai dari input transaksi, lalu dashboard otomatis ikut berubah, dan laporan memakai data yang sama.</p>
+                <p>Mulai dari input transaksi, lalu dashboard otomatis ikut berubah.</p>
             </div>
 
             <div class="actions" style="margin-top: 16px;">

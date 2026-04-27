@@ -20,7 +20,9 @@ class InitialFinanceSeeder extends Seeder
 
         collect([
             ['nama_kategori' => 'SPP', 'tipe' => 'pemasukan'],
+            ['nama_kategori' => 'Siswa Boarding', 'tipe' => 'pemasukan'],
             ['nama_kategori' => 'Dana Bantuan', 'tipe' => 'pemasukan'],
+            ['nama_kategori' => 'Boarding', 'tipe' => 'pengeluaran'],
             ['nama_kategori' => 'Operasional', 'tipe' => 'pengeluaran'],
             ['nama_kategori' => 'Sarana Prasarana', 'tipe' => 'pengeluaran'],
             ['nama_kategori' => 'Kesiswaan', 'tipe' => 'pengeluaran'],
