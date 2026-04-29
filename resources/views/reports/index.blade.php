@@ -4,7 +4,7 @@
     <div class="topbar">
         <div>
             <h2>Laporan Keuangan</h2>
-            <p>Rekap transaksi berdasarkan periode, kategori, dan tipe transaksi.</p>
+            <p>Rekap transaksi.</p>
         </div>
         <div class="pill">Filter tanggal aktif: <strong>{{ $filters['start_date'] }}</strong> s.d. <strong>{{ $filters['end_date'] }}</strong></div>
     </div>
@@ -32,11 +32,11 @@
         <div class="toolbar">
             <div>
                 <h3>Filter Laporan</h3>
-                <div class="muted">Gunakan filter ini sebelum ekspor agar hasil laporan tetap konsisten.</div>
+                <div class="muted">Atur filter sebelum ekspor.</div>
             </div>
             <div class="actions">
-                <a href="{{ route('reports.export', request()->query()) }}" class="btn">Ekspor CSV</a>
-                <a href="{{ route('reports.export-excel', request()->query()) }}" class="btn secondary">Cetak Excel</a>
+                <a href="{{ route('reports.export', request()->query()) }}" class="btn">CSV</a>
+                <a href="{{ route('reports.export-excel', request()->query()) }}" class="btn secondary">Excel</a>
             </div>
         </div>
 
@@ -104,7 +104,7 @@
         <div class="toolbar">
             <div>
                 <h3>Detail Transaksi</h3>
-                <div class="muted">Tabel ini memakai sumber data yang sama dengan dashboard, jadi rekap selalu konsisten.</div>
+                <div class="muted">Data sesuai filter.</div>
             </div>
         </div>
 
@@ -137,7 +137,7 @@
                     @empty
                         <tr>
                             <td colspan="7">
-                                <div class="empty-state">Belum ada data transaksi untuk filter yang dipilih.</div>
+                                <div class="empty-state">Tidak ada data.</div>
                             </td>
                         </tr>
                     @endforelse

@@ -4,9 +4,9 @@
     <div class="topbar">
         <div>
             <h2>Input Kas Keluar</h2>
-            <p>Masukkan transaksi pengeluaran secara tertib agar dashboard dan laporan selalu sinkron.</p>
+            <p>Input pengeluaran.</p>
         </div>
-        <div class="pill">Tabel tujuan: <strong>transaksi</strong></div>
+        <div class="pill">Tabel <strong>transaksi</strong></div>
     </div>
 
     @if (session('success'))
@@ -15,7 +15,7 @@
 
     @if ($errors->any())
         <div class="alert warning">
-            <strong>Data belum bisa disimpan.</strong>
+            <strong>Periksa input.</strong>
             <ul class="errors">
                 @foreach ($errors->all() as $error)
                     <li>{{ $error }}</li>
@@ -26,7 +26,7 @@
 
     @if ($categories->isEmpty() || $submitters->isEmpty())
         <div class="alert warning">
-            Halaman input membutuhkan data kategori pengeluaran dan minimal satu user. Jalankan seeder awal atau isi tabelnya terlebih dahulu.
+            Isi kategori dan user dulu.
         </div>
     @endif
 
@@ -34,8 +34,8 @@
         <article class="card">
             <div class="toolbar">
                 <div>
-                    <h3>Form Transaksi</h3>
-                    <div class="muted">Semua field penting divalidasi agar data tidak bentrok di dashboard dan laporan.</div>
+                    <h3>Form</h3>
+                    <div class="muted">Isi data transaksi.</div>
                 </div>
             </div>
 
@@ -89,33 +89,33 @@
                     </div>
                 </div>
 
-                <div class="helper">Format nota yang didukung: PDF, JPG, JPEG, PNG. Maksimal 5 MB.</div>
+                <div class="helper">PDF/JPG/PNG, maks. 5 MB.</div>
 
                 <div class="actions">
                     <button type="submit" class="btn" @disabled($categories->isEmpty() || $submitters->isEmpty())>Simpan Kas Keluar</button>
-                    <a href="{{ route('dashboard') }}" class="btn secondary">Kembali ke Dashboard</a>
+                    <a href="{{ route('dashboard') }}" class="btn secondary">Kembali</a>
                 </div>
             </form>
         </article>
 
         <aside class="card">
-            <h3>Catatan Integrasi</h3>
+            <h3>Catatan</h3>
             <div class="progress-list">
                 <div class="progress-row">
-                    <strong>1. Validasi kategori</strong>
-                    <div class="muted">Hanya kategori bertipe <code>pengeluaran</code> yang bisa dipilih.</div>
+                    <strong>1. Kategori</strong>
+                    <div class="muted">Hanya <code>pengeluaran</code>.</div>
                 </div>
                 <div class="progress-row">
-                    <strong>2. No referensi unik</strong>
-                    <div class="muted">Mencegah transaksi ganda masuk ke laporan.</div>
+                    <strong>2. Referensi</strong>
+                    <div class="muted">Harus unik.</div>
                 </div>
                 <div class="progress-row">
-                    <strong>3. Bukti nota tersimpan</strong>
-                    <div class="muted">File disimpan ke folder <code>storage/app/public/nota</code>.</div>
+                    <strong>3. Nota</strong>
+                    <div class="muted">Masuk ke <code>storage/app/public/nota</code>.</div>
                 </div>
                 <div class="progress-row">
-                    <strong>4. Data otomatis terbaca</strong>
-                    <div class="muted">Setelah simpan, dashboard dan laporan memakai data yang sama tanpa input ulang.</div>
+                    <strong>4. Sinkron</strong>
+                    <div class="muted">Dashboard dan laporan ikut update.</div>
                 </div>
             </div>
         </aside>

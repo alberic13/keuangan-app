@@ -4,31 +4,31 @@
     <div class="topbar">
         <div>
             <h2>Dashboard Alokasi Dana</h2>
-            <p>Ringkasan pemasukan, pengeluaran, saldo, dan transaksi terbaru dalam satu tampilan.</p>
+            <p>Ringkasan utama.</p>
         </div>
-        <div class="pill">Update otomatis dari tabel <strong>transaksi</strong></div>
+        <div class="pill">Data <strong>transaksi</strong></div>
     </div>
 
     <section class="grid cards">
         <article class="card">
             <h3>Total Pemasukan</h3>
             <div class="metric">Rp {{ number_format($incomeTotal, 0, ',', '.') }}</div>
-            <div class="muted">Akumulasi semua transaksi kategori pemasukan.</div>
+            <div class="muted">Total pemasukan.</div>
         </article>
         <article class="card">
             <h3>Total Pengeluaran</h3>
             <div class="metric">Rp {{ number_format($expenseTotal, 0, ',', '.') }}</div>
-            <div class="muted">Akumulasi semua transaksi kategori pengeluaran.</div>
+            <div class="muted">Total pengeluaran.</div>
         </article>
         <article class="card">
             <h3>Saldo Saat Ini</h3>
             <div class="metric">Rp {{ number_format($balanceTotal, 0, ',', '.') }}</div>
-            <div class="muted">Hasil pemasukan dikurangi pengeluaran.</div>
+            <div class="muted">Pemasukan - pengeluaran.</div>
         </article>
         <article class="card">
             <h3>Transaksi Terbaru</h3>
             <div class="metric">{{ $recentTransactions->count() }}</div>
-            <div class="muted">Jumlah baris yang sedang ditampilkan pada tabel ringkas.</div>
+            <div class="muted">Baris tampil.</div>
         </article>
     </section>
 
@@ -36,8 +36,8 @@
         <article class="card">
             <div class="toolbar">
                 <div>
-                    <h3>Tren Pengeluaran 6 Bulan</h3>
-                    <div class="muted">Membantu melihat pola kas keluar dari waktu ke waktu.</div>
+                    <h3>Tren 6 Bulan</h3>
+                    <div class="muted">Kas keluar per bulan.</div>
                 </div>
             </div>
 
@@ -57,11 +57,11 @@
         </article>
 
         <article class="card">
-            <h3>Alokasi per Kategori</h3>
-            <div class="muted">Persentase terhadap total pengeluaran yang tercatat.</div>
+            <h3>Alokasi Kategori</h3>
+            <div class="muted">Porsi pengeluaran.</div>
 
             @if ($categoryExpenses->isEmpty())
-                <div class="empty-state" style="margin-top: 18px;">Belum ada kategori pengeluaran yang tersedia.</div>
+                <div class="empty-state" style="margin-top: 18px;">Belum ada kategori.</div>
             @else
                 <div class="progress-list">
                     @foreach ($categoryExpenses as $category)
@@ -85,10 +85,10 @@
         <div class="toolbar">
             <div>
                 <h3>Transaksi Terbaru</h3>
-                <div class="muted">Data ini diambil langsung dari tabel transaksi dan relasinya.</div>
+                <div class="muted">Data terbaru.</div>
             </div>
             <div class="actions">
-                <a href="{{ route('expenses.create') }}" class="btn">Tambah Kas Keluar</a>
+                <a href="{{ route('expenses.create') }}" class="btn">Tambah</a>
                 <a href="{{ route('reports.index') }}" class="btn secondary">Buka Laporan</a>
             </div>
         </div>
@@ -120,7 +120,7 @@
                     @empty
                         <tr>
                             <td colspan="6">
-                                <div class="empty-state">Belum ada transaksi. Mulai dari halaman Input Kas Keluar.</div>
+                                <div class="empty-state">Belum ada transaksi.</div>
                             </td>
                         </tr>
                     @endforelse
