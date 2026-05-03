@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Student Management - E-Keuangan MAN 2 Surakarta</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-bright": "#f7f9ff",
+                        "surface-variant": "#dfe3e8",
+                        "on-surface-variant": "#3f4943",
+                        "inverse-on-surface": "#eef1f7",
+                        "on-tertiary-fixed-variant": "#73332d",
+                        "primary-container": "#005c42",
+                        "on-secondary-fixed": "#0d1f18",
+                        "on-primary-fixed": "#002115",
+                        "surface-container-low": "#f1f4fa",
+                        "secondary-container": "#cfe5d9",
+                        "primary-fixed-dim": "#8bd6b4",
+                        "tertiary-fixed-dim": "#ffb4ab",
+                        "on-primary-fixed-variant": "#00513a",
+                        "surface-container-high": "#e5e8ee",
+                        "on-error-container": "#93000a",
+                        "surface": "#f7f9ff",
+                        "background": "#f7f9ff",
+                        "surface-container": "#ebeef4",
+                        "on-secondary": "#ffffff",
+                        "inverse-primary": "#8bd6b4",
+                        "on-secondary-container": "#54675e",
+                        "on-primary-container": "#87d2b1",
+                        "outline-variant": "#bec9c2",
+                        "surface-tint": "#1b6b50",
+                        "on-secondary-fixed-variant": "#384b42",
+                        "error": "#ba1a1a",
+                        "on-tertiary-fixed": "#3b0807",
+                        "outline": "#6f7973",
+                        "tertiary": "#622621",
+                        "on-surface": "#181c20",
+                        "secondary": "#4f6359",
+                        "on-tertiary-container": "#ffaea5",
+                        "tertiary-container": "#7f3c36",
+                        "primary-fixed": "#a6f2d0",
+                        "surface-container-lowest": "#ffffff",
+                        "secondary-fixed": "#d2e7dc",
+                        "on-background": "#181c20",
+                        "inverse-surface": "#2d3135",
+                        "on-primary": "#ffffff",
+                        "on-error": "#ffffff",
+                        "tertiary-fixed": "#ffdad6",
+                        "surface-container-highest": "#dfe3e8",
+                        "secondary-fixed-dim": "#b6cbc0",
+                        "primary": "#00422f",
+                        "error-container": "#ffdad6",
+                        "surface-dim": "#d7dae0",
+                        "on-tertiary": "#ffffff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "fontFamily": {
+                        "headline": ["Manrope"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3, .font-headline { font-family: 'Manrope', sans-serif; }
+        .glass-header {
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #00422f33; border-radius: 10px; }
+    </style>
+</head>
+<body class="bg-background text-on-surface flex min-h-screen">
+<!-- SideNavBar Anchor -->
+<aside class="h-screen w-72 bg-slate-50 dark:bg-emerald-950 flex flex-col py-6 fixed left-0 top-0 z-40">
+<div class="px-6 mb-10 flex items-center gap-3">
+<img alt="MAN 2 Surakarta Logo" class="w-10 h-10 object-contain" data-alt="Official logo of MAN 2 Surakarta featuring institutional heraldry in emerald green and gold" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAAFRsC60pcr2FewtgUKjhONHvlW1k6H0r5nl_8BVM0KetXDJpbUhFCfjO8LcnUDeSBKsxpLPD84LtCnJqYWt6q8A2GOvsq5ajgA1khPej78AdHF3qpgegyGP_XwMIkVRcN9avXYH-u_HAw8Y19bheJT_7eOr_XqanEsTKbkMXmxRDcarlCMwbaBWZKSYiwDjVD0_Z8XJEXjhHgzY1YbIvotXo4Zag5fs-cztgTMBDKok6PdmfRmOJT_tgwSMrZqHse5fCQ5rhk8Zm3"/>
+<div>
+<h1 class="text-lg font-black text-emerald-900 dark:text-emerald-50 leading-tight">E-Keuangan</h1>
+<p class="text-xs font-medium text-slate-500">MAN 2 Surakarta</p>
+</div>
+</div>
+<nav class="flex-1 space-y-1 px-2 overflow-y-auto custom-scrollbar">
+<!-- Active Tab: Student Management -->
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-emerald-900 rounded-lg transition-all mx-2 group" href="#">
+<span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">dashboard</span>
+<span class="font-manrope text-sm font-medium">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 bg-emerald-100 dark:bg-emerald-800 text-emerald-900 dark:text-emerald-50 rounded-lg mx-2 transition-all translate-x-1" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">group</span>
+<span class="font-manrope text-sm font-medium">Student Management</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-emerald-900 rounded-lg transition-all mx-2 group" href="#">
+<span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">receipt_long</span>
+<span class="font-manrope text-sm font-medium">Billing Management</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-emerald-900 rounded-lg transition-all mx-2 group" href="#">
+<span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">payments</span>
+<span class="font-manrope text-sm font-medium">Payment Recording</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-emerald-900 rounded-lg transition-all mx-2 group" href="#">
+<span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">account_balance_wallet</span>
+<span class="font-manrope text-sm font-medium">Cash Ledger</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-emerald-900 rounded-lg transition-all mx-2 group" href="#">
+<span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">history_edu</span>
+<span class="font-manrope text-sm font-medium">Audit Logs</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-emerald-900 rounded-lg transition-all mx-2 group" href="#">
+<span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">manage_accounts</span>
+<span class="font-manrope text-sm font-medium">User Management</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-emerald-900 rounded-lg transition-all mx-2 group" href="#">
+<span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">analytics</span>
+<span class="font-manrope text-sm font-medium">Reports</span>
+</a>
+</nav>
+<div class="mt-auto px-4">
+<a class="flex items-center gap-3 px-4 py-3 text-tertiary hover:bg-red-50 rounded-lg transition-all mx-2" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span class="font-manrope text-sm font-medium">Logout</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 ml-72 min-h-screen">
+<!-- TopAppBar Anchor -->
+<header class="fixed top-0 left-72 right-0 z-30 bg-white/80 dark:bg-emerald-950/80 backdrop-blur-xl shadow-sm dark:shadow-none flex justify-between items-center px-8 py-3">
+<div class="flex items-center gap-4">
+<h2 class="font-manrope tracking-tight font-semibold text-emerald-900 text-xl">Student Management</h2>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative group">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">search</span>
+<input class="pl-10 pr-4 py-2 bg-surface-container-low border-none rounded-full text-sm focus:ring-2 focus:ring-primary w-64 transition-all" placeholder="Search students NIS or Name..." type="text"/>
+</div>
+<div class="flex items-center gap-2">
+<button class="p-2 text-slate-500 hover:bg-emerald-50/50 rounded-full transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="p-2 text-slate-500 hover:bg-emerald-50/50 rounded-full transition-colors">
+<span class="material-symbols-outlined">settings</span>
+</button>
+<div class="h-8 w-px bg-slate-200 mx-2"></div>
+<div class="flex items-center gap-3 hover:bg-emerald-50/50 p-1 pr-3 rounded-full transition-all cursor-pointer">
+<img alt="User profile" class="w-8 h-8 rounded-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAn-vQB7mJXDu7wDv5e8eb00D6mr4ztT6mUgAVdIVoTm6jtCCOL3SiLuSEtWcJiKaKF3aVMNMn8nT5pf0mBGwXg8ClFFN6nr_IdtBJfNUKL4HLO3WqHyZ6fow6nLD1QlpbXmYjLbbjGt21ltFy79OJDB2pVmADPCOE9OcXYhA0qgpYgoc293ZSLImq1c6Sx0B_jzP22Eae6laiHunsA3P8-ap0Z_L63X7EFWd0XACp8x96PPxwzltZBBaLPpTwzw4QL5AjiXS8u8U1y"/>
+<span class="text-sm font-medium text-emerald-900">Admin Keuangan</span>
+</div>
+</div>
+</div>
+</header>
+<!-- Content Canvas -->
+<div class="pt-24 pb-12 px-8">
+<!-- Bento Dashboard Stats (Asymmetric Layout) -->
+<div class="grid grid-cols-12 gap-6 mb-10">
+<div class="col-span-12 lg:col-span-4 p-6 bg-surface-container-lowest rounded-xl shadow-[0_12px_40px_rgba(27,107,80,0.06)] flex flex-col justify-between">
+<div>
+<p class="text-label-md text-on-surface-variant font-medium">Total Students</p>
+<h3 class="text-4xl font-extrabold text-primary mt-2">1,248</h3>
+</div>
+<div class="mt-4 flex items-center gap-2 text-emerald-600 text-sm">
+<span class="material-symbols-outlined text-sm">trending_up</span>
+<span>+12 new this month</span>
+</div>
+</div>
+<div class="col-span-6 lg:col-span-4 p-6 bg-primary-container rounded-xl text-on-primary-container relative overflow-hidden">
+<span class="material-symbols-outlined absolute -right-4 -bottom-4 text-9xl opacity-10">school</span>
+<p class="text-label-md font-medium text-emerald-100">Boarding Students</p>
+<h3 class="text-4xl font-extrabold mt-2">412</h3>
+<p class="mt-4 text-sm opacity-80">33.1% of total students</p>
+</div>
+<div class="col-span-6 lg:col-span-4 p-6 bg-surface-container-low rounded-xl flex flex-col justify-between">
+<div>
+<p class="text-label-md text-on-surface-variant font-medium">Regular Students</p>
+<h3 class="text-4xl font-extrabold text-on-surface mt-2">836</h3>
+</div>
+<div class="mt-4 h-1 w-full bg-slate-200 rounded-full overflow-hidden">
+<div class="h-full bg-primary" style="width: 66.9%;"></div>
+</div>
+</div>
+</div>
+<!-- Filter & Action Panel -->
+<div class="bg-surface-container-lowest rounded-xl shadow-[0_12px_40px_rgba(27,107,80,0.06)] p-6 mb-8">
+<div class="flex flex-wrap items-center justify-between gap-6">
+<div class="flex flex-wrap items-center gap-4">
+<div class="space-y-1">
+<label class="text-[10px] uppercase tracking-wider font-bold text-slate-400 px-1">Batch</label>
+<select class="block w-40 bg-surface-container-low border-none rounded-lg text-sm focus:ring-2 focus:ring-primary">
+<option>Academic 2023/2024</option>
+<option>Academic 2022/2023</option>
+<option>Academic 2021/2022</option>
+</select>
+</div>
+<div class="space-y-1">
+<label class="text-[10px] uppercase tracking-wider font-bold text-slate-400 px-1">Class</label>
+<select class="block w-32 bg-surface-container-low border-none rounded-lg text-sm focus:ring-2 focus:ring-primary">
+<option>All Classes</option>
+<option>X (Ten)</option>
+<option>XI (Eleven)</option>
+<option>XII (Twelve)</option>
+</select>
+</div>
+<div class="space-y-1">
+<label class="text-[10px] uppercase tracking-wider font-bold text-slate-400 px-1">Major</label>
+<select class="block w-48 bg-surface-container-low border-none rounded-lg text-sm focus:ring-2 focus:ring-primary">
+<option>All Majors</option>
+<option>MIPA (Science)</option>
+<option>IPS (Social Studies)</option>
+<option>Keagamaan (Religious)</option>
+<option>Bahasa (Language)</option>
+</select>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<button class="px-5 py-2.5 bg-surface-container-high text-on-surface font-semibold rounded-lg flex items-center gap-2 hover:bg-slate-200 transition-all">
+<span class="material-symbols-outlined text-[20px]">filter_list</span>
+                            More Filters
+                        </button>
+<button class="px-6 py-2.5 bg-gradient-to-br from-primary to-primary-container text-white font-semibold rounded-lg flex items-center gap-2 hover:opacity-90 shadow-lg shadow-primary/20 transition-all active:scale-95">
+<span class="material-symbols-outlined text-[20px]">add</span>
+                            Add Student
+                        </button>
+</div>
+</div>
+</div>
+<!-- Student Ledger Table -->
+<div class="bg-surface-container-lowest rounded-xl shadow-[0_12px_40px_rgba(27,107,80,0.06)] overflow-hidden">
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low">
+<th class="px-6 py-4 text-label-md font-bold text-slate-500 uppercase tracking-widest text-[11px]">NIS</th>
+<th class="px-6 py-4 text-label-md font-bold text-slate-500 uppercase tracking-widest text-[11px]">Student Name</th>
+<th class="px-6 py-4 text-label-md font-bold text-slate-500 uppercase tracking-widest text-[11px]">Class &amp; Major</th>
+<th class="px-6 py-4 text-label-md font-bold text-slate-500 uppercase tracking-widest text-[11px]">Type</th>
+<th class="px-6 py-4 text-label-md font-bold text-slate-500 uppercase tracking-widest text-[11px]">Financial Status</th>
+<th class="px-6 py-4 text-label-md font-bold text-slate-500 uppercase tracking-widest text-[11px] text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-slate-100">
+<!-- Row 1 -->
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="px-6 py-4 font-mono text-sm text-slate-600">2023101001</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<img alt="Student profile" class="w-8 h-8 rounded-full border border-white" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAb7P6L5hGzrImESDfQebdS1vrOVrZ5eMWp8mEgPvKcpLD4NWJTnJ-L-PQy1M2P5Uy8tBLjPlWriLcqgcuys6qhenEMyWmtYxVTOO7crgZFUuWYCa51DqJ3XncTnIvMYzelSX07Mj89-uaU1aPdQQuEkjf4O_NBJ4y3MoulrH4DZPvJFE_QLZXEsdTHkYQCmbuXwASWqiVIiMLwKDRcmOQtJ-Y3HYwS-xK582XrApcQdKxruigmyfcgV6QiBVp0l2oO93cNqexJCWUb"/>
+<div>
+<p class="font-semibold text-on-surface">Ahmad Fathoni</p>
+<p class="text-xs text-slate-400">fathoni.ahmad@school.id</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex flex-col">
+<span class="text-sm font-medium">XII MIPA 1</span>
+<span class="text-xs text-slate-500">Science Stream</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="px-3 py-1 bg-emerald-50 text-emerald-700 text-xs font-bold rounded-full border border-emerald-100">Boarding</span>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-emerald-500"></div>
+<span class="text-sm font-medium text-emerald-700">Fully Paid</span>
+</div>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="p-2 text-slate-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="px-6 py-4 font-mono text-sm text-slate-600">2023101002</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<img alt="Student profile" class="w-8 h-8 rounded-full border border-white" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDRV1RmcsVgJi5ikBI7VHCV6c5E4cj666vuoCMkwxIcXAzNLoe4XMsP_rBKm3sRo1B_wUioG_gLVPXLPpzN76g0oiAb_of-3Bae7TI9_gnSCzZ2WuDhBD9rl0FvxG9QKPOOTH0ZsDDIGCpkrjZfX5m9fsTbgfBiiNda_NT7tpDT-egWoyy7s7B0D2ujXuWvtmWUyLkp0cY5UQQ_HaAhq1BYHKqqBHREDgdM9cz8iI0sFe7VlGIPkGXzEvrnLqVRg_kwjpVifttnnjZo"/>
+<div>
+<p class="font-semibold text-on-surface">Siti Aminah</p>
+<p class="text-xs text-slate-400">siti.aminah@school.id</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex flex-col">
+<span class="text-sm font-medium">X IPS 3</span>
+<span class="text-xs text-slate-500">Social Studies</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="px-3 py-1 bg-slate-100 text-slate-600 text-xs font-bold rounded-full">Regular</span>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-tertiary"></div>
+<span class="text-sm font-medium text-tertiary">Pending Bills</span>
+</div>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="p-2 text-slate-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="px-6 py-4 font-mono text-sm text-slate-600">2023101003</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<img alt="Student profile" class="w-8 h-8 rounded-full border border-white" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBI8O8DTbTECOGyDB8WJ2xR6-1WhHkGUVanhINub9QVN-ikn6afTabJAyGwGL5sMzGliII4aGRLpjBJmMHm8a0KWISExc25fyBz3yVfm22JO0Kt3QRiDClyX5emZxyqhjqJ2qW5qdicUBGb8Jz1Cs2vc53E3MdxNrQal5qFSQPrWo9_V8UNdNhk75z74NMieIryTfXAzr8A3gnr3o2S-w0GLYbuS_bvVVrQcPC8dqHcK6Icd-grjU19RKjzJNSsmKJsI_tTPY3IN-gq"/>
+<div>
+<p class="font-semibold text-on-surface">Budi Santoso</p>
+<p class="text-xs text-slate-400">budi.santoso@school.id</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex flex-col">
+<span class="text-sm font-medium">XI Keagamaan 1</span>
+<span class="text-xs text-slate-500">Religious Stream</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="px-3 py-1 bg-emerald-50 text-emerald-700 text-xs font-bold rounded-full border border-emerald-100">Boarding</span>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-orange-400"></div>
+<span class="text-sm font-medium text-orange-700">Installment Plan</span>
+</div>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="p-2 text-slate-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="px-6 py-4 font-mono text-sm text-slate-600">2023101004</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<img alt="Student profile" class="w-8 h-8 rounded-full border border-white" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC1SSs_sUoSSf-ijFlrn31BZOunO_bRNDWAnIVm00I_7j-Z5yOOsBANC2Z3gey1EZYigGzIvuvTzsW9FS09EyRv5Y-KOZP0DOgPhzIj_cfqDsij_Uve4kM7sNqLn4CYDnSoXomOylpx5gk1rJ--IDb8g8Uuw2IG-s8mif-Dte8mAnEHrsEfdiSExOTNFd7_cUlIrEhrXvZvE9pMSQeINCOArX6bEl_tiFnbNNusCvQoUECjcvfZxVuauuxXzCg2Z6yEwfpHcIStrF3x"/>
+<div>
+<p class="font-semibold text-on-surface">Dewi Lestari</p>
+<p class="text-xs text-slate-400">dewi.lestari@school.id</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex flex-col">
+<span class="text-sm font-medium">XII IPS 2</span>
+<span class="text-xs text-slate-500">Social Studies</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="px-3 py-1 bg-slate-100 text-slate-600 text-xs font-bold rounded-full">Regular</span>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-emerald-500"></div>
+<span class="text-sm font-medium text-emerald-700">Fully Paid</span>
+</div>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="p-2 text-slate-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination -->
+<div class="p-6 bg-surface-container-low flex items-center justify-between">
+<p class="text-sm text-slate-500">Showing <span class="font-bold text-on-surface">1 - 10</span> of <span class="font-bold text-on-surface">1,248</span> students</p>
+<div class="flex gap-2">
+<button class="p-2 rounded-lg bg-white shadow-sm text-slate-400 hover:text-primary transition-all active:scale-95">
+<span class="material-symbols-outlined">chevron_left</span>
+</button>
+<button class="w-10 h-10 rounded-lg bg-primary text-white font-bold flex items-center justify-center">1</button>
+<button class="w-10 h-10 rounded-lg bg-white shadow-sm text-slate-600 font-medium hover:bg-emerald-50 flex items-center justify-center transition-all">2</button>
+<button class="w-10 h-10 rounded-lg bg-white shadow-sm text-slate-600 font-medium hover:bg-emerald-50 flex items-center justify-center transition-all">3</button>
+<button class="w-10 h-10 rounded-lg bg-white shadow-sm text-slate-600 font-medium flex items-center justify-center">...</button>
+<button class="p-2 rounded-lg bg-white shadow-sm text-slate-400 hover:text-primary transition-all active:scale-95">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- FAB for Quick Actions -->
+<div class="fixed bottom-8 right-8 flex flex-col gap-4 group">
+<button class="w-14 h-14 bg-gradient-to-br from-primary to-primary-container text-white rounded-full shadow-2xl flex items-center justify-center transition-all hover:scale-110 active:scale-95 hover:rotate-90">
+<span class="material-symbols-outlined text-3xl">add</span>
+</button>
+</div>
+</main>
+<!-- Background Decorative Elements -->
+<div class="fixed inset-0 pointer-events-none z-[-1] overflow-hidden">
+<div class="absolute top-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-emerald-100/20 blur-3xl"></div>
+<div class="absolute bottom-[-5%] left-[-5%] w-[30%] h-[30%] rounded-full bg-slate-200/30 blur-3xl"></div>
+</div>
+</body></html>

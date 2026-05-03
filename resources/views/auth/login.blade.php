@@ -1,192 +1,105 @@
 <!DOCTYPE html>
-<html lang="id">
+<html class="light" lang="id">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Login Admin - Sistem Keuangan</title>
-    <style>
-        :root {
-            --bg: #f8fbf8;
-            --card: #ffffff;
-            --line: #d8e6d8;
-            --text: #163322;
-            --muted: #5f7b6a;
-            --green: #198754;
-            --green-strong: #12653f;
-            --shadow: 0 18px 40px rgba(25, 135, 84, 0.12);
-        }
-
-        * {
-            box-sizing: border-box;
-        }
-
-        body {
-            margin: 0;
-            min-height: 100vh;
-            display: grid;
-            place-items: center;
-            padding: 24px;
-            font-family: Helvetica, Arial, sans-serif;
-            color: var(--text);
-            background:
-                radial-gradient(circle at top right, rgba(25, 135, 84, 0.16), transparent 40%),
-                radial-gradient(circle at bottom left, rgba(25, 135, 84, 0.1), transparent 45%),
-                var(--bg);
-        }
-
-        .login-card {
-            width: min(100%, 430px);
-            background: var(--card);
-            border: 1px solid var(--line);
-            border-radius: 22px;
-            padding: 26px;
-            box-shadow: var(--shadow);
-        }
-
-        h1 {
-            margin: 0;
-            font-size: 1.7rem;
-        }
-
-        p {
-            margin: 8px 0 0;
-            color: var(--muted);
-        }
-
-        form {
-            display: grid;
-            gap: 14px;
-            margin-top: 20px;
-        }
-
-        .field {
-            display: grid;
-            gap: 8px;
-        }
-
-        label {
-            color: var(--muted);
-            font-size: 0.95rem;
-        }
-
-        input {
-            width: 100%;
-            padding: 12px 14px;
-            border-radius: 12px;
-            border: 1px solid var(--line);
-            font: inherit;
-        }
-
-        input:focus {
-            outline: 2px solid rgba(25, 135, 84, 0.18);
-            border-color: var(--green);
-        }
-
-        .remember {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: var(--muted);
-            font-size: 0.92rem;
-        }
-
-        .remember input {
-            width: auto;
-            margin: 0;
-        }
-
-        button {
-            border: 0;
-            border-radius: 12px;
-            padding: 12px 16px;
-            font: inherit;
-            color: #fff;
-            cursor: pointer;
-            background: linear-gradient(135deg, var(--green), var(--green-strong));
-        }
-
-        button:hover {
-            filter: brightness(0.95);
-        }
-
-        .alert {
-            margin-top: 14px;
-            border-radius: 12px;
-            padding: 11px 12px;
-            background: #ecf8f0;
-            border: 1px solid #b7e2c8;
-            color: #236540;
-        }
-
-        .errors {
-            margin-top: 14px;
-            border-radius: 12px;
-            padding: 11px 12px;
-            background: #fff3f3;
-            border: 1px solid #f2c7c7;
-            color: #a33e3e;
-        }
-
-        .errors ul {
-            margin: 0;
-            padding-left: 18px;
-        }
-
-        .hint {
-            margin-top: 16px;
-            font-size: 0.88rem;
-            color: var(--muted);
-        }
-
-        @media (max-width: 520px) {
-            .login-card {
-                padding: 20px;
-                border-radius: 18px;
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Login | E-Keuangan MAN 2 Surakarta</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        background: "#f7f9ff",
+                        primary: "#00422f",
+                        "primary-container": "#005c42",
+                        "primary-fixed-dim": "#8bd6b4",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container-high": "#e5e8ee",
+                        "on-surface": "#181c20",
+                        "on-surface-variant": "#3f4943"
+                    },
+                    fontFamily: {
+                        headline: ["Manrope"],
+                        body: ["Inter"]
+                    }
+                }
             }
+        };
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3 { font-family: 'Manrope', sans-serif; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .bg-pattern {
+            background-color: #f7f9ff;
+            background-image: radial-gradient(#00422f 0.5px, transparent 0.5px);
+            background-size: 24px 24px;
+            opacity: 0.03;
         }
     </style>
 </head>
-<body>
-    <section class="login-card">
-        <h1>Login Admin</h1>
-        <p>Hanya akun admin yang dapat mengakses sistem keuangan.</p>
-
-        @if (session('status'))
-            <div class="alert">{{ session('status') }}</div>
-        @endif
+<body class="bg-background text-on-surface min-h-screen flex items-center justify-center p-4 sm:p-8">
+<div class="fixed inset-0 bg-pattern pointer-events-none"></div>
+<main class="relative w-full max-w-6xl grid grid-cols-1 lg:grid-cols-12 overflow-hidden bg-surface-container-lowest rounded-xl shadow-[0_12px_40px_rgba(27,107,80,0.06)]">
+    <section class="lg:col-span-7 hidden lg:flex flex-col justify-between p-12 bg-primary text-white">
+        <div class="flex items-center gap-3">
+            <div class="w-14 h-14 rounded-xl bg-white flex items-center justify-center shadow-lg shadow-black/10 overflow-hidden">
+                <img alt="Logo MAN 2 Surakarta" class="h-12 w-12 object-contain" src="{{ asset('images/man2-logo.png') }}">
+            </div>
+            <div>
+                <span class="font-headline font-extrabold text-xl leading-none block">E-Keuangan</span>
+                <span class="text-primary-fixed-dim text-xs tracking-widest">MAN 2 SURAKARTA</span>
+            </div>
+        </div>
+        <div class="max-w-md">
+            <h1 class="text-4xl font-headline font-bold leading-tight mb-6">
+                Integritas dalam Pengelolaan, Kecemerlangan dalam Pendidikan
+            </h1>
+            <p class="text-primary-fixed-dim text-lg leading-relaxed">
+                Sistem manajemen keuangan terintegrasi untuk mendukung administrasi pendidikan yang transparan, rapi, dan siap audit.
+            </p>
+        </div>
+        <div class="flex gap-4">
+            <div class="h-1 w-12 bg-primary-fixed-dim rounded-full"></div>
+            <div class="h-1 w-4 bg-primary-fixed-dim/30 rounded-full"></div>
+            <div class="h-1 w-4 bg-primary-fixed-dim/30 rounded-full"></div>
+        </div>
+    </section>
+    <section class="lg:col-span-5 flex flex-col justify-center p-8 sm:p-12 lg:p-16 bg-surface-container-lowest">
+        <div class="mb-8">
+            <h3 class="text-on-surface text-3xl font-headline font-bold tracking-tight mb-2">Selamat Datang</h3>
+            <p class="text-on-surface-variant">Silakan masuk untuk mengakses dashboard manajemen keuangan institusi.</p>
+        </div>
 
         @if ($errors->any())
-            <div class="errors">
-                <ul>
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
+            <div class="mb-6 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-900">
+                {{ $errors->first() }}
             </div>
         @endif
 
-        <form action="{{ route('login.attempt') }}" method="POST">
+        <form action="{{ route('login.store') }}" class="space-y-6" method="POST">
             @csrf
-
-            <div class="field">
-                <label for="email">Email Admin</label>
-                <input type="email" id="email" name="email" value="{{ old('email') }}" required autofocus>
+            <div class="space-y-1.5">
+                <label class="text-on-surface-variant text-xs font-semibold uppercase tracking-widest block ml-1" for="login">Username atau Email</label>
+                <input class="block w-full px-4 py-3.5 bg-surface-container-high border-none border-b-2 border-transparent focus:border-primary focus:ring-0 rounded-xl transition-all font-body text-on-surface placeholder:text-slate-400" id="login" name="login" placeholder="admin@man2surakarta.sch.id" required type="text" value="{{ old('login') }}">
             </div>
-
-            <div class="field">
-                <label for="password">Password</label>
-                <input type="password" id="password" name="password" required>
+            <div class="space-y-1.5">
+                <label class="text-on-surface-variant text-xs font-semibold uppercase tracking-widest block ml-1" for="password">Kata Sandi</label>
+                <input class="block w-full px-4 py-3.5 bg-surface-container-high border-none border-b-2 border-transparent focus:border-primary focus:ring-0 rounded-xl transition-all font-body text-on-surface placeholder:text-slate-400" id="password" name="password" placeholder="••••••••••••" required type="password">
             </div>
-
-            <label class="remember">
-                <input type="checkbox" name="remember" value="1" @checked(old('remember'))>
-                Ingat saya
-            </label>
-
-            <button type="submit">Masuk sebagai Admin</button>
+            <div class="flex items-center px-1">
+                <input class="w-4 h-4 text-primary bg-surface-container-high border-slate-300 rounded focus:ring-primary" id="remember" name="remember" type="checkbox" value="1">
+                <label class="ml-2 text-sm font-medium text-on-surface-variant" for="remember">Ingat saya di perangkat ini</label>
+            </div>
+            <button class="w-full py-4 px-6 bg-gradient-to-br from-primary to-primary-container text-white font-headline font-bold rounded-xl shadow-lg shadow-primary/10 hover:shadow-primary/20 transition-all flex items-center justify-center gap-2" type="submit">
+                Masuk ke Sistem
+                <span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+            </button>
         </form>
-
-        <div class="hint">Email admin default: admin@man2.test</div>
     </section>
+</main>
 </body>
 </html>
