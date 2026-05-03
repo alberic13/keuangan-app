@@ -18,7 +18,16 @@ class ExpensesPage extends Component
             : null;
 
         return view('livewire.expenses-page', [
-            'accounts' => CashAccount::query()->where('is_active', true)->orderBy('name')->get(),
+            'accounts' => CashAccount::query()
+                ->where('is_active', true)
+                ->withSum(['ledgerEntries as incoming_total' => function (Builder $query) {
+                    $query->where('direction', 'in')->where('status', 'posted');
+                }], 'amount')
+                ->withSum(['ledgerEntries as outgoing_total' => function (Builder $query) {
+                    $query->where('direction', 'out')->where('status', 'posted');
+                }], 'amount')
+                ->orderBy('name')
+                ->get(),
             'categories' => ExpenseCategory::query()->where('is_active', true)->orderBy('name')->get(),
             'editingExpense' => $editingExpense,
             'expenses' => Expense::query()

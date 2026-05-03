@@ -50,6 +50,12 @@
                             <p class="text-xs uppercase tracking-widest text-on-surface-variant">{{ strtoupper($account->type) }}</p>
                             <p class="mt-1 font-semibold">{{ $account->name }}</p>
                             <p class="text-sm text-on-surface-variant">{{ $account->account_holder ?: 'Tanpa nama holder' }}</p>
+                            @php
+                                $balance = (int) ($account->incoming_total ?? 0) - (int) ($account->outgoing_total ?? 0);
+                            @endphp
+                            <div class="mt-3 rounded-lg bg-white/70 px-3 py-2 text-sm font-semibold text-slate-700">
+                                Saldo: <span class="text-emerald-700">Rp {{ number_format($balance, 0, ',', '.') }}</span>
+                            </div>
                         </div>
                     @endforeach
                 </div>
