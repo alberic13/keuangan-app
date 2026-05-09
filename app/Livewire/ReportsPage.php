@@ -18,8 +18,8 @@ class ReportsPage extends Component
         ];
 
         $type = 'cashflow';
-        $payments = $reportService->incomePayments($filters + ['limit' => 50]);
-        $expenses = $reportService->expenseDetails($filters + ['limit' => 50]);
+        $payments = $reportService->incomePayments($filters);
+        $expenses = $reportService->expenseDetails($filters);
         $paymentHistory = collect($payments->map(function ($payment) {
             return [
                 'date' => $payment->payment_date,
@@ -45,9 +45,6 @@ class ReportsPage extends Component
         })->all());
 
         $history = $paymentHistory
-            ->map(function ($payment) {
-                return $payment;
-            })
             ->merge($expenseHistory)
             ->sortByDesc(fn (array $item) => $item['date']?->timestamp ?? 0)
             ->values();
@@ -177,4 +174,5 @@ class ReportsPage extends Component
             $periodAlert,
         ];
     }
+
 }

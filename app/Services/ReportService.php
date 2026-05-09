@@ -34,7 +34,7 @@ class ReportService
             ->when(! empty($filters['date_from']), fn (Builder $query) => $query->whereDate('payment_date', '>=', $filters['date_from']))
             ->when(! empty($filters['date_to']), fn (Builder $query) => $query->whereDate('payment_date', '<=', $filters['date_to']))
             ->latest('payment_date')
-            ->limit((int) ($filters['limit'] ?? 50))
+            ->when(array_key_exists('limit', $filters), fn (Builder $query) => $query->limit((int) $filters['limit']))
             ->get();
     }
 
@@ -45,7 +45,7 @@ class ReportService
             ->when(! empty($filters['date_from']), fn (Builder $query) => $query->whereDate('transaction_date', '>=', $filters['date_from']))
             ->when(! empty($filters['date_to']), fn (Builder $query) => $query->whereDate('transaction_date', '<=', $filters['date_to']))
             ->latest('transaction_date')
-            ->limit((int) ($filters['limit'] ?? 50))
+            ->when(array_key_exists('limit', $filters), fn (Builder $query) => $query->limit((int) $filters['limit']))
             ->get();
     }
 

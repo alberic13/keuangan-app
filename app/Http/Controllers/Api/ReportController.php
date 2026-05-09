@@ -111,6 +111,15 @@ class ReportController extends Controller
             default => [],
         };
 
+        $summary = $type === 'cashflow' && is_array($rows)
+            ? [
+                'income' => (int) collect($rows)->sum('uang_masuk'),
+                'expense' => (int) collect($rows)->sum('uang_keluar'),
+                'balance' => (int) collect($rows)->sum('uang_masuk') - (int) collect($rows)->sum('uang_keluar'),
+                'count' => collect($rows)->count(),
+            ]
+            : null;
+
         if ($request->string('format')->toString() === 'xlsx') {
             return Excel::download(
                 new RowsExport($this->normalizeRowsForSpreadsheet($type, $rows) ?: [['data' => 'Tidak ada data']]),
@@ -122,6 +131,7 @@ class ReportController extends Controller
             'type' => $type,
             'title' => $this->resolveTitle($type),
             'rows' => $rows,
+            'summary' => $summary,
             'filters' => $request->except(['format']),
             'generatedAt' => now(),
         ])->download(Str::slug($type ?: 'report').'.pdf');
@@ -226,6 +236,34 @@ class ReportController extends Controller
 
     protected function normalizeRowsForSpreadsheet(string $type, mixed $rows): array
     {
+        if ($type === 'cashflow') {
+            $normalizedRows = collect($rows instanceof Collection ? $rows->all() : $rows)
+                ->map(function (array $row) {
+                    return [
+                        'tanggal' => $row['tanggal'] ?? '-',
+                        'jenis' => $row['jenis'] ?? '-',
+                        'no_bukti' => $row['no_bukti'] ?? '-',
+                        'sumber' => $row['sumber'] ?? '-',
+                        'keterangan' => $row['keterangan'] ?? '-',
+                        'uang_masuk' => (int) ($row['uang_masuk'] ?? 0),
+                        'uang_keluar' => (int) ($row['uang_keluar'] ?? 0),
+                    ];
+                })
+                ->values();
+
+            $summaryRow = [
+                'tanggal' => 'Total Periode',
+                'jenis' => '',
+                'no_bukti' => '',
+                'sumber' => '',
+                'keterangan' => 'Total periode',
+                'uang_masuk' => (int) $normalizedRows->sum('uang_masuk'),
+                'uang_keluar' => (int) $normalizedRows->sum('uang_keluar'),
+            ];
+
+            return $normalizedRows->push($summaryRow)->all();
+        }
+
         if ($type === 'student-ledger') {
             return $this->normalizeStudentLedgerRows($rows);
         }

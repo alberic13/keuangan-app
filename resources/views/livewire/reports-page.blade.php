@@ -180,6 +180,17 @@
                     </tr>
                 @endforelse
                 </tbody>
+                <tfoot class="border-t border-slate-200 bg-slate-50">
+                <tr>
+                    <td class="px-6 py-4 text-sm font-semibold text-slate-700" colspan="5">Total Periode</td>
+                    <td class="px-6 py-4 text-sm font-bold text-emerald-700">
+                        Rp {{ number_format((int) (($summary['income'] ?? 0)), 0, ',', '.') }}
+                    </td>
+                    <td class="px-6 py-4 text-sm font-bold text-rose-700">
+                        Rp {{ number_format((int) (($summary['expense'] ?? 0)), 0, ',', '.') }}
+                    </td>
+                </tr>
+                </tfoot>
             </table>
         </div>
     </section>
