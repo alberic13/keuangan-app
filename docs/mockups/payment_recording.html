@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Payment Recording - E-Keuangan MAN 2 Surakarta</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=Inter:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-bright": "#f7f9ff",
+                        "surface-variant": "#dfe3e8",
+                        "on-surface-variant": "#3f4943",
+                        "inverse-on-surface": "#eef1f7",
+                        "on-tertiary-fixed-variant": "#73332d",
+                        "primary-container": "#005c42",
+                        "on-secondary-fixed": "#0d1f18",
+                        "on-primary-fixed": "#002115",
+                        "surface-container-low": "#f1f4fa",
+                        "secondary-container": "#cfe5d9",
+                        "primary-fixed-dim": "#8bd6b4",
+                        "tertiary-fixed-dim": "#ffb4ab",
+                        "on-primary-fixed-variant": "#00513a",
+                        "surface-container-high": "#e5e8ee",
+                        "on-error-container": "#93000a",
+                        "surface": "#f7f9ff",
+                        "background": "#f7f9ff",
+                        "surface-container": "#ebeef4",
+                        "on-secondary": "#ffffff",
+                        "inverse-primary": "#8bd6b4",
+                        "on-secondary-container": "#54675e",
+                        "on-primary-container": "#87d2b1",
+                        "outline-variant": "#bec9c2",
+                        "surface-tint": "#1b6b50",
+                        "on-secondary-fixed-variant": "#384b42",
+                        "error": "#ba1a1a",
+                        "on-tertiary-fixed": "#3b0807",
+                        "outline": "#6f7973",
+                        "tertiary": "#622621",
+                        "on-surface": "#181c20",
+                        "secondary": "#4f6359",
+                        "on-tertiary-container": "#ffaea5",
+                        "tertiary-container": "#7f3c36",
+                        "primary-fixed": "#a6f2d0",
+                        "surface-container-lowest": "#ffffff",
+                        "secondary-fixed": "#d2e7dc",
+                        "on-background": "#181c20",
+                        "inverse-surface": "#2d3135",
+                        "on-primary": "#ffffff",
+                        "on-error": "#ffffff",
+                        "tertiary-fixed": "#ffdad6",
+                        "surface-container-highest": "#dfe3e8",
+                        "secondary-fixed-dim": "#b6cbc0",
+                        "primary": "#00422f",
+                        "error-container": "#ffdad6",
+                        "surface-dim": "#d7dae0",
+                        "on-tertiary": "#ffffff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "fontFamily": {
+                        "headline": ["Manrope"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .font-manrope { font-family: 'Manrope', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface">
+<div class="flex min-h-screen">
+<!-- SideNavBar -->
+<aside class="hidden md:flex flex-col h-screen w-72 bg-slate-50 dark:bg-emerald-950 fixed left-0 top-0 py-6 font-manrope text-sm font-medium border-r-0 z-50">
+<div class="px-6 mb-8 flex items-center gap-3">
+<img alt="MAN 2 Surakarta Logo" class="w-10 h-10 object-contain" data-alt="Official logo of MAN 2 Surakarta, featuring Islamic geometric elements and scholarly symbols in deep emerald and gold tones" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDy2-hbp2IKAoT5FCzo71iZoUqfbZfauTDIFjHPH07UBmOZpUukE3R61JON5eLNxib5MpvsGwQI-xyWpdPCJ54A-mYAr9IFOJ_J4DrBqRAIf8qz72YGlp9K5R-SJZjAyXm2azxqmsHXSssNJMKKUOsFBuGLyDCbVgvxaP3T_EFtxrB0X9eQQQ9MZjneGp1jVzelSRPJa3-1ZoXSf0-9xLqwscZ2_x16qMT9waz3r51HZdttNZgdCycMkTlFPbGgfXaqkQm6U1m98Mpi"/>
+<div>
+<h1 class="text-lg font-black text-emerald-900 dark:text-emerald-50">E-Keuangan</h1>
+<p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest">MAN 2 Surakarta</p>
+</div>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 mx-2 hover:bg-slate-200 dark:hover:bg-emerald-900 rounded-lg transition-transform hover:translate-x-1" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span>Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 mx-2 hover:bg-slate-200 dark:hover:bg-emerald-900 rounded-lg transition-transform hover:translate-x-1" href="#">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+<span>Student Management</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 mx-2 hover:bg-slate-200 dark:hover:bg-emerald-900 rounded-lg transition-transform hover:translate-x-1" href="#">
+<span class="material-symbols-outlined" data-icon="receipt_long">receipt_long</span>
+<span>Billing Management</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 bg-emerald-100 dark:bg-emerald-800 text-emerald-900 dark:text-emerald-50 rounded-lg mx-2 transition-transform translate-x-1" href="#">
+<span class="material-symbols-outlined" data-icon="payments">payments</span>
+<span>Payment Recording</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 mx-2 hover:bg-slate-200 dark:hover:bg-emerald-900 rounded-lg transition-transform hover:translate-x-1" href="#">
+<span class="material-symbols-outlined" data-icon="account_balance_wallet">account_balance_wallet</span>
+<span>Cash Ledger</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 mx-2 hover:bg-slate-200 dark:hover:bg-emerald-900 rounded-lg transition-transform hover:translate-x-1" href="#">
+<span class="material-symbols-outlined" data-icon="history_edu">history_edu</span>
+<span>Audit Logs</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 mx-2 hover:bg-slate-200 dark:hover:bg-emerald-900 rounded-lg transition-transform hover:translate-x-1" href="#">
+<span class="material-symbols-outlined" data-icon="manage_accounts">manage_accounts</span>
+<span>User Management</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 mx-2 hover:bg-slate-200 dark:hover:bg-emerald-900 rounded-lg transition-transform hover:translate-x-1" href="#">
+<span class="material-symbols-outlined" data-icon="analytics">analytics</span>
+<span>Reports</span>
+</a>
+</nav>
+<div class="mt-auto px-2">
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-emerald-900 rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+<span>Logout</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="flex-1 md:ml-72 flex flex-col min-h-screen">
+<!-- TopNavBar -->
+<header class="fixed top-0 right-0 left-0 md:left-72 z-40 bg-white/80 dark:bg-emerald-950/80 backdrop-blur-xl shadow-sm dark:shadow-none py-3 px-6 flex justify-between items-center transition-all">
+<div class="flex items-center gap-4 flex-1">
+<div class="relative w-full max-w-xl">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">search</span>
+<input class="w-full pl-10 pr-4 py-2 bg-surface-container-low border-none rounded-full text-sm focus:ring-2 focus:ring-primary/20" placeholder="Search student by name or NISN..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 text-slate-500 hover:bg-emerald-50/50 rounded-full transition-colors">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="p-2 text-slate-500 hover:bg-emerald-50/50 rounded-full transition-colors">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+<div class="h-8 w-8 rounded-full bg-primary-container overflow-hidden ring-2 ring-primary-fixed-dim/30">
+<img alt="User profile" class="w-full h-full object-cover" data-alt="Minimalist avatar of a male clerk in professional attire with soft lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCyrCY6DyRPzFA9J3BMiPobnS0skmZBLVqSpGeJJ8iavMyurelDVAEK5ryB3zrzJ4MeWT7jE-9a_A8B2W-ICwfp7I12-xpmr_8U7RDRML60k_ODXLUBUieqYyXX4TJQa3fIV91qQEOdylxJwTwl-8niqyIyLU1qKP_MMXlTDTOdogIHLwShl46AIe8frySME0nNH7nw4cxBEXplPj5gMCi2-RHhV5U_oswqsRCZEbrAZlsOhrC4fDeUFsIXQDYDv7xs7MqgmMEsjEX6"/>
+</div>
+</div>
+</header>
+<!-- Page Body -->
+<section class="mt-20 px-8 py-6 space-y-8 max-w-7xl mx-auto w-full">
+<!-- Header Section with Asymmetry -->
+<div class="flex justify-between items-end">
+<div>
+<span class="text-primary font-manrope font-bold text-xs uppercase tracking-widest bg-primary-fixed/30 px-3 py-1 rounded-full">Finance / Transaction</span>
+<h2 class="text-4xl font-headline font-extrabold text-on-surface mt-2 tracking-tight">Payment Recording</h2>
+<p class="text-on-surface-variant mt-1 text-sm">Efficiently record tuition and institutional fees.</p>
+</div>
+<div class="text-right hidden sm:block">
+<p class="text-xs text-on-surface-variant font-medium">Session Active</p>
+<p class="text-sm font-bold text-on-surface">Staff: Ahmad Fauzi</p>
+</div>
+</div>
+<!-- Main Grid Layout -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+<!-- Left: Student Detail & Invoices (Bento Grid Style) -->
+<div class="lg:col-span-8 space-y-6">
+<!-- Student Quick Profile Card -->
+<div class="bg-surface-container-lowest rounded-xl p-6 shadow-[0_12px_40px_rgba(27,107,80,0.06)] relative overflow-hidden group">
+<div class="absolute -right-4 -top-4 w-32 h-32 bg-primary/5 rounded-full blur-3xl group-hover:bg-primary/10 transition-colors"></div>
+<div class="flex flex-col md:flex-row gap-6 items-start">
+<div class="w-20 h-20 rounded-xl bg-surface-container overflow-hidden">
+<img alt="Student profile" class="w-full h-full object-cover" data-alt="Digital representation of a student profile using initials on a solid brand green background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC-_RE0Ge1UXghWwvkrl1QBNYAQPPHyjQWBDbU07IaPNLcpWYNYtQ-AI4k8fKv2pZ8LIJPwqLmFMiYOQo7UpRU8fFCcUsigvw8GYXMWLGxD_JHQVKDYJri0JLiHmUc21_J73mjaCHYx27e-BhMZAnaVfvBCWp-SSPj4wfKEq79FMdkwE4TLb1aLcKVOuMsdMAR1nCZOFFAMa2ohO4DuSJ6mECdfI5AhoX50nS84F4LDPKRO6P4RJU3DVTRF-rUPmFPybWxEYK8MPn-m"/>
+</div>
+<div class="flex-1">
+<div class="flex items-center gap-3">
+<h3 class="text-xl font-manrope font-bold text-on-surface">Rizky Setiawan</h3>
+<span class="px-2 py-0.5 rounded bg-secondary-container text-on-secondary-container text-[10px] font-bold">XII-MIPA 1</span>
+</div>
+<p class="text-on-surface-variant text-sm font-medium">NISN: 0081239942</p>
+<div class="mt-4 flex gap-6">
+<div>
+<p class="text-[10px] text-on-surface-variant uppercase font-bold tracking-tighter">Total Arrears</p>
+<p class="text-lg font-manrope font-extrabold text-error">Rp 1.250.000</p>
+</div>
+<div>
+<p class="text-[10px] text-on-surface-variant uppercase font-bold tracking-tighter">Last Payment</p>
+<p class="text-lg font-manrope font-extrabold text-primary">12 Oct 2023</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Active Invoices Ledger -->
+<div class="bg-surface-container-low rounded-xl overflow-hidden">
+<div class="p-6 border-b border-outline-variant/10 flex justify-between items-center">
+<h4 class="font-manrope font-bold text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">receipt</span>
+                                    Outstanding Invoices
+                                </h4>
+<span class="text-xs font-bold text-on-surface-variant">3 Items Found</span>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left">
+<thead class="bg-surface-container-high/50">
+<tr>
+<th class="px-6 py-4 label-md font-bold text-[11px] uppercase tracking-wider text-on-surface-variant">Invoice ID</th>
+<th class="px-6 py-4 label-md font-bold text-[11px] uppercase tracking-wider text-on-surface-variant">Fee Category</th>
+<th class="px-6 py-4 label-md font-bold text-[11px] uppercase tracking-wider text-on-surface-variant text-right">Amount</th>
+<th class="px-6 py-4 label-md font-bold text-[11px] uppercase tracking-wider text-on-surface-variant">Due Date</th>
+<th class="px-6 py-4 label-md font-bold text-[11px] uppercase tracking-wider text-on-surface-variant">Select</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/10">
+<tr class="hover:bg-surface-container transition-colors">
+<td class="px-6 py-4 text-sm font-bold text-on-surface">#SPP-OCT-23</td>
+<td class="px-6 py-4 text-sm text-on-surface-variant">SPP Bulan Oktober 2023</td>
+<td class="px-6 py-4 text-sm font-bold text-right text-on-surface">Rp 250.000</td>
+<td class="px-6 py-4 text-sm text-on-surface-variant">25 Oct 2023</td>
+<td class="px-6 py-4">
+<input checked="" class="rounded-sm border-outline text-primary focus:ring-primary h-4 w-4" type="checkbox"/>
+</td>
+</tr>
+<tr class="hover:bg-surface-container transition-colors">
+<td class="px-6 py-4 text-sm font-bold text-on-surface">#BUI-2023</td>
+<td class="px-6 py-4 text-sm text-on-surface-variant">Biaya Ujian Semester Ganjil</td>
+<td class="px-6 py-4 text-sm font-bold text-right text-on-surface">Rp 500.000</td>
+<td class="px-6 py-4 text-sm text-on-surface-variant">10 Nov 2023</td>
+<td class="px-6 py-4">
+<input class="rounded-sm border-outline text-primary focus:ring-primary h-4 w-4" type="checkbox"/>
+</td>
+</tr>
+<tr class="hover:bg-surface-container transition-colors">
+<td class="px-6 py-4 text-sm font-bold text-on-surface">#DSR-2023</td>
+<td class="px-6 py-4 text-sm text-on-surface-variant">Dana Sumbangan Pendidikan</td>
+<td class="px-6 py-4 text-sm font-bold text-right text-on-surface">Rp 500.000</td>
+<td class="px-6 py-4 text-sm text-on-surface-variant">30 Dec 2023</td>
+<td class="px-6 py-4">
+<input class="rounded-sm border-outline text-primary focus:ring-primary h-4 w-4" type="checkbox"/>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<!-- Right: Recording Form & Summary -->
+<div class="lg:col-span-4 space-y-6">
+<!-- Recording Form Card -->
+<div class="bg-surface-container-lowest rounded-xl p-8 shadow-[0_12px_40px_rgba(27,107,80,0.06)] border border-outline-variant/20">
+<h4 class="font-manrope font-bold text-lg text-on-surface mb-6">Record Payment</h4>
+<form class="space-y-6">
+<div>
+<label class="block text-[11px] font-bold uppercase tracking-widest text-on-surface-variant mb-2">Payment Method</label>
+<div class="grid grid-cols-2 gap-3">
+<button class="flex flex-col items-center justify-center p-3 rounded-lg border-2 border-primary bg-primary/5 text-primary" type="button">
+<span class="material-symbols-outlined mb-1">payments</span>
+<span class="text-xs font-bold">Cash</span>
+</button>
+<button class="flex flex-col items-center justify-center p-3 rounded-lg border-2 border-transparent bg-surface-container-low text-on-surface-variant hover:border-outline-variant transition-colors" type="button">
+<span class="material-symbols-outlined mb-1">account_balance</span>
+<span class="text-xs font-bold">Bank Transfer</span>
+</button>
+</div>
+</div>
+<div>
+<label class="block text-[11px] font-bold uppercase tracking-widest text-on-surface-variant mb-1">Amount to Pay</label>
+<div class="relative">
+<span class="absolute left-0 bottom-2 text-on-surface font-bold">Rp</span>
+<input class="w-full bg-transparent border-0 border-b-2 border-primary pt-6 pb-2 pl-7 font-manrope font-extrabold text-2xl focus:ring-0 text-on-surface" type="text" value="250.000"/>
+</div>
+</div>
+<div>
+<label class="block text-[11px] font-bold uppercase tracking-widest text-on-surface-variant mb-1">Transaction Notes</label>
+<textarea class="w-full bg-surface-container-low border-0 border-b-2 border-outline-variant focus:border-primary focus:ring-0 text-sm py-2 rounded-t-md" placeholder="e.g. Paid by Parent via Cashier..." rows="2"></textarea>
+</div>
+<!-- Summary List -->
+<div class="bg-surface-container-low/50 rounded-lg p-4 space-y-2">
+<div class="flex justify-between text-xs">
+<span class="text-on-surface-variant">Subtotal Selected</span>
+<span class="font-bold">Rp 250.000</span>
+</div>
+<div class="flex justify-between text-xs">
+<span class="text-on-surface-variant">Admin Fee</span>
+<span class="font-bold">Rp 0</span>
+</div>
+<div class="pt-2 border-t border-outline-variant/20 flex justify-between">
+<span class="text-sm font-bold">Total Amount</span>
+<span class="text-sm font-extrabold text-primary">Rp 250.000</span>
+</div>
+</div>
+<button class="w-full py-4 bg-gradient-to-br from-primary to-primary-container text-white rounded-xl font-manrope font-bold text-sm shadow-lg shadow-primary/20 hover:opacity-90 active:scale-[0.98] transition-all" type="submit">
+                                    Confirm and Record Payment
+                                </button>
+<button class="w-full py-2 text-on-surface-variant font-medium text-xs hover:text-primary transition-colors" type="button">
+                                    Print Quote Only
+                                </button>
+</form>
+</div>
+<!-- Info Card -->
+<div class="bg-primary/5 rounded-xl p-5 flex gap-4">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">info</span>
+<div class="text-xs text-on-primary-fixed-variant leading-relaxed">
+<strong>Clerk Note:</strong> Transactions are final once confirmed. E-receipts will be sent automatically to the student's registered WhatsApp/Email.
+                            </div>
+</div>
+</div>
+</div>
+</section>
+</main>
+</div>
+</body></html>

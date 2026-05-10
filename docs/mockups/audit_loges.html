@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Audit Logs - E-Keuangan MAN 2 Surakarta</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=Inter:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-bright": "#f7f9ff",
+                        "surface-variant": "#dfe3e8",
+                        "on-surface-variant": "#3f4943",
+                        "inverse-on-surface": "#eef1f7",
+                        "on-tertiary-fixed-variant": "#73332d",
+                        "primary-container": "#005c42",
+                        "on-secondary-fixed": "#0d1f18",
+                        "on-primary-fixed": "#002115",
+                        "surface-container-low": "#f1f4fa",
+                        "secondary-container": "#cfe5d9",
+                        "primary-fixed-dim": "#8bd6b4",
+                        "tertiary-fixed-dim": "#ffb4ab",
+                        "on-primary-fixed-variant": "#00513a",
+                        "surface-container-high": "#e5e8ee",
+                        "on-error-container": "#93000a",
+                        "surface": "#f7f9ff",
+                        "background": "#f7f9ff",
+                        "surface-container": "#ebeef4",
+                        "on-secondary": "#ffffff",
+                        "inverse-primary": "#8bd6b4",
+                        "on-secondary-container": "#54675e",
+                        "on-surface": "#181c20",
+                        "secondary": "#4f6359",
+                        "on-tertiary-container": "#ffaea5",
+                        "tertiary-container": "#7f3c36",
+                        "primary-fixed": "#a6f2d0",
+                        "surface-container-lowest": "#ffffff",
+                        "secondary-fixed": "#d2e7dc",
+                        "on-background": "#181c20",
+                        "inverse-surface": "#2d3135",
+                        "on-primary": "#ffffff",
+                        "on-error": "#ffffff",
+                        "tertiary-fixed": "#ffdad6",
+                        "surface-container-highest": "#dfe3e8",
+                        "secondary-fixed-dim": "#b6cbc0",
+                        "primary": "#00422f",
+                        "error-container": "#ffdad6",
+                        "surface-dim": "#d7dae0",
+                        "on-tertiary": "#ffffff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "fontFamily": {
+                        "headline": ["Manrope"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3, .font-headline { font-family: 'Manrope', sans-serif; }
+        .glass-header { backdrop-filter: blur(12px); }
+        .audit-grid { display: grid; grid-template-columns: 280px 1fr; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #005c4233; border-radius: 10px; }
+    </style>
+</head>
+<body class="bg-surface text-on-surface">
+<div class="flex min-h-screen">
+<!-- SideNavBar -->
+<aside class="hidden md:flex flex-col h-screen w-72 sticky top-0 bg-slate-50 dark:bg-emerald-950 font-manrope text-sm font-medium py-6 border-r-0">
+<div class="px-6 mb-10">
+<div class="flex items-center gap-3">
+<img alt="MAN 2 Surakarta Logo" class="w-10 h-10 object-contain" data-alt="professional crest of an islamic educational institution with elegant calligraphy and geometric patterns in emerald and gold" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAYHmKQBhyydH1eRRN1jhaQvbZYIJRCsQ7hmPJKmhIXGGxkAInDNcyovBWa-uEohJqRZ7G9PFWV4vdDn1Ei5o-alkAJw-KrPRRoEeo_kMe0fJHcyqxxeVwvuGSnjJQsNuAIfKuvJg_g4ejOHPiSHZfK_Y4rlgw93biRYdy5syfgNXNvHPAouMwcFfNrUHUsonKSN6STT1QLjuM0m1cYbjcckvWVDFVWMU8fizTzEZ6L7N8ePrSR38tOdKNld-TKg0g3bsD5Yp6o1pnH"/>
+<div>
+<h1 class="text-lg font-black text-emerald-900 dark:text-emerald-50 leading-tight">E-Keuangan</h1>
+<p class="text-[10px] text-slate-500 uppercase tracking-widest">MAN 2 Surakarta</p>
+</div>
+</div>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-6 py-3 text-slate-600 dark:text-slate-400 mx-2 hover:bg-slate-200 dark:hover:bg-emerald-900 rounded-lg transition-transform hover:translate-x-1" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span>Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-3 text-slate-600 dark:text-slate-400 mx-2 hover:bg-slate-200 dark:hover:bg-emerald-900 rounded-lg transition-transform hover:translate-x-1" href="#">
+<span class="material-symbols-outlined">group</span>
+<span>Student Management</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-3 text-slate-600 dark:text-slate-400 mx-2 hover:bg-slate-200 dark:hover:bg-emerald-900 rounded-lg transition-transform hover:translate-x-1" href="#">
+<span class="material-symbols-outlined">receipt_long</span>
+<span>Billing Management</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-3 text-slate-600 dark:text-slate-400 mx-2 hover:bg-slate-200 dark:hover:bg-emerald-900 rounded-lg transition-transform hover:translate-x-1" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span>Payment Recording</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-3 text-slate-600 dark:text-slate-400 mx-2 hover:bg-slate-200 dark:hover:bg-emerald-900 rounded-lg transition-transform hover:translate-x-1" href="#">
+<span class="material-symbols-outlined">account_balance_wallet</span>
+<span>Cash Ledger</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-3 bg-emerald-100 dark:bg-emerald-800 text-emerald-900 dark:text-emerald-50 rounded-lg mx-2 transition-transform translate-x-1" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">history_edu</span>
+<span>Audit Logs</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-3 text-slate-600 dark:text-slate-400 mx-2 hover:bg-slate-200 dark:hover:bg-emerald-900 rounded-lg transition-transform hover:translate-x-1" href="#">
+<span class="material-symbols-outlined">manage_accounts</span>
+<span>User Management</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-3 text-slate-600 dark:text-slate-400 mx-2 hover:bg-slate-200 dark:hover:bg-emerald-900 rounded-lg transition-transform hover:translate-x-1" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span>Reports</span>
+</a>
+</nav>
+<div class="mt-auto px-6 pt-6 border-t border-slate-200/50">
+<a class="flex items-center gap-3 py-3 text-slate-600 hover:text-error transition-colors" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span>Logout</span>
+</a>
+</div>
+</aside>
+<!-- Main Canvas -->
+<main class="flex-1 min-w-0 flex flex-col bg-surface">
+<!-- TopNavBar -->
+<header class="fixed top-0 w-full z-50 bg-white/80 dark:bg-emerald-950/80 backdrop-blur-xl shadow-sm dark:shadow-none font-manrope tracking-tight font-semibold">
+<div class="flex justify-between items-center px-6 py-3 w-full">
+<div class="text-xl font-bold text-emerald-900 dark:text-emerald-50 flex items-center gap-2">
+<span class="md:hidden flex items-center gap-2">
+<img alt="MAN 2 Surakarta Logo" class="w-8 h-8" data-alt="school logo mascot" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCBhZbhpfFoCw7c_CNBr6qMVITEgU8afnX-tZc1MbXLIY-6QSTARMqL5jt3cfaHmOX7QwtMtFTZzr5EcuqVMbh62xaL2feuqKBeaKCdqOcCqJwgYQrzjDjFLKHTsvHrLYp1Z6xmmHMsy7yXBAnmbFMn8t0CFpinLEaYkK23US_2Y8lqFvoYE9yfHSN6lXjrGMAby_Lq18Ywe8bhK5cJr_XWzuGFvTVMeR3sT83G64W4Y0Qp5l_pgfe2Ghn6iRzB1J8MxWt2n7hCQ5J5"/>
+                            E-Keuangan
+                        </span>
+<span class="hidden md:block">Audit System Transparency</span>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative hidden sm:block">
+<input class="bg-surface-container-low border-none rounded-full px-4 py-2 text-sm w-64 focus:ring-2 focus:ring-primary/20" placeholder="Search logs..." type="text"/>
+<span class="material-symbols-outlined absolute right-3 top-2 text-slate-400 text-sm">search</span>
+</div>
+<div class="flex items-center gap-2">
+<button class="p-2 hover:bg-emerald-50/50 dark:hover:bg-emerald-900/50 transition-colors rounded-full text-emerald-900 dark:text-emerald-50">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="p-2 hover:bg-emerald-50/50 dark:hover:bg-emerald-900/50 transition-colors rounded-full text-emerald-900 dark:text-emerald-50">
+<span class="material-symbols-outlined">settings</span>
+</button>
+<div class="h-8 w-8 rounded-full bg-emerald-100 overflow-hidden ml-2">
+<img alt="User profile" class="w-full h-full object-cover" data-alt="professional portrait avatar of a school administrator in modest business attire" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA7nl8a8kXd2-_CzVJxIDPhTyQrkHJAP4-wvImLhKQBJ2pOB5Luu-1lo95T1pNuDCKldYgo_ETslMY93RmgnTco4euQ3rMqiOCwbt1eSVpDABw7HM7t_YHRosiWOd4oHaNMl4vZk-atzcbYKNHN-MtjVUp3u_1QuHtZhwjtGmRSKuSk23I1aUmAV5ZBbyfrSbyEg_IBO32hY_i0vD4qM1V9ASPiDwTYl3OSc_TKH0WTzwS1OoTYu380RsakchaWrwrcX3OrRpQET9kA"/>
+</div>
+</div>
+</div>
+</div>
+</header>
+<div class="pt-20 px-8 pb-12 overflow-y-auto">
+<!-- Header Section -->
+<div class="mb-8">
+<h2 class="text-3xl font-extrabold text-on-surface tracking-tight font-headline">Audit Logs &amp; Integrity</h2>
+<p class="text-on-surface-variant mt-1">Institutional transparency and chronological trail of financial operations.</p>
+</div>
+<!-- Bento Health Overview -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
+<div class="col-span-1 md:col-span-2 bg-primary rounded-xl p-6 text-on-primary shadow-lg flex flex-col justify-between relative overflow-hidden">
+<div class="relative z-10">
+<span class="text-primary-fixed-dim text-xs font-bold uppercase tracking-widest">System Health</span>
+<div class="mt-4 flex items-end gap-3">
+<h3 class="text-5xl font-extrabold font-headline leading-none">99.8%</h3>
+<span class="text-primary-fixed text-sm mb-1">Operational</span>
+</div>
+<p class="mt-4 text-primary-fixed-dim text-sm max-w-xs leading-relaxed">All financial nodes are secure. Last integrity scan completed 14 minutes ago.</p>
+</div>
+<!-- Background Pattern -->
+<div class="absolute right-[-20%] bottom-[-20%] opacity-10">
+<span class="material-symbols-outlined text-[12rem]">verified_user</span>
+</div>
+</div>
+<div class="bg-surface-container-lowest rounded-xl p-6 shadow-sm flex flex-col border border-surface-variant/20">
+<div class="w-10 h-10 rounded-lg bg-tertiary-fixed flex items-center justify-center mb-4">
+<span class="material-symbols-outlined text-tertiary">security_update_warning</span>
+</div>
+<span class="text-on-surface-variant text-xs font-semibold uppercase">Pending Reviews</span>
+<h4 class="text-3xl font-bold mt-1">12</h4>
+<div class="mt-auto pt-4 flex items-center text-xs text-error gap-1">
+<span class="material-symbols-outlined text-xs">trending_up</span>
+<span>+4 since yesterday</span>
+</div>
+</div>
+<div class="bg-surface-container-lowest rounded-xl p-6 shadow-sm flex flex-col border border-surface-variant/20">
+<div class="w-10 h-10 rounded-lg bg-secondary-fixed flex items-center justify-center mb-4">
+<span class="material-symbols-outlined text-secondary">history</span>
+</div>
+<span class="text-on-surface-variant text-xs font-semibold uppercase">Logs Today</span>
+<h4 class="text-3xl font-bold mt-1">842</h4>
+<div class="mt-auto pt-4 flex items-center text-xs text-primary-container gap-1">
+<span class="material-symbols-outlined text-xs">sync</span>
+<span>Real-time tracking active</span>
+</div>
+</div>
+</div>
+<!-- Filters & Action Bar -->
+<div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+<div class="flex items-center gap-3">
+<button class="bg-primary text-on-primary px-4 py-2 rounded-xl text-sm font-semibold flex items-center gap-2 hover:opacity-90 active:scale-95 transition-all">
+<span class="material-symbols-outlined text-sm">filter_alt</span>
+                            Filter Logs
+                        </button>
+<button class="bg-surface-container-high text-on-surface px-4 py-2 rounded-xl text-sm font-semibold flex items-center gap-2 hover:bg-surface-variant/50 transition-colors">
+<span class="material-symbols-outlined text-sm">download</span>
+                            Export Ledger
+                        </button>
+</div>
+<div class="flex items-center gap-2 text-sm text-on-surface-variant">
+<span>Showing logs for:</span>
+<div class="bg-surface-container px-3 py-1 rounded-full font-medium text-on-surface">Last 24 Hours</div>
+</div>
+</div>
+<!-- Logs Ledger -->
+<div class="bg-surface-container-lowest rounded-xl shadow-sm border border-surface-variant/20 overflow-hidden">
+<table class="w-full text-left border-collapse">
+<thead class="bg-surface-container-low">
+<tr>
+<th class="px-6 py-4 label-md text-[11px] font-bold tracking-widest text-on-surface-variant uppercase">Timestamp</th>
+<th class="px-6 py-4 label-md text-[11px] font-bold tracking-widest text-on-surface-variant uppercase">Operator</th>
+<th class="px-6 py-4 label-md text-[11px] font-bold tracking-widest text-on-surface-variant uppercase">Entity</th>
+<th class="px-6 py-4 label-md text-[11px] font-bold tracking-widest text-on-surface-variant uppercase">Action</th>
+<th class="px-6 py-4 label-md text-[11px] font-bold tracking-widest text-on-surface-variant uppercase">Status</th>
+<th class="px-6 py-4 label-md text-[11px] font-bold tracking-widest text-on-surface-variant uppercase">Detail</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-surface-container">
+<!-- Row 1 -->
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="px-6 py-5">
+<div class="flex flex-col">
+<span class="text-sm font-semibold">Oct 24, 2023</span>
+<span class="text-xs text-on-surface-variant">14:22:15</span>
+</div>
+</td>
+<td class="px-6 py-5">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-secondary-fixed text-secondary flex items-center justify-center font-bold text-xs">AS</div>
+<div>
+<p class="text-sm font-medium">Ahmad Sudirman</p>
+<p class="text-[10px] text-on-surface-variant">Finance Admin</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-5">
+<span class="text-sm font-mono bg-surface-container px-2 py-1 rounded text-primary">BILL_REF_902</span>
+</td>
+<td class="px-6 py-5">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-sm text-on-tertiary-fixed-variant">edit_square</span>
+<span class="text-sm">Modified Entry</span>
+</div>
+</td>
+<td class="px-6 py-5">
+<span class="inline-flex items-center gap-1 bg-primary-fixed-dim/20 text-primary-container px-2 py-1 rounded-full text-[10px] font-bold uppercase">Verified</span>
+</td>
+<td class="px-6 py-5 text-right">
+<button class="text-primary hover:underline text-sm font-semibold flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+                                        Inspect <span class="material-symbols-outlined text-sm">chevron_right</span>
+</button>
+</td>
+</tr>
+<!-- Row 2 (Active/Expanded State Simulation) -->
+<tr class="bg-surface-container-low">
+<td class="p-0" colspan="6">
+<div class="p-8 bg-surface-container-low border-y border-surface-variant/30">
+<div class="flex items-center justify-between mb-6">
+<h5 class="text-lg font-bold font-headline">Snapshot Comparison</h5>
+<div class="flex items-center gap-2 bg-surface-container-highest px-3 py-1 rounded-full text-xs font-semibold">
+<span class="material-symbols-outlined text-xs">info</span>
+                                                Reason: Correction of tuition discount percentage.
+                                            </div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+<!-- Before -->
+<div class="bg-surface-container-lowest rounded-xl p-6 shadow-sm relative border border-error/10">
+<div class="absolute top-4 right-4 bg-error-container text-error px-2 py-1 rounded text-[10px] font-bold uppercase">Before</div>
+<div class="space-y-4">
+<div class="pb-2 border-b border-surface-container">
+<p class="text-xs text-on-surface-variant">Amount Due</p>
+<p class="text-lg font-mono font-bold text-error">Rp 1,500,000</p>
+</div>
+<div class="pb-2 border-b border-surface-container">
+<p class="text-xs text-on-surface-variant">Discount Code</p>
+<p class="text-sm font-mono">EARLY_BIRD_05</p>
+</div>
+<div>
+<p class="text-xs text-on-surface-variant">Total Payable</p>
+<p class="text-lg font-mono font-bold">Rp 1,425,000</p>
+</div>
+</div>
+</div>
+<!-- After -->
+<div class="bg-surface-container-lowest rounded-xl p-6 shadow-sm relative border border-primary/10">
+<div class="absolute top-4 right-4 bg-primary-fixed text-primary px-2 py-1 rounded text-[10px] font-bold uppercase">After</div>
+<div class="space-y-4">
+<div class="pb-2 border-b border-surface-container">
+<p class="text-xs text-on-surface-variant">Amount Due</p>
+<p class="text-lg font-mono font-bold text-primary-container">Rp 1,500,000</p>
+</div>
+<div class="pb-2 border-b border-surface-container">
+<p class="text-xs text-on-surface-variant">Discount Code</p>
+<p class="text-sm font-mono text-primary font-bold">SCHOLARSHIP_20</p>
+</div>
+<div>
+<p class="text-xs text-on-surface-variant">Total Payable</p>
+<p class="text-lg font-mono font-bold">Rp 1,200,000</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="px-6 py-5">
+<div class="flex flex-col">
+<span class="text-sm font-semibold">Oct 24, 2023</span>
+<span class="text-xs text-on-surface-variant">12:05:01</span>
+</div>
+</td>
+<td class="px-6 py-5">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-primary-fixed text-primary flex items-center justify-center font-bold text-xs">SY</div>
+<div>
+<p class="text-sm font-medium">System Automated</p>
+<p class="text-[10px] text-on-surface-variant">Auth Service</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-5">
+<span class="text-sm font-mono bg-surface-container px-2 py-1 rounded">USER_SESSION</span>
+</td>
+<td class="px-6 py-5">
+<div class="flex items-center gap-2 text-tertiary">
+<span class="material-symbols-outlined text-sm">lock_reset</span>
+<span class="text-sm">Password Reset</span>
+</div>
+</td>
+<td class="px-6 py-5">
+<span class="inline-flex items-center gap-1 bg-surface-container-highest text-on-surface-variant px-2 py-1 rounded-full text-[10px] font-bold uppercase">Action Logged</span>
+</td>
+<td class="px-6 py-5 text-right">
+<button class="text-primary hover:underline text-sm font-semibold flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+                                        Inspect <span class="material-symbols-outlined text-sm">chevron_right</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Footer / Quick Action Floating -->
+<div class="mt-8 flex items-center justify-between text-xs text-on-surface-variant border-t border-surface-container pt-6">
+<div class="flex items-center gap-4">
+<p>© 2023 MAN 2 Surakarta Financial Integrity Division</p>
+<a class="hover:text-primary transition-colors" href="#">Privacy Protocol</a>
+<a class="hover:text-primary transition-colors" href="#">Security Policy</a>
+</div>
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+<span>Live Database Monitoring Active</span>
+</div>
+</div>
+</div>
+</main>
+</div>
+<!-- Floating Action Button (FAB) - Suppression Logic applied: Hidden on Audit details if primary intent is observation -->
+<div class="fixed bottom-8 right-8 z-[60]">
+<button class="w-14 h-14 rounded-full bg-gradient-to-br from-primary to-primary-container text-on-primary shadow-xl flex items-center justify-center hover:scale-110 active:scale-95 transition-all group">
+<span class="material-symbols-outlined text-3xl">add</span>
+<span class="absolute right-16 bg-on-surface text-surface px-3 py-1 rounded text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">Manual Entry</span>
+</button>
+</div>
+</body></html>

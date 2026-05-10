@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=Inter:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-bright": "#f7f9ff",
+                    "surface-variant": "#dfe3e8",
+                    "on-surface-variant": "#3f4943",
+                    "inverse-on-surface": "#eef1f7",
+                    "on-tertiary-fixed-variant": "#73332d",
+                    "primary-container": "#005c42",
+                    "on-secondary-fixed": "#0d1f18",
+                    "on-primary-fixed": "#002115",
+                    "surface-container-low": "#f1f4fa",
+                    "secondary-container": "#cfe5d9",
+                    "primary-fixed-dim": "#8bd6b4",
+                    "tertiary-fixed-dim": "#ffb4ab",
+                    "on-primary-fixed-variant": "#00513a",
+                    "surface-container-high": "#e5e8ee",
+                    "on-error-container": "#93000a",
+                    "surface": "#f7f9ff",
+                    "background": "#f7f9ff",
+                    "surface-container": "#ebeef4",
+                    "on-secondary": "#ffffff",
+                    "inverse-primary": "#8bd6b4",
+                    "on-secondary-container": "#54675e",
+                    "on-primary-container": "#87d2b1",
+                    "outline-variant": "#bec9c2",
+                    "surface-tint": "#1b6b50",
+                    "on-secondary-fixed-variant": "#384b42",
+                    "error": "#ba1a1a",
+                    "on-tertiary-fixed": "#3b0807",
+                    "outline": "#6f7973",
+                    "tertiary": "#622621",
+                    "on-surface": "#181c20",
+                    "secondary": "#4f6359",
+                    "on-tertiary-container": "#ffaea5",
+                    "tertiary-container": "#7f3c36",
+                    "primary-fixed": "#a6f2d0",
+                    "surface-container-lowest": "#ffffff",
+                    "secondary-fixed": "#d2e7dc",
+                    "on-background": "#181c20",
+                    "inverse-surface": "#2d3135",
+                    "on-primary": "#ffffff",
+                    "on-error": "#ffffff",
+                    "tertiary-fixed": "#ffdad6",
+                    "surface-container-highest": "#dfe3e8",
+                    "secondary-fixed-dim": "#b6cbc0",
+                    "primary": "#00422f",
+                    "error-container": "#ffdad6",
+                    "surface-dim": "#d7dae0",
+                    "on-tertiary": "#ffffff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "fontFamily": {
+                    "headline": ["Manrope"],
+                    "body": ["Inter"],
+                    "label": ["Inter"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        @media print {
+            .no-print { display: none !important; }
+            .print-only { display: block !important; }
+            body { background: white !important; }
+            .shadow-sm, .shadow-xl { shadow: none !important; }
+            .report-page { border: none !important; margin: 0 !important; width: 100% !important; padding: 0 !important; }
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background font-body text-on-surface">
+<!-- Shell Container -->
+<div class="flex min-h-screen">
+<!-- SideNavBar -->
+<aside class="no-print h-screen w-72 bg-slate-50 border-r-0 flex flex-col py-6 sticky top-0">
+<div class="px-6 mb-10 flex items-center gap-3">
+<img alt="MAN 2 Surakarta Logo" class="w-10 h-10 object-contain" data-alt="Official seal of MAN 2 Surakarta school featuring Islamic geometric motifs and educational symbols in green and gold." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBO3J13vqefSWEXZwuyDr9Ue3aNX78MBEhUk9ez3BKutQYpO21uoGnf8zU3JQ-ZdEgimPMpDOpxYrmiHjshpd8kehX_nNsZlaIUFDQdx3VXVDicGPaYtl-dJ5oe1PxYnZgk6sgTOcprkl49iMjAt1S-x4OFudt_awbnVonS478IP0fjEZiqS1CpH3gXSHmwpapE2X9b6cnJLWG87ausGsMZTJVsVo5eV0Xj0jA4l9zaMjlWcvwN9uABDaAl9BuW43Z-L7iw96RsXTAx"/>
+<div>
+<h1 class="text-lg font-black text-emerald-900 font-headline leading-tight">E-Keuangan</h1>
+<p class="text-xs font-medium text-slate-500 font-label">MAN 2 Surakarta</p>
+</div>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 mx-2 hover:bg-slate-200 rounded-lg transition-transform hover:translate-x-1 font-label text-sm" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span>Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 mx-2 hover:bg-slate-200 rounded-lg transition-transform hover:translate-x-1 font-label text-sm" href="#">
+<span class="material-symbols-outlined">group</span>
+<span>Student Management</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 mx-2 hover:bg-slate-200 rounded-lg transition-transform hover:translate-x-1 font-label text-sm" href="#">
+<span class="material-symbols-outlined">receipt_long</span>
+<span>Billing Management</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 mx-2 hover:bg-slate-200 rounded-lg transition-transform hover:translate-x-1 font-label text-sm" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span>Payment Recording</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 mx-2 hover:bg-slate-200 rounded-lg transition-transform hover:translate-x-1 font-label text-sm" href="#">
+<span class="material-symbols-outlined">account_balance_wallet</span>
+<span>Cash Ledger</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 mx-2 hover:bg-slate-200 rounded-lg transition-transform hover:translate-x-1 font-label text-sm" href="#">
+<span class="material-symbols-outlined">history_edu</span>
+<span>Audit Logs</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 mx-2 hover:bg-slate-200 rounded-lg transition-transform hover:translate-x-1 font-label text-sm" href="#">
+<span class="material-symbols-outlined">manage_accounts</span>
+<span>User Management</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 bg-emerald-100 text-emerald-900 rounded-lg mx-2 transition-transform translate-x-1 font-label text-sm font-semibold" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">analytics</span>
+<span>Reports</span>
+</a>
+</nav>
+<div class="mt-auto px-2">
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-200 rounded-lg transition-transform hover:translate-x-1 font-label text-sm" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span>Logout</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 min-w-0">
+<!-- TopNavBar -->
+<header class="no-print fixed top-0 right-0 left-72 bg-white/80 backdrop-blur-xl z-50 shadow-sm flex justify-between items-center px-6 py-3">
+<div class="flex items-center gap-4">
+<span class="text-emerald-900 font-headline font-semibold tracking-tight">Official Reports</span>
+</div>
+<div class="flex items-center gap-3">
+<div class="relative">
+<span class="absolute inset-y-0 left-3 flex items-center text-slate-400">
+<span class="material-symbols-outlined text-lg">search</span>
+</span>
+<input class="bg-surface-container-low border-none rounded-full py-2 pl-10 pr-4 text-sm w-64 focus:ring-2 focus:ring-primary/20 transition-all outline-none" placeholder="Search report..." type="text"/>
+</div>
+<button class="p-2 text-slate-500 hover:bg-emerald-50/50 rounded-full transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="p-2 text-slate-500 hover:bg-emerald-50/50 rounded-full transition-colors">
+<span class="material-symbols-outlined">settings</span>
+</button>
+<div class="h-8 w-8 rounded-full bg-emerald-100 flex items-center justify-center">
+<span class="text-xs font-bold text-emerald-900">JS</span>
+</div>
+</div>
+</header>
+<!-- Report Content Wrapper -->
+<div class="pt-24 pb-12 px-8 flex flex-col items-center">
+<!-- Report Controls (No Print) -->
+<div class="no-print w-full max-w-4xl mb-8 flex justify-between items-center">
+<div class="flex gap-4">
+<div class="bg-white rounded-xl shadow-sm px-4 py-2 flex items-center gap-2">
+<span class="text-xs font-bold text-slate-400 uppercase tracking-widest font-label">Period:</span>
+<select class="border-none bg-transparent text-sm font-semibold focus:ring-0 cursor-pointer">
+<option>Oktober 2023</option>
+<option>September 2023</option>
+<option>Agustus 2023</option>
+</select>
+</div>
+<div class="bg-white rounded-xl shadow-sm px-4 py-2 flex items-center gap-2">
+<span class="text-xs font-bold text-slate-400 uppercase tracking-widest font-label">Type:</span>
+<span class="text-sm font-semibold">Buku Kas Umum (BKU)</span>
+</div>
+</div>
+<button class="bg-primary text-on-primary px-6 py-2 rounded-xl flex items-center gap-2 font-semibold hover:bg-primary-container transition-all active:scale-95" onclick="window.print()">
+<span class="material-symbols-outlined text-lg">print</span>
+                        Print Official Document
+                    </button>
+</div>
+<!-- Official Document Canvas -->
+<div class="report-page w-full max-w-4xl bg-white shadow-xl min-h-[1120px] p-16 flex flex-col font-serif relative overflow-hidden">
+<!-- Header Pattern Watermark -->
+<div class="absolute top-0 right-0 w-64 h-64 opacity-[0.03] pointer-events-none" style="background-image: radial-gradient(circle at 2px 2px, #00422f 1px, transparent 0); background-size: 24px 24px;"></div>
+<!-- Institutional Header -->
+<div class="flex items-start justify-center gap-8 border-b-4 border-double border-emerald-900 pb-8 mb-10">
+<img alt="MAN 2 Surakarta Logo" class="w-24 h-24 object-contain" data-alt="Official emblem of MAN 2 Surakarta with symmetrical Islamic pattern in deep forest green and polished gold accents." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBqaWxMaF5fOscXorP6XqfSlTzd67kzca3urBSzHBfrUf24Zv-eeC8SthSxHBXHeD8mBECGQ_wi2mZwR2Zh4s_Pu_0hDpD7HOuhKV78s08mRo52A36a4Cp9KuVmOXGEKtPNYf-GhX4KvhyLIyoz3FYM41D3UkGI0oacZVyKwu2JnzKJ_6Y-W0eAwZA8FmUv-V7bWjaPDftSPzLOgmgK9ynU-eRV9P9QbjCIdEKqsV_GJbzdQCT5m4ql-iWMOl44mkUosb4TZIydNNW3"/>
+<div class="text-center">
+<h2 class="text-xl font-bold font-headline uppercase tracking-wide text-emerald-900">Kementerian Agama Republik Indonesia</h2>
+<h1 class="text-2xl font-extrabold font-headline uppercase tracking-tighter text-emerald-950">MAN 2 Surakarta</h1>
+<p class="text-sm font-body text-slate-600 mt-1">Jl. Slamet Riyadi No. 441, Kota Surakarta, Jawa Tengah 57147</p>
+<p class="text-xs font-body text-slate-500">Telepon: (0271) 711xxx | Website: www.man2surakarta.sch.id</p>
+</div>
+</div>
+<!-- Report Title -->
+<div class="text-center mb-10">
+<h3 class="text-lg font-bold font-headline underline decoration-1 underline-offset-4">LAPORAN BUKU KAS UMUM (BKU)</h3>
+<p class="text-sm font-body text-slate-600 mt-1 uppercase">Periode: 01 Oktober 2023 - 31 Oktober 2023</p>
+</div>
+<!-- Data Table -->
+<div class="flex-1">
+<table class="w-full text-sm border-collapse">
+<thead>
+<tr class="bg-emerald-950 text-white font-label">
+<th class="border border-emerald-900 px-3 py-3 text-left font-semibold">TGL</th>
+<th class="border border-emerald-900 px-3 py-3 text-left font-semibold">KODE</th>
+<th class="border border-emerald-900 px-3 py-3 text-left font-semibold">URAIAN TRANSAKSI</th>
+<th class="border border-emerald-900 px-3 py-3 text-right font-semibold">DEBET (Rp)</th>
+<th class="border border-emerald-900 px-3 py-3 text-right font-semibold">KREDIT (Rp)</th>
+<th class="border border-emerald-900 px-3 py-3 text-right font-semibold">SALDO (Rp)</th>
+</tr>
+</thead>
+<tbody class="text-slate-800 font-body">
+<tr>
+<td class="border border-slate-300 px-3 py-2 italic text-slate-400" colspan="5">Saldo Awal Bulan</td>
+<td class="border border-slate-300 px-3 py-2 text-right font-bold">12.450.000</td>
+</tr>
+<tr class="hover:bg-slate-50">
+<td class="border border-slate-300 px-3 py-2 whitespace-nowrap">02/10</td>
+<td class="border border-slate-300 px-3 py-2">4111</td>
+<td class="border border-slate-300 px-3 py-2">Penerimaan SPP Kelas X-A (40 Siswa)</td>
+<td class="border border-slate-300 px-3 py-2 text-right">8.000.000</td>
+<td class="border border-slate-300 px-3 py-2 text-right">0</td>
+<td class="border border-slate-300 px-3 py-2 text-right">20.450.000</td>
+</tr>
+<tr class="hover:bg-slate-50">
+<td class="border border-slate-300 px-3 py-2 whitespace-nowrap">05/10</td>
+<td class="border border-slate-300 px-3 py-2">5212</td>
+<td class="border border-slate-300 px-3 py-2">Biaya Operasional Listrik &amp; Internet Gedung A</td>
+<td class="border border-slate-300 px-3 py-2 text-right">0</td>
+<td class="border border-slate-300 px-3 py-2 text-right">2.150.000</td>
+<td class="border border-slate-300 px-3 py-2 text-right">18.300.000</td>
+</tr>
+<tr class="hover:bg-slate-50">
+<td class="border border-slate-300 px-3 py-2 whitespace-nowrap">10/10</td>
+<td class="border border-slate-300 px-3 py-2">4112</td>
+<td class="border border-slate-300 px-3 py-2">Penerimaan Dana BOS Reguler Tahap II</td>
+<td class="border border-slate-300 px-3 py-2 text-right">45.000.000</td>
+<td class="border border-slate-300 px-3 py-2 text-right">0</td>
+<td class="border border-slate-300 px-3 py-2 text-right">63.300.000</td>
+</tr>
+<tr class="hover:bg-slate-50">
+<td class="border border-slate-300 px-3 py-2 whitespace-nowrap">15/10</td>
+<td class="border border-slate-300 px-3 py-2">5101</td>
+<td class="border border-slate-300 px-3 py-2">Honorarium GTT/PTT Bulan Oktober</td>
+<td class="border border-slate-300 px-3 py-2 text-right">0</td>
+<td class="border border-slate-300 px-3 py-2 text-right">12.500.000</td>
+<td class="border border-slate-300 px-3 py-2 text-right">50.800.000</td>
+</tr>
+<tr class="hover:bg-slate-50">
+<td class="border border-slate-300 px-3 py-2 whitespace-nowrap">22/10</td>
+<td class="border border-slate-300 px-3 py-2">5301</td>
+<td class="border border-slate-300 px-3 py-2">Pengadaan Sarana Olahraga &amp; Seni</td>
+<td class="border border-slate-300 px-3 py-2 text-right">0</td>
+<td class="border border-slate-300 px-3 py-2 text-right">3.750.000</td>
+<td class="border border-slate-300 px-3 py-2 text-right">47.050.000</td>
+</tr>
+<!-- Filler rows to maintain structure -->
+<tr class="h-20"><td class="border border-slate-300" colspan="6"></td></tr>
+</tbody>
+<tfoot>
+<tr class="bg-emerald-50/50 font-bold">
+<td class="border border-emerald-900 px-3 py-4 text-center" colspan="3 uppercase">Jumlah Total Transaksi</td>
+<td class="border border-emerald-900 px-3 py-4 text-right text-emerald-900">53.000.000</td>
+<td class="border border-emerald-900 px-3 py-4 text-right text-tertiary">18.400.000</td>
+<td class="border border-emerald-900 px-3 py-4 text-right text-emerald-950">47.050.000</td>
+</tr>
+</tfoot>
+</table>
+</div>
+<!-- Signatures Section -->
+<div class="mt-20 grid grid-cols-2 gap-20">
+<div class="text-center">
+<p class="text-sm font-body mb-24">Mengetahui,<br/>Kepala Madrasah</p>
+<p class="text-sm font-bold font-headline underline uppercase">Drs. H. Ahmad Saefudin, M.Pd</p>
+<p class="text-xs font-body text-slate-600">NIP. 197405231998031002</p>
+</div>
+<div class="text-center">
+<p class="text-sm font-body mb-2">Surakarta, 31 Oktober 2023</p>
+<p class="text-sm font-body mb-22">Bendahara Madrasah</p>
+<div class="h-24"></div> <!-- Placeholder for wet stamp/signature -->
+<p class="text-sm font-bold font-headline underline uppercase">Siti Aminah, S.E.</p>
+<p class="text-xs font-body text-slate-600">NIP. 198210122005012004</p>
+</div>
+</div>
+<!-- Footer Microcopy -->
+<div class="mt-auto pt-10 text-[10px] text-slate-400 italic flex justify-between border-t border-slate-100">
+<span>Generated by E-Keuangan MAN 2 Surakarta on 2023-11-05 14:22:05</span>
+<span>Document ID: M2S-BKU-202310-0042</span>
+<span>Page 1 of 1</span>
+</div>
+</div>
+<!-- FAB Suppression: No FAB on report detail screen -->
+</div>
+</main>
+</div>
+</body></html>

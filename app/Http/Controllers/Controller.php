@@ -2,11 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-use Illuminate\Foundation\Validation\ValidatesRequests;
-use Illuminate\Routing\Controller as BaseController;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 
-class Controller extends BaseController
+abstract class Controller
 {
-    use AuthorizesRequests, ValidatesRequests;
+    protected function ensureAnyRole(array $roles): void
+    {
+        abort_unless(auth()->user()?->hasAnyRole($roles), 403, 'User tidak berwenang.');
+    }
+
+    protected function redirectBackWithMessage(Request $request, string $message): RedirectResponse
+    {
+        return redirect()->to($request->headers->get('referer') ?: '/')->with('status', $message);
+    }
 }
