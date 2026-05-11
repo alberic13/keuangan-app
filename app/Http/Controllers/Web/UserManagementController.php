@@ -69,4 +69,36 @@ class UserManagementController extends Controller
 
         return $this->redirectBackWithMessage($request, 'User berhasil diperbarui.');
     }
+
+    public function destroy(Request $request, User $user): RedirectResponse
+    {
+        $this->ensureAnyRole(['admin_keuangan']);
+
+        abort_if($request->user()?->is($user), 422, 'Tidak bisa menghapus akun sendiri.');
+
+        $before = $user->toArray();
+        $user->delete();
+
+        $this->auditLogs->log('user.deleted', $user, $before, null, null, $request->user());
+
+        return $this->redirectBackWithMessage($request, 'User berhasil dihapus.');
+    }
+
+    public function updateStatus(Request $request, User $user): RedirectResponse
+    {
+        $this->ensureAnyRole(['admin_keuangan']);
+
+        $data = $request->validate([
+            'is_active' => ['required', 'boolean'],
+        ]);
+
+        $before = $user->toArray();
+        $user->update([
+            'is_active' => $data['is_active'],
+        ]);
+
+        $this->auditLogs->log('user.status_changed', $user, $before, $user->fresh()->toArray(), null, $request->user());
+
+        return $this->redirectBackWithMessage($request, 'Status pengguna berhasil diperbarui.');
+    }
 }

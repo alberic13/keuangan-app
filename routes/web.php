@@ -79,6 +79,8 @@ Route::middleware(['auth', 'active'])->group(function () {
     Route::get('/users', UsersPage::class)->name('users.index');
     Route::post('/users', [UserManagementController::class, 'store'])->name('users.store');
     Route::put('/users/{user}', [UserManagementController::class, 'update'])->name('users.update');
+    Route::patch('/users/{user}/status', [UserManagementController::class, 'updateStatus'])->name('users.status');
+    Route::delete('/users/{user}', [UserManagementController::class, 'destroy'])->name('users.destroy');
 
     Route::get('/reports', ReportsPage::class)->name('reports.index');
     Route::get('/reports/export', [ApiReportController::class, 'export'])->name('reports.export');

@@ -108,7 +108,7 @@ class FeeController extends Controller
             'fee_type_id' => ['required', 'exists:fee_types,id'],
             'batch_id' => ['nullable', 'exists:batches,id'],
             'nominal' => ['required', 'integer', 'min:1'],
-            'effective_start' => ['required', 'date', 'after_or_equal:today'],
+            'effective_start' => ['required', 'date'],
             'effective_end' => ['nullable', 'date', 'after_or_equal:effective_start'],
             'is_active' => ['nullable', 'boolean'],
         ]);

@@ -24,7 +24,7 @@ class PaymentManagementController extends Controller
 
         $data = $request->validate([
             'student_id' => ['required', 'exists:students,id'],
-            'payment_date' => ['required', 'date', 'after_or_equal:today'],
+            'payment_date' => ['required', 'date'],
             'method' => ['required', Rule::in(['cash', 'bank_transfer'])],
             'cash_account_id' => ['required', 'exists:cash_accounts,id'],
             'payment_proof' => ['nullable', 'file', 'mimes:pdf,jpg,jpeg,png,webp', 'max:5120'],
@@ -51,7 +51,7 @@ class PaymentManagementController extends Controller
 
         $data = $request->validate([
             'student_id' => ['required', 'exists:students,id'],
-            'payment_date' => ['required', 'date', 'after_or_equal:today'],
+            'payment_date' => ['required', 'date'],
             'method' => ['required', Rule::in(['cash', 'bank_transfer'])],
             'cash_account_id' => ['required', 'exists:cash_accounts,id'],
             'payment_proof' => ['nullable', 'file', 'mimes:pdf,jpg,jpeg,png,webp', 'max:5120'],

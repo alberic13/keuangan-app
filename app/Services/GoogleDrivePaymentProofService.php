@@ -4,6 +4,7 @@ namespace App\Services;
 
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
@@ -12,9 +13,7 @@ class GoogleDrivePaymentProofService
     public function upload(UploadedFile $file, string $paymentNo, ?string $studentName = null): array
     {
         if (! $this->isConfigured()) {
-            throw ValidationException::withMessages([
-                'payment_proof' => 'Konfigurasi Google Apps Script belum lengkap. Isi GOOGLE_APPS_SCRIPT_UPLOAD_URL di file .env.',
-            ]);
+            return $this->uploadLocally($file, $paymentNo, $studentName);
         }
 
         $safeStudentName = Str::slug($studentName ?: 'siswa');
@@ -65,8 +64,38 @@ class GoogleDrivePaymentProofService
         ];
     }
 
+    protected function uploadLocally(UploadedFile $file, string $paymentNo, ?string $studentName = null): array
+    {
+        $safeStudentName = Str::slug($studentName ?: 'siswa');
+        $extension = strtolower($file->getClientOriginalExtension() ?: $file->extension() ?: 'bin');
+        $filename = sprintf(
+            '%s-%s-%s.%s',
+            $paymentNo,
+            $safeStudentName,
+            now()->format('YmdHis'),
+            $extension
+        );
+
+        $path = $file->storeAs('payment-proofs', $filename, 'public');
+
+        return [
+            'payment_proof_drive_id' => 'local:'.$path,
+            'payment_proof_name' => $filename,
+            'payment_proof_mime_type' => $file->getMimeType() ?: 'application/octet-stream',
+            'payment_proof_url' => Storage::disk('public')->url($path),
+        ];
+    }
+
     public function delete(?string $driveFileId): void
     {
+        if (blank($driveFileId)) {
+            return;
+        }
+
+        if (str_starts_with($driveFileId, 'local:')) {
+            Storage::disk('public')->delete(Str::after($driveFileId, 'local:'));
+        }
+
         // Apps Script upload mode does not expose a delete endpoint yet.
     }
 
