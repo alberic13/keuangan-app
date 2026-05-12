@@ -29,9 +29,10 @@ E-Keuangan MAN 2 Surakarta adalah sistem administrasi keuangan berbasis web untu
 
 Sistem dirancang mengikuti kebutuhan spesifik sekolah:
 
-- SPP berbeda per angkatan dan tidak boleh dicicil.
-- Uang kegiatan dapat dicicil.
-- Uang makan hanya berlaku untuk siswa boarding.
+- SPP memakai nominal yang sama untuk semua angkatan dan tidak boleh dicicil.
+- Dana Kegiatan menjadi pembeda siswa Full Day dan dibayarkan satu kali setahun.
+- Uang makan hanya berlaku untuk siswa boarding/asrama.
+- Sistem tidak memblokir akses materi atau ujian karena tunggakan.
 - Laporan mengikuti struktur Buku Kas Umum dan buku pembantu existing.
 - Sistem hanya dipakai oleh user internal sekolah.
 
@@ -54,10 +55,11 @@ MAN 2 Surakarta membutuhkan sistem administrasi keuangan yang terpusat, mudah di
 
 Selain itu, sekolah memiliki aturan bisnis spesifik:
 
-- SPP berbeda per angkatan.
+- SPP memakai nominal yang sama untuk semua angkatan.
 - SPP tidak dapat dicicil.
-- Uang kegiatan dapat dicicil.
-- Uang makan hanya berlaku untuk siswa boarding.
+- Dana Kegiatan berlaku untuk siswa Full Day dan ditagih satu kali setahun.
+- Uang makan hanya berlaku untuk siswa boarding/asrama.
+- Tunggakan tahun ajaran sebelumnya tetap dipantau dan ditagih sebagai invoice aktif.
 - Sistem harus mendukung laporan kas harian, bulanan, tahunan, dan per siswa.
 - Sistem harus mendukung cetak tagihan siswa.
 - Sistem harus mendukung import data siswa dari Excel.
@@ -75,7 +77,7 @@ Sistem ini menyelesaikan masalah berikut:
 Sistem web internal untuk:
 
 - mengelola master data siswa dan struktur akademik sederhana,
-- mengelola jenis biaya dan tarif per angkatan,
+- mengelola jenis biaya dan tarif, termasuk SPP umum lintas angkatan,
 - menghasilkan tagihan berdasarkan periode dan aturan bisnis,
 - mencatat pembayaran cash dan transfer manual,
 - melacak cicilan uang kegiatan,
@@ -174,7 +176,7 @@ Solusi ini penting dibangun karena sistem akan menjadi fondasi administrasi keua
 
 1. Admin keuangan login ke sistem.
 2. Admin menyiapkan atau memperbarui data siswa melalui input manual atau import Excel.
-3. Admin mengatur tarif SPP per angkatan, tarif uang kegiatan, dan tarif uang makan boarding.
+3. Admin mengatur tarif SPP umum, tarif Dana Kegiatan Full Day, dan tarif uang makan asrama.
 4. Admin membangkitkan tagihan untuk periode tertentu.
 5. Bendahara menerima pembayaran cash atau memeriksa transfer secara manual.
 6. Bendahara mencari siswa dan melihat tagihan aktifnya.
@@ -255,7 +257,7 @@ Solusi ini penting dibangun karena sistem akan menjadi fondasi administrasi keua
 **Tujuan fitur:** mempercepat input dan pembaruan massal.  
 **Deskripsi:** upload file dengan template tertentu, validasi, preview, lalu commit.  
 **User flow:** download template -> upload -> review validasi -> confirm import.  
-**Input:** file xlsx/csv.  
+**Input:** file Excel (`xlsx`/`xls`).  
 **Output:** jumlah data berhasil dan gagal, log import.  
 **Business rules:** insert/update berdasarkan NIS/NISN; hanya data valid yang diproses.  
 **Error handling:** file invalid, kolom wajib hilang, data duplikat, nilai enum salah.  
@@ -265,9 +267,9 @@ Solusi ini penting dibangun karena sistem akan menjadi fondasi administrasi keua
 **Tujuan fitur:** mengelola struktur biaya dan nominal yang berlaku.  
 **Deskripsi:** pengaturan fee type, fee scheme, periode berlaku, dan rule pembayaran.  
 **User flow:** tambah jenis biaya -> atur tarif -> aktifkan untuk periode tertentu.  
-**Input:** nama biaya, kategori, nominal, angkatan, effective period, aturan cicilan, berlaku untuk tipe siswa.  
+**Input:** nama biaya, kategori, nominal, angkatan opsional untuk biaya non-SPP, effective period, aturan cicilan, berlaku untuk tipe siswa.  
 **Output:** tarif aktif yang dapat dipakai generate tagihan.  
-**Business rules:** SPP bulanan dan tidak bisa dicicil; uang kegiatan bisa dicicil; uang makan hanya boarding dan ditagih per bulan; tarif dapat berubah antar periode.  
+**Business rules:** SPP bulanan, satu nominal untuk semua angkatan, dan tidak bisa dicicil; Dana Kegiatan ditujukan untuk Full Day dan one-time tahunan; uang makan hanya boarding/asrama dan ditagih per bulan; tarif dapat berubah antar periode.  
 **Error handling:** tarif overlap, nominal invalid, rule tidak lengkap.  
 **Prioritas:** P0.
 
@@ -277,7 +279,7 @@ Solusi ini penting dibangun karena sistem akan menjadi fondasi administrasi keua
 **User flow:** pilih periode -> pilih jenis biaya/filter -> generate -> review -> publish.  
 **Input:** periode, fee type, filter batch/kelas/jurusan/student type.  
 **Output:** invoice aktif.  
-**Business rules:** SPP dibangkitkan bulanan; uang makan hanya untuk boarding aktif; uang kegiatan dapat dibuat berdasarkan program atau kebijakan tertentu dan outstanding-nya dapat dicicil; kombinasi siswa + fee + periode + referensi tidak boleh duplikat.  
+**Business rules:** SPP dibangkitkan bulanan dengan tarif umum semua angkatan; uang makan hanya untuk boarding/asrama aktif; Dana Kegiatan dibuat sebagai tagihan one-time untuk siswa Full Day; kombinasi siswa + fee + periode + referensi tidak boleh duplikat.  
 **Error handling:** tarif belum ada, tagihan duplikat, data siswa tidak memenuhi syarat.  
 **Prioritas:** P0.
 
@@ -583,7 +585,7 @@ Rekomendasi database adalah **MySQL 8** karena umum, mudah dikelola, dan sesuai 
 - class_id
 - major_id
 - batch_id
-- student_type (`regular`, `boarding`)
+- student_type (`regular`, `full_day`, `boarding`)
 - is_active
 - enrollment_date
 - exit_date
@@ -1003,7 +1005,7 @@ Desktop-first, tetap nyaman di tablet, mobile hanya minimum readability.
 
 - Siswa berubah dari reguler ke boarding di tengah periode
 - Siswa nonaktif di tengah bulan namun histori tetap harus ada
-- Tarif SPP berubah untuk periode berikutnya
+- Tarif SPP umum berubah untuk periode berikutnya
 - Generate tagihan dijalankan dua kali untuk periode sama
 - Payment dibuat untuk invoice yang sudah lunas
 - SPP dicoba dibayar parsial
@@ -1115,8 +1117,8 @@ Desktop-first, tetap nyaman di tablet, mobile hanya minimum readability.
 
 ## 19.4 Master tarif
 
-- Admin dapat membuat tarif SPP per angkatan.
-- Admin dapat membuat biaya kegiatan dengan cicilan.
+- Admin dapat membuat tarif SPP umum untuk semua angkatan.
+- Admin dapat membuat Dana Kegiatan Full Day satu kali setahun.
 - Admin dapat membuat biaya makan boarding bulanan.
 - Sistem menolak overlap tarif aktif pada periode sama.
 

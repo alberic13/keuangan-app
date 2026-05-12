@@ -164,7 +164,7 @@ Implement backend preview import siswa.
 Kebutuhan:
 - endpoint download template,
 - endpoint preview upload,
-- parsing xlsx/csv,
+- parsing xlsx,
 - validasi per row,
 - hasilkan preview token,
 - simpan import_logs/import_log_rows bila perlu.
@@ -172,7 +172,7 @@ Kebutuhan:
 Business rule penting:
 - import belum commit ke tabel students,
 - tampilkan valid_rows, invalid_rows, error per row,
-- student_type hanya regular/boarding,
+- student_type hanya regular/full_day/boarding,
 - referensi batch/class/major harus valid.
 
 Gunakan Laravel Excel jika cocok.
@@ -279,7 +279,7 @@ Baca:
 Implement service generate invoice SPP bulanan.
 Rule wajib:
 - siswa active saja,
-- pakai fee scheme sesuai angkatan,
+- pakai fee scheme SPP umum lintas angkatan,
 - tidak boleh duplikat untuk kombinasi siswa + fee + periode,
 - status awal unpaid.
 
@@ -819,4 +819,3 @@ Perbaiki mismatch tanpa rewrite besar.
 Buat test untuk rule bisnis modul ini berdasarkan docs/prd.md bagian Acceptance Criteria dan docs/backlog.md.
 Fokus pada edge case yang paling berisiko.
 ```
-

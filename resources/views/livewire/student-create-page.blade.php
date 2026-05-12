@@ -207,14 +207,13 @@
                         </div>
                     </div>
 
-                    <form class="space-y-3 rounded-xl bg-surface-container-low px-4 py-4" wire:submit.prevent="addStudentType">
+                    <div class="space-y-2 rounded-xl bg-surface-container-low px-4 py-4">
                         <div class="flex items-center justify-between gap-3">
-                            <h5 class="text-sm font-semibold text-on-surface">Tambah Tipe Siswa</h5>
+                            <h5 class="text-sm font-semibold text-on-surface">Tipe Siswa Dikunci</h5>
                             <span class="text-xs text-on-surface-variant">student type</span>
                         </div>
-                        <input class="w-full rounded-xl border-none bg-white px-4 py-3 text-sm" placeholder="Contoh: Reguler, Asrama, Pindahan" type="text" wire:model.defer="studentTypeLabel">
-                        <button class="w-full rounded-xl bg-primary px-4 py-3 text-sm font-semibold text-white" type="submit">Simpan Tipe Siswa</button>
-                    </form>
+                        <p class="text-sm text-on-surface-variant">Kebijakan sekolah hanya memakai tiga tipe siswa: Reguler, Full Day, dan Asrama.</p>
+                    </div>
                     <div class="rounded-xl border border-dashed border-surface-container bg-white px-4 py-4">
                         <div class="mb-3 flex items-center justify-between gap-3">
                             <h5 class="text-sm font-semibold text-on-surface">Tipe Siswa Tersedia</h5>
@@ -227,9 +226,11 @@
                                         <div class="font-semibold text-on-surface">{{ $studentType->label }}</div>
                                         <div class="text-xs text-on-surface-variant">{{ $studentType->slug }}</div>
                                     </div>
-                                    <button class="inline-flex h-8 w-8 items-center justify-center rounded-full border border-rose-200 text-rose-600 hover:bg-rose-50" title="Hapus tipe siswa" type="button" wire:click="deleteStudentType({{ $studentType->id }})" wire:confirm="Hapus tipe siswa ini?">
-                                        <span aria-hidden="true" class="text-lg leading-none">×</span>
-                                    </button>
+                                    @unless (in_array($studentType->slug, ['regular', 'full_day', 'boarding'], true))
+                                        <button class="inline-flex h-8 w-8 items-center justify-center rounded-full border border-rose-200 text-rose-600 hover:bg-rose-50" title="Hapus tipe siswa" type="button" wire:click="deleteStudentType({{ $studentType->id }})" wire:confirm="Hapus tipe siswa ini?">
+                                            <span aria-hidden="true" class="text-lg leading-none">×</span>
+                                        </button>
+                                    @endunless
                                 </div>
                             @empty
                                 <p class="text-xs text-on-surface-variant">Belum ada tipe siswa.</p>
@@ -244,7 +245,7 @@
                 <div class="mt-4 space-y-3 text-sm text-on-surface-variant">
                     <p>Isi minimal nama lengkap, angkatan, kelas, jurusan, dan tipe siswa.</p>
                     <p>NIS dan NISN bersifat unik. Jika salah satu sudah pernah dipakai, sistem akan menolak penyimpanan.</p>
-                    <p>Gunakan tipe `Asrama` untuk siswa boarding agar billing boarding bisa dipetakan dengan benar.</p>
+                    <p>Gunakan tipe Reguler, Full Day, atau Asrama sesuai kebijakan biaya siswa.</p>
                 </div>
             </div>
 

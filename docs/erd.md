@@ -77,7 +77,7 @@ ERD ini dirancang untuk memenuhi kebutuhan berikut:
 - class_id (FK -> classes.id)
 - major_id (FK -> majors.id)
 - batch_id (FK -> batches.id)
-- student_type (`regular`, `boarding`)
+- student_type (`regular`, `full_day`, `boarding`)
 - is_active
 - enrollment_date
 - exit_date
@@ -91,7 +91,7 @@ ERD ini dirancang untuk memenuhi kebutuhan berikut:
 - category (`spp`, `activity`, `meal`, `other`)
 - installment_allowed
 - billing_frequency (`monthly`, `one_time`, `custom`)
-- applies_to (`all`, `regular`, `boarding`)
+- applies_to (`all`, `regular`, `full_day`, `boarding`)
 - is_active
 - created_at
 - updated_at

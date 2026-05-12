@@ -13,6 +13,7 @@
     $appliesToLabels = [
         'all' => 'Semua siswa',
         'regular' => 'Reguler',
+        'full_day' => 'Full Day',
         'boarding' => 'Asrama',
     ];
     $isEditingFeeType = $editingFeeType !== null;
@@ -64,6 +65,7 @@
                         <select class="w-full rounded-xl border-none bg-surface-container-low px-4 py-3 text-sm" name="applies_to" required>
                             <option @selected(old('applies_to', $editingFeeType?->applies_to) === 'all') value="all">Semua siswa</option>
                             <option @selected(old('applies_to', $editingFeeType?->applies_to) === 'regular') value="regular">Reguler</option>
+                            <option @selected(old('applies_to', $editingFeeType?->applies_to) === 'full_day') value="full_day">Full Day</option>
                             <option @selected(old('applies_to', $editingFeeType?->applies_to) === 'boarding') value="boarding">Asrama</option>
                         </select>
                     </div>

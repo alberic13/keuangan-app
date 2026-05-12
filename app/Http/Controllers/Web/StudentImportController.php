@@ -16,14 +16,10 @@ class StudentImportController extends Controller
 
     public function template(): StreamedResponse
     {
-        $headers = ['nis', 'nisn', 'full_name', 'class', 'major', 'batch', 'student_type', 'is_active'];
-
-        return response()->streamDownload(function () use ($headers) {
-            $handle = fopen('php://output', 'w');
-            fputcsv($handle, $headers);
-            fclose($handle);
-        }, 'template_import_siswa.csv', [
-            'Content-Type' => 'text/csv',
+        return response()->streamDownload(function () {
+            $this->studentImportService->writeTemplate();
+        }, 'template_import_siswa.xlsx', [
+            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         ]);
     }
 
@@ -32,7 +28,7 @@ class StudentImportController extends Controller
         $this->ensureAnyRole(['admin_keuangan']);
 
         $request->validate([
-            'file' => ['required', 'file', 'mimes:csv,txt,xlsx'],
+            'file' => ['required', 'file', 'mimes:xlsx,xls'],
         ]);
 
         $preview = $this->studentImportService->preview($request->file('file'));

@@ -46,6 +46,7 @@ class FeeManagementController extends Controller
         $this->ensureAnyRole(['admin_keuangan']);
 
         $data = $this->validatedFeeScheme($request);
+        $data = $this->normalizeFeeScheme($data);
         $this->ensureSchemeDoesNotOverlap($data);
         $scheme = FeeScheme::query()->create($data);
         $this->auditLogs->log('fee_scheme.created', $scheme, null, $scheme->toArray(), null, $request->user());
@@ -58,6 +59,7 @@ class FeeManagementController extends Controller
         $this->ensureAnyRole(['admin_keuangan']);
 
         $data = $this->validatedFeeScheme($request);
+        $data = $this->normalizeFeeScheme($data);
         $this->ensureSchemeDoesNotOverlap($data, $feeScheme);
 
         $before = $feeScheme->toArray();
@@ -74,7 +76,7 @@ class FeeManagementController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'category' => ['required', Rule::in(['spp', 'activity', 'meal', 'other'])],
             'billing_frequency' => ['required', Rule::in(['monthly', 'one_time', 'custom'])],
-            'applies_to' => ['required', Rule::in(['all', 'regular', 'boarding'])],
+            'applies_to' => ['required', Rule::in(['all', 'regular', 'full_day', 'boarding'])],
         ]);
     }
 
@@ -95,6 +97,7 @@ class FeeManagementController extends Controller
             ]),
             'activity' => array_merge($data, [
                 'installment_allowed' => true,
+                'billing_frequency' => 'one_time',
                 'is_active' => true,
             ]),
             default => array_merge($data, [
@@ -114,6 +117,17 @@ class FeeManagementController extends Controller
             'effective_end' => ['nullable', 'date', 'after_or_equal:effective_start'],
             'is_active' => ['nullable', 'boolean'],
         ]);
+    }
+
+    protected function normalizeFeeScheme(array $data): array
+    {
+        $feeType = FeeType::query()->find($data['fee_type_id']);
+
+        if ($feeType?->category === 'spp') {
+            $data['batch_id'] = null;
+        }
+
+        return $data;
     }
 
     protected function ensureSchemeDoesNotOverlap(array $data, ?FeeScheme $feeScheme = null): void

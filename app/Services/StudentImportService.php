@@ -16,7 +16,12 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
+use PhpOffice\PhpSpreadsheet\Cell\DataValidation;
 use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class StudentImportService
 {
@@ -27,8 +32,14 @@ class StudentImportService
 
     public function preview(UploadedFile $file): array
     {
-        $spreadsheet = IOFactory::load($file->getRealPath());
-        $rows = $spreadsheet->getActiveSheet()->toArray(null, false, false, false);
+        $previousErrorReporting = error_reporting(E_ALL & ~E_DEPRECATED);
+
+        try {
+            $spreadsheet = IOFactory::load($file->getRealPath());
+            $rows = $spreadsheet->getActiveSheet()->toArray(null, false, false, false);
+        } finally {
+            error_reporting($previousErrorReporting);
+        }
 
         if ($rows === [] || count($rows) < 2) {
             throw ValidationException::withMessages([
@@ -49,6 +60,7 @@ class StudentImportService
         $batches = Batch::query()->pluck('id', 'year_label')->mapWithKeys(fn ($id, $label) => [Str::lower(trim((string) $label)) => $id]);
         $classes = AcademicClass::query()->pluck('id', 'name')->mapWithKeys(fn ($id, $name) => [Str::lower(trim((string) $name)) => $id]);
         $majors = Major::query()
+            ->where('is_active', true)
             ->get(['id', 'name', 'code'])
             ->flatMap(fn (Major $major) => [
                 Str::lower(trim($major->name)) => $major->id,
@@ -63,6 +75,10 @@ class StudentImportService
         $validRows = 0;
 
         foreach ($rows as $index => $row) {
+            if ($this->rowIsEmpty($row)) {
+                continue;
+            }
+
             $rowNumber = $index + 2;
             $payload = $this->rowToPayload($headers, $row);
             $rowErrors = $this->validateRow($payload, $batches->all(), $classes->all(), $majors->all(), $studentTypes, $seenNis, $seenNisn);
@@ -110,6 +126,99 @@ class StudentImportService
         ];
     }
 
+    public function writeTemplate(string $target = 'php://output'): void
+    {
+        $previousErrorReporting = error_reporting(E_ALL & ~E_DEPRECATED);
+
+        try {
+            $headers = ['nis', 'nisn', 'full_name', 'class', 'major', 'batch', 'student_type', 'is_active'];
+            $classes = AcademicClass::query()->orderBy('level')->orderBy('name')->pluck('name')->values()->all();
+            $majors = Major::query()->where('is_active', true)->orderBy('name')->pluck('code')->values()->all();
+            $batches = Batch::query()->orderByDesc('academic_year')->pluck('year_label')->values()->all();
+            $studentTypes = StudentType::query()->where('is_active', true)->orderBy('slug')->pluck('slug')->values()->all();
+            $activeOptions = ['true', 'false'];
+
+            $spreadsheet = new Spreadsheet();
+            $sheet = $spreadsheet->getActiveSheet();
+            $sheet->setTitle('Import Siswa');
+            $sheet->fromArray($headers, null, 'A1');
+
+            $headerStyle = [
+                'font' => ['bold' => true, 'color' => ['rgb' => 'FFFFFF']],
+                'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['rgb' => '00422F']],
+                'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER],
+            ];
+
+            $sheet->getStyle('A1:H1')->applyFromArray($headerStyle);
+            $sheet->freezePane('A2');
+            $sheet->setAutoFilter('A1:H1001');
+
+            foreach ([
+                'A' => 14,
+                'B' => 16,
+                'C' => 28,
+                'D' => 16,
+                'E' => 14,
+                'F' => 14,
+                'G' => 16,
+                'H' => 12,
+            ] as $column => $width) {
+                $sheet->getColumnDimension($column)->setWidth($width);
+            }
+
+            $referenceSheet = $spreadsheet->createSheet();
+            $referenceSheet->setTitle('Referensi');
+            $referenceSheet->fromArray(['class', 'major', 'batch', 'student_type', 'is_active'], null, 'A1');
+
+            $references = [$classes, $majors, $batches, $studentTypes, $activeOptions];
+            $maxReferenceRows = max(array_map('count', $references) ?: [1]);
+
+            for ($i = 0; $i < $maxReferenceRows; $i++) {
+                $referenceSheet->fromArray([
+                    $classes[$i] ?? null,
+                    $majors[$i] ?? null,
+                    $batches[$i] ?? null,
+                    $studentTypes[$i] ?? null,
+                    $activeOptions[$i] ?? null,
+                ], null, 'A'.($i + 2));
+            }
+
+            $referenceSheet->getStyle('A1:E1')->applyFromArray($headerStyle);
+
+            foreach (['A', 'B', 'C', 'D', 'E'] as $column) {
+                $referenceSheet->getColumnDimension($column)->setWidth(18);
+            }
+
+            $validationColumns = [
+                'D' => ['A', max(count($classes), 1)],
+                'E' => ['B', max(count($majors), 1)],
+                'F' => ['C', max(count($batches), 1)],
+                'G' => ['D', max(count($studentTypes), 1)],
+                'H' => ['E', count($activeOptions)],
+            ];
+
+            foreach ($validationColumns as $inputColumn => [$referenceColumn, $count]) {
+                for ($row = 2; $row <= 1001; $row++) {
+                    $validation = $sheet->getCell($inputColumn.$row)->getDataValidation();
+                    $validation->setType(DataValidation::TYPE_LIST);
+                    $validation->setErrorStyle(DataValidation::STYLE_STOP);
+                    $validation->setAllowBlank(false);
+                    $validation->setShowDropDown(true);
+                    $validation->setShowErrorMessage(true);
+                    $validation->setErrorTitle('Input tidak valid');
+                    $validation->setError('Pilih nilai dari daftar referensi.');
+                    $validation->setFormula1(sprintf("'Referensi'!\$%s\$2:\$%s\$%d", $referenceColumn, $referenceColumn, $count + 1));
+                }
+            }
+
+            $spreadsheet->setActiveSheetIndex(0);
+
+            (new Xlsx($spreadsheet))->save($target);
+        } finally {
+            error_reporting($previousErrorReporting);
+        }
+    }
+
     public function commit(string $previewToken, User $actor): array
     {
         $previewPath = $this->previewPath($previewToken);
@@ -124,6 +233,7 @@ class StudentImportService
         $batchMap = Batch::query()->pluck('id', 'year_label')->mapWithKeys(fn ($id, $label) => [Str::lower(trim((string) $label)) => $id])->all();
         $classMap = AcademicClass::query()->pluck('id', 'name')->mapWithKeys(fn ($id, $name) => [Str::lower(trim((string) $name)) => $id])->all();
         $majorMap = Major::query()
+            ->where('is_active', true)
             ->get(['id', 'name', 'code'])
             ->flatMap(fn (Major $major) => [
                 Str::lower(trim($major->name)) => $major->id,
@@ -238,6 +348,17 @@ class StudentImportService
             'student_type' => Str::lower($mapped['student_type'] ?? ''),
             'is_active' => $this->parseBoolean($mapped['is_active'] ?? ''),
         ];
+    }
+
+    protected function rowIsEmpty(array $row): bool
+    {
+        foreach ($row as $cell) {
+            if (trim((string) $cell) !== '') {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     protected function normalizeHeaders(array $headers): array

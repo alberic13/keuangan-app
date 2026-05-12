@@ -8,7 +8,6 @@ use App\Models\Invoice;
 use App\Models\Major;
 use App\Models\Student;
 use App\Models\StudentType;
-use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use Livewire\Component;
@@ -34,7 +33,7 @@ class StudentCreatePage extends Component
         return view('livewire.student-create-page', [
             'batches' => Batch::query()->orderByDesc('academic_year')->get(),
             'classes' => AcademicClass::query()->orderBy('level')->orderBy('name')->get(),
-            'majors' => Major::query()->orderBy('name')->get(),
+            'majors' => Major::query()->where('is_active', true)->orderBy('name')->get(),
             'studentTypes' => StudentType::query()->where('is_active', true)->orderBy('label')->get(),
         ])->layout('layouts.app', [
             'pageTitle' => 'Tambah Siswa Manual',
@@ -98,26 +97,9 @@ class StudentCreatePage extends Component
 
     public function addStudentType(): void
     {
-        $data = $this->validate([
-            'studentTypeLabel' => ['required', 'string', 'max:100', Rule::unique('student_types', 'label')],
+        throw ValidationException::withMessages([
+            'studentTypeLabel' => 'Tipe siswa dikunci sesuai kebijakan: Reguler, Full Day, dan Asrama.',
         ]);
-
-        $slug = Str::slug($data['studentTypeLabel']);
-
-        if ($slug === '' || StudentType::query()->where('slug', $slug)->exists()) {
-            throw ValidationException::withMessages([
-                'studentTypeLabel' => 'Nama tipe siswa sudah dipakai atau tidak valid.',
-            ]);
-        }
-
-        StudentType::query()->create([
-            'slug' => $slug,
-            'label' => $data['studentTypeLabel'],
-            'is_active' => true,
-        ]);
-
-        $this->reset(['studentTypeLabel']);
-        session()->flash('status', 'Tipe siswa baru berhasil ditambahkan.');
     }
 
     public function deleteBatch(int $batchId): void
@@ -159,9 +141,10 @@ class StudentCreatePage extends Component
         $major = Major::query()->findOrFail($majorId);
 
         if (Student::query()->where('major_id', $major->id)->exists()) {
-            throw ValidationException::withMessages([
-                'majorCode' => 'Jurusan tidak bisa dihapus karena masih dipakai data siswa.',
-            ]);
+            $major->update(['is_active' => false]);
+            session()->flash('status', 'Jurusan masih dipakai data siswa, jadi dinonaktifkan dan disembunyikan dari pilihan.');
+
+            return;
         }
 
         $major->delete();
@@ -171,6 +154,12 @@ class StudentCreatePage extends Component
     public function deleteStudentType(int $studentTypeId): void
     {
         $studentType = StudentType::query()->findOrFail($studentTypeId);
+
+        if (in_array($studentType->slug, ['regular', 'full_day', 'boarding'], true)) {
+            throw ValidationException::withMessages([
+                'studentTypeLabel' => 'Tipe siswa kebijakan tidak bisa dihapus: Reguler, Full Day, dan Asrama.',
+            ]);
+        }
 
         if (Student::query()->where('student_type', $studentType->slug)->exists()) {
             throw ValidationException::withMessages([

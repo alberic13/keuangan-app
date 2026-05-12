@@ -161,7 +161,7 @@ Upload file dan preview hasil validasi tanpa commit final.
 
 **Request**
 - multipart/form-data
-- `file` = file xlsx/csv
+- `file` = file Excel (`xlsx`/`xls`)
 
 **Response 200**
 ```json
@@ -178,7 +178,7 @@ Upload file dan preview hasil validasi tanpa commit final.
       {
         "row_number": 4,
         "field": "student_type",
-        "message": "student_type harus regular atau boarding"
+        "message": "student_type harus regular, full_day, atau boarding"
       }
     ]
   }
@@ -503,4 +503,3 @@ Commit hasil import berdasarkan preview token.
 16. BKU baseline reports
 17. Export endpoints
 18. Audit logs
-

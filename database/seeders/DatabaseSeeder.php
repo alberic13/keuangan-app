@@ -170,7 +170,6 @@ class DatabaseSeeder extends Seeder
             ['code' => 'MIPA', 'name' => 'MIPA', 'is_active' => true],
             ['code' => 'IPS', 'name' => 'IPS', 'is_active' => true],
             ['code' => 'KAG', 'name' => 'Keagamaan', 'is_active' => true],
-            ['code' => 'BHS', 'name' => 'Bahasa', 'is_active' => true],
         ])->mapWithKeys(fn (array $item) => [
             $item['code'] => Major::query()->updateOrCreate(
                 ['code' => $item['code']],
@@ -182,7 +181,7 @@ class DatabaseSeeder extends Seeder
             ['nis' => '2026001', 'nisn' => '9981000001', 'full_name' => 'Ahmad Fulan', 'class' => 'X-A', 'major' => 'MIPA', 'batch' => '2026', 'student_type' => 'boarding', 'is_active' => true],
             ['nis' => '2026002', 'nisn' => '9981000002', 'full_name' => 'Siti Nur Aini', 'class' => 'X-A', 'major' => 'MIPA', 'batch' => '2026', 'student_type' => 'regular', 'is_active' => true],
             ['nis' => '2025001', 'nisn' => '9981000003', 'full_name' => 'Rizky Setiawan', 'class' => 'XI-MIPA 1', 'major' => 'MIPA', 'batch' => '2025', 'student_type' => 'boarding', 'is_active' => true],
-            ['nis' => '2025002', 'nisn' => '9981000004', 'full_name' => 'Aulia Rahmah', 'class' => 'XI-IPS 1', 'major' => 'IPS', 'batch' => '2025', 'student_type' => 'regular', 'is_active' => true],
+            ['nis' => '2025002', 'nisn' => '9981000004', 'full_name' => 'Aulia Rahmah', 'class' => 'XI-IPS 1', 'major' => 'IPS', 'batch' => '2025', 'student_type' => 'full_day', 'is_active' => true],
             ['nis' => '2024001', 'nisn' => '9981000005', 'full_name' => 'Bima Pradana', 'class' => 'XII-MIPA 1', 'major' => 'MIPA', 'batch' => '2024', 'student_type' => 'regular', 'is_active' => true],
             ['nis' => '2024002', 'nisn' => '9981000006', 'full_name' => 'Laila Zahra', 'class' => 'XII-IPS 1', 'major' => 'IPS', 'batch' => '2024', 'student_type' => 'boarding', 'is_active' => true],
             ['nis' => '2025003', 'nisn' => '9981000007', 'full_name' => 'Muhammad Naufal', 'class' => 'XI-MIPA 1', 'major' => 'KAG', 'batch' => '2025', 'student_type' => 'boarding', 'is_active' => true],
@@ -248,13 +247,13 @@ class DatabaseSeeder extends Seeder
                 'name' => 'Uang Kegiatan',
                 'category' => 'activity',
                 'installment_allowed' => true,
-                'billing_frequency' => 'custom',
-                'applies_to' => 'all',
+                'billing_frequency' => 'one_time',
+                'applies_to' => 'full_day',
                 'is_active' => true,
             ],
             [
                 'code' => 'UMK',
-                'name' => 'Uang Makan Boarding',
+                'name' => 'Uang Makan Asrama',
                 'category' => 'meal',
                 'installment_allowed' => false,
                 'billing_frequency' => 'monthly',
@@ -269,9 +268,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         foreach ([
-            ['fee_type' => 'SPP', 'batch' => '2024', 'nominal' => 350000, 'effective_start' => '2026-01-01'],
-            ['fee_type' => 'SPP', 'batch' => '2025', 'nominal' => 375000, 'effective_start' => '2026-01-01'],
-            ['fee_type' => 'SPP', 'batch' => '2026', 'nominal' => 400000, 'effective_start' => '2026-01-01'],
+            ['fee_type' => 'SPP', 'batch' => null, 'nominal' => 400000, 'effective_start' => '2026-01-01'],
             ['fee_type' => 'UKG', 'batch' => null, 'nominal' => 600000, 'effective_start' => '2026-01-01'],
             ['fee_type' => 'UMK', 'batch' => null, 'nominal' => 450000, 'effective_start' => '2026-01-01'],
         ] as $scheme) {
@@ -402,10 +399,6 @@ class DatabaseSeeder extends Seeder
                 [
                     'invoice_id' => $rizkyInvoices['SPP-'.$previousCycleId]->id,
                     'amount' => (int) $rizkyInvoices['SPP-'.$previousCycleId]->outstanding_amount,
-                ],
-                [
-                    'invoice_id' => $rizkyInvoices['UKG-'.$currentCycleId.'-Kegiatan Semester Ganjil 2026/2027']->id,
-                    'amount' => 250000,
                 ],
             ],
         ], $bendahara);

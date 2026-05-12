@@ -65,6 +65,7 @@ return [
     'apps_script' => [
         'upload_url' => env('GOOGLE_APPS_SCRIPT_UPLOAD_URL'),
         'subfolder' => env('GOOGLE_APPS_SCRIPT_SUBFOLDER', 'Bukti Pembayaran'),
+        'ca_bundle' => env('GOOGLE_APPS_SCRIPT_CA_BUNDLE'),
     ],
 
     /*

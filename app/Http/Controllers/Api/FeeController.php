@@ -48,10 +48,10 @@ class FeeController extends Controller
     public function feeSchemesIndex(Request $request)
     {
         $schemes = FeeScheme::query()
-            ->with(['feeType', 'batch'])
+            ->with('feeType')
+            ->where('is_active', true)
             ->when($request->filled('fee_type_id'), fn ($query) => $query->where('fee_type_id', $request->integer('fee_type_id')))
             ->when($request->filled('batch_id'), fn ($query) => $query->where('batch_id', $request->integer('batch_id')))
-            ->when($request->boolean('active_only'), fn ($query) => $query->where('is_active', true))
             ->latest('effective_start')
             ->get();
 
@@ -62,6 +62,7 @@ class FeeController extends Controller
     {
         $this->ensureAnyRole(['admin_keuangan']);
         $data = $this->validatedFeeScheme($request);
+        $data = $this->normalizeFeeScheme($data);
         $this->ensureSchemeDoesNotOverlap($data);
         $scheme = FeeScheme::query()->create($data);
         $this->auditLogs->log('fee_scheme.created', $scheme, null, $scheme->toArray(), null, $request->user());
@@ -73,6 +74,7 @@ class FeeController extends Controller
     {
         $this->ensureAnyRole(['admin_keuangan']);
         $data = $this->validatedFeeScheme($request);
+        $data = $this->normalizeFeeScheme($data);
         $this->ensureSchemeDoesNotOverlap($data, $feeScheme);
         $before = $feeScheme->toArray();
         $feeScheme->update($data);
@@ -88,7 +90,7 @@ class FeeController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'category' => ['required', Rule::in(['spp', 'activity', 'meal', 'other'])],
             'billing_frequency' => ['required', Rule::in(['monthly', 'one_time', 'custom'])],
-            'applies_to' => ['required', Rule::in(['all', 'regular', 'boarding'])],
+            'applies_to' => ['required', Rule::in(['all', 'regular', 'full_day', 'boarding'])],
         ]);
     }
 
@@ -97,7 +99,7 @@ class FeeController extends Controller
         return match ($data['category']) {
             'spp' => array_merge($data, ['installment_allowed' => false, 'billing_frequency' => 'monthly', 'applies_to' => 'all', 'is_active' => true]),
             'meal' => array_merge($data, ['installment_allowed' => false, 'billing_frequency' => 'monthly', 'applies_to' => 'boarding', 'is_active' => true]),
-            'activity' => array_merge($data, ['installment_allowed' => true, 'is_active' => true]),
+            'activity' => array_merge($data, ['installment_allowed' => true, 'billing_frequency' => 'one_time', 'is_active' => true]),
             default => array_merge($data, ['installment_allowed' => $request->boolean('installment_allowed'), 'is_active' => true]),
         };
     }
@@ -112,6 +114,17 @@ class FeeController extends Controller
             'effective_end' => ['nullable', 'date', 'after_or_equal:effective_start'],
             'is_active' => ['nullable', 'boolean'],
         ]);
+    }
+
+    protected function normalizeFeeScheme(array $data): array
+    {
+        $feeType = FeeType::query()->find($data['fee_type_id']);
+
+        if ($feeType?->category === 'spp') {
+            $data['batch_id'] = null;
+        }
+
+        return $data;
     }
 
     protected function ensureSchemeDoesNotOverlap(array $data, ?FeeScheme $feeScheme = null): void

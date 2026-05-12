@@ -43,7 +43,7 @@ Dokumen ini dipakai untuk:
 |---|---|---:|---|
 | EPIC-01 | Project Foundation | P0 | Menyiapkan fondasi project Laravel, auth, dan struktur dasar |
 | EPIC-02 | Master Data Akademik & Siswa | P0 | Menyiapkan data inti siswa dan referensi akademik |
-| EPIC-03 | Import Data Siswa | P0 | Upload, preview, dan commit import Excel/CSV |
+| EPIC-03 | Import Data Siswa | P0 | Upload, preview, dan commit import Excel |
 | EPIC-04 | Fee Types & Fee Schemes | P0 | Menetapkan struktur biaya dan tarif |
 | EPIC-05 | Billing Cycle & Generate Tagihan | P0 | Membuat siklus billing dan invoice siswa |
 | EPIC-06 | Payments Multi-Item | P0 | Mencatat pembayaran cash/transfer manual |
@@ -305,7 +305,7 @@ Target:
 ### TASK-019 Service generate invoice SPP
 - **Prioritas:** P0
 - **Label:** backend
-- **Deskripsi:** Generate SPP bulanan sesuai angkatan.
+- **Deskripsi:** Generate SPP bulanan dengan nominal sama untuk semua angkatan.
 - **Acceptance criteria:**
   - siswa aktif saja,
   - tidak ada invoice duplikat,
@@ -798,4 +798,3 @@ Contoh:
 - “Kerjakan TASK-011 di `docs/backlog.md` sesuai `docs/workflow.md` bagian Workflow Data Upload / Import Siswa.”
 - “Implement TASK-026 sesuai `docs/api-spec.md` modul Payments dan `docs/erd.md` tabel payments/payment_items.”
 - “Kerjakan TASK-042 sampai TASK-046 untuk laporan baseline BKU.”
-

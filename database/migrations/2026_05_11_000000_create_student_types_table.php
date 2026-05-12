@@ -27,6 +27,13 @@ return new class extends Migration
                 'updated_at' => now(),
             ],
             [
+                'slug' => 'full_day',
+                'label' => 'Full Day',
+                'is_active' => true,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
                 'slug' => 'boarding',
                 'label' => 'Asrama',
                 'is_active' => true,

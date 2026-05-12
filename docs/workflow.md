@@ -115,7 +115,7 @@ Membuat data siswa yang konsisten sebagai dasar penagihan, pembayaran, dan lapor
 > Ini adalah alur upload data yang harus dipakai sebagai acuan implementasi frontend, backend, dan validasi integrasi.
 
 ### 4.1 Tujuan
-Mempercepat input awal dan update massal data siswa melalui file Excel/CSV.
+Mempercepat input awal dan update massal data siswa melalui file Excel.
 
 ### 4.2 Preconditions
 - User login sebagai Admin Keuangan.
@@ -130,7 +130,7 @@ Kolom minimum yang harus dikenali sistem:
 - `class`
 - `major`
 - `batch`
-- `student_type` (`regular` / `boarding`)
+- `student_type` (`regular` / `full_day` / `boarding`)
 - `is_active` *(opsional, default true jika kosong)*
 
 ### 4.4 Alur utama upload/import
@@ -161,7 +161,7 @@ Kolom minimum yang harus dikenali sistem:
 - Angkatan harus valid.
 - Kelas harus valid.
 - Jurusan harus valid.
-- `student_type` hanya boleh `regular` atau `boarding`.
+- `student_type` hanya boleh `regular`, `full_day`, atau `boarding`.
 - NIS/NISN tidak boleh bentrok dengan siswa lain secara tidak konsisten.
 
 ### 4.6 Output import
@@ -178,7 +178,7 @@ Kolom minimum yang harus dikenali sistem:
 - Perubahan student type berlaku ke tagihan berikutnya, bukan retroaktif kecuali ada proses koreksi manual.
 
 ### 4.8 Error / exception
-- File bukan `.xlsx` / `.csv`.
+- File bukan `.xlsx` / `.xls`.
 - Header template tidak sesuai.
 - Encoding rusak.
 - Ada referensi kelas/jurusan/angkatan yang tidak dikenal.
@@ -255,7 +255,7 @@ Membuat invoice per siswa berdasarkan tarif aktif dan periode billing.
 2. Admin memilih periode bulan.
 3. Admin memilih fee type = `SPP`.
 4. Sistem mengambil siswa aktif.
-5. Sistem mencocokkan batch siswa dengan fee scheme SPP aktif.
+5. Sistem memakai fee scheme SPP umum yang berlaku untuk semua angkatan.
 6. Sistem mengecek apakah invoice untuk kombinasi siswa + fee + periode sudah ada.
 7. Jika belum ada, sistem membuat invoice.
 8. Status awal invoice adalah `unpaid`.
@@ -272,7 +272,7 @@ Membuat invoice per siswa berdasarkan tarif aktif dan periode billing.
 3. Sistem membuat invoice dengan outstanding yang bisa dibayar bertahap.
 
 ### 6.6 Business rules
-- SPP tidak boleh duplikat pada periode sama.
+- SPP tidak boleh duplikat pada periode sama dan memakai nominal yang sama untuk semua angkatan.
 - Uang makan hanya untuk boarding active.
 - Uang kegiatan boleh one-time per event/program dan dibayar bertahap.
 - Siswa inactive harus diskip.
@@ -555,4 +555,3 @@ Merekam setiap perubahan penting agar siap audit.
 - [ ] konsistensi invoice status setelah payment/edit
 - [ ] konsistensi ledger terhadap payment/expense
 - [ ] export PDF/Excel sesuai format laporan
-

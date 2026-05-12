@@ -17,7 +17,7 @@ class FeesPage extends Component
             ? FeeType::query()->find(request('edit_fee_type'))
             : null;
         $editingFeeScheme = request('edit_fee_scheme')
-            ? FeeScheme::query()->with(['feeType', 'batch'])->find(request('edit_fee_scheme'))
+            ? FeeScheme::query()->with('feeType')->find(request('edit_fee_scheme'))
             : null;
 
         return view('livewire.fees-page', [
@@ -40,7 +40,8 @@ class FeesPage extends Component
                 ->orderBy('name')
                 ->get(),
             'feeSchemes' => FeeScheme::query()
-                ->with(['feeType', 'batch'])
+                ->with('feeType')
+                ->where('is_active', true)
                 ->when($search !== '', function (Builder $query) use ($search) {
                     $query->where(function (Builder $schemeQuery) use ($search) {
                         $schemeQuery

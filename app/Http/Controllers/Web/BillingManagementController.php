@@ -9,6 +9,7 @@ use App\Models\StudentType;
 use App\Services\AuditLogService;
 use App\Services\BillingService;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -85,7 +86,7 @@ class BillingManagementController extends Controller
             'reference_name' => ['nullable', 'string', 'max:255'],
             'filters.batch_id' => ['nullable', 'exists:batches,id'],
             'filters.class_id' => ['nullable', 'exists:classes,id'],
-            'filters.major_id' => ['nullable', 'exists:majors,id'],
+            'filters.major_id' => ['nullable', Rule::exists('majors', 'id')->where(fn (Builder $query) => $query->where('is_active', true))],
             'filters.student_type' => ['nullable', Rule::in(array_merge(['all'], StudentType::activeSlugs()))],
         ]);
 

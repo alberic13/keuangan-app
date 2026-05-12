@@ -184,12 +184,8 @@ class BillingService
             $query->where('student_type', $filters['student_type']);
         }
 
-        if ($feeType->applies_to === 'boarding') {
-            $query->where('student_type', 'boarding');
-        }
-
-        if ($feeType->applies_to === 'regular') {
-            $query->where('student_type', 'regular');
+        if ($feeType->applies_to !== 'all') {
+            $query->where('student_type', $feeType->applies_to);
         }
 
         if ($feeType->category === 'meal') {

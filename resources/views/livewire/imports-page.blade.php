@@ -2,7 +2,7 @@
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
         <div class="lg:col-span-4 bg-surface-container-lowest rounded-xl shadow-sm p-6">
             <h3 class="text-lg font-headline font-bold mb-4">Upload Import Siswa</h3>
-            <p class="text-sm text-on-surface-variant mb-4">Gunakan template resmi, unggah file CSV/XLSX, lalu proses setelah pratinjau valid.</p>
+            <p class="text-sm text-on-surface-variant mb-4">Gunakan file Excel untuk tambah siswa baru atau pembaruan massal saat kenaikan kelas. Baris dengan NIS/NISN yang sudah ada akan memperbarui data siswa tersebut.</p>
             <div class="flex flex-col gap-3">
                 <a class="inline-flex items-center justify-center rounded-xl bg-surface-container-low px-5 py-3 text-sm font-semibold text-on-surface" href="{{ route('imports.students.template') }}">Unduh Template</a>
                 <form action="{{ route('imports.students.preview') }}" class="space-y-3" enctype="multipart/form-data" method="POST">

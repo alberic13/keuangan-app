@@ -72,7 +72,7 @@ class BillingPage extends Component
                 ->get(),
             'batches' => Batch::query()->orderByDesc('academic_year')->get(),
             'classes' => AcademicClass::query()->orderBy('level')->orderBy('name')->get(),
-            'majors' => Major::query()->orderBy('name')->get(),
+            'majors' => Major::query()->where('is_active', true)->orderBy('name')->get(),
             'studentTypes' => StudentType::query()->where('is_active', true)->orderBy('label')->get(),
         ])->layout('layouts.app', [
             'pageTitle' => 'Manajemen Tagihan',

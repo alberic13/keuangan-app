@@ -1,6 +1,7 @@
 @php
     $studentTypeLabels = [
         'regular' => 'Reguler',
+        'full_day' => 'Full Day',
         'boarding' => 'Asrama',
     ];
 @endphp

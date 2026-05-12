@@ -13,7 +13,7 @@
         <div class="bg-surface-container-lowest p-6 rounded-xl shadow-sm">
             <p class="text-sm font-medium text-on-surface-variant">Sisa Tagihan</p>
             <h3 class="text-3xl font-extrabold mt-2 text-tertiary">Rp {{ number_format($summary['outstanding'], 0, ',', '.') }}</h3>
-            <p class="mt-2 text-sm text-on-surface-variant">{{ $summary['is_month_filtered'] ? 'Tagihan periode '.$summary['month_label'] : 'Akumulasi tagihan berjalan' }}</p>
+            <p class="mt-2 text-sm text-on-surface-variant">{{ $summary['is_month_filtered'] ? 'Tagihan periode '.$summary['month_label'] : 'Akumulasi seluruh periode, termasuk tunggakan lama' }}</p>
         </div>
         <div class="bg-gradient-to-br from-primary to-primary-container p-6 rounded-xl shadow-lg text-white">
             <p class="text-sm font-medium text-white/80">Saldo Kas Bersih</p>

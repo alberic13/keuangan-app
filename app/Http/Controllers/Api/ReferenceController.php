@@ -54,7 +54,7 @@ class ReferenceController extends Controller
 
     public function majors()
     {
-        return $this->success(Major::query()->orderBy('name')->get());
+        return $this->success(Major::query()->where('is_active', true)->orderBy('name')->get());
     }
 
     public function storeMajor(Request $request)

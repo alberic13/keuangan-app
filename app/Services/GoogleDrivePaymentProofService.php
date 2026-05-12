@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
@@ -27,16 +28,32 @@ class GoogleDrivePaymentProofService
         );
 
         $mimeType = $file->getMimeType() ?: 'application/octet-stream';
-        $response = Http::asForm()
-            ->timeout(60)
-            ->post($this->config('upload_url'), [
-                'file' => base64_encode(file_get_contents($file->getRealPath())),
-                'filename' => $filename,
-                'subfolder' => $this->config('subfolder', 'Bukti Pembayaran'),
-                'mime_type' => $mimeType,
+
+        try {
+            $response = Http::asForm()
+                ->timeout(60)
+                ->withOptions([
+                    'verify' => $this->caBundle(),
+                ])
+                ->post($this->config('upload_url'), [
+                    'file' => base64_encode(file_get_contents($file->getRealPath())),
+                    'filename' => $filename,
+                    'subfolder' => $this->config('subfolder', 'Bukti Pembayaran'),
+                    'mime_type' => $mimeType,
+                ]);
+        } catch (ConnectionException $exception) {
+            throw ValidationException::withMessages([
+                'payment_proof' => 'Koneksi ke Google Apps Script gagal: '.$exception->getMessage(),
             ]);
+        }
 
         if ($response->failed()) {
+            if (in_array($response->status(), [401, 403], true)) {
+                throw ValidationException::withMessages([
+                    'payment_proof' => 'Google Apps Script belum bisa diakses publik. Deploy ulang sebagai Web app dengan Execute as: Me dan Who has access: Anyone.',
+                ]);
+            }
+
             throw ValidationException::withMessages([
                 'payment_proof' => 'Upload bukti pembayaran ke Google Apps Script gagal. Status: '.$response->status(),
             ]);
@@ -50,17 +67,22 @@ class GoogleDrivePaymentProofService
             ]);
         }
 
-        if (blank($payload['url'] ?? null)) {
+        if (blank($payload['fileId'] ?? null) && blank($payload['url'] ?? null)) {
             throw ValidationException::withMessages([
-                'payment_proof' => 'Google Apps Script berhasil dipanggil, tetapi URL file tidak dikembalikan.',
+                'payment_proof' => 'Google Apps Script berhasil dipanggil, tetapi ID/URL file tidak dikembalikan.',
             ]);
         }
 
+        $fileId = filled($payload['fileId'] ?? null) ? trim((string) $payload['fileId']) : null;
+        $url = $fileId
+            ? 'https://drive.google.com/file/d/'.rawurlencode($fileId).'/view'
+            : trim((string) $payload['url']);
+
         return [
-            'payment_proof_drive_id' => $payload['fileId'] ?? null,
+            'payment_proof_drive_id' => $fileId,
             'payment_proof_name' => $payload['name'] ?? $filename,
             'payment_proof_mime_type' => $payload['mimeType'] ?? $mimeType,
-            'payment_proof_url' => $payload['url'],
+            'payment_proof_url' => $url,
         ];
     }
 
@@ -106,6 +128,31 @@ class GoogleDrivePaymentProofService
 
     protected function config(string $key, mixed $default = null): mixed
     {
-        return data_get(config('filesystems.apps_script', []), $key, $default);
+        $value = data_get(config('filesystems.apps_script', []), $key, $default);
+
+        return is_string($value) ? trim($value) : $value;
+    }
+
+    protected function caBundle(): string|bool
+    {
+        $configured = $this->config('ca_bundle');
+
+        if (is_string($configured) && $configured !== '' && is_file($configured)) {
+            return $configured;
+        }
+
+        foreach ([
+            ini_get('curl.cainfo'),
+            ini_get('openssl.cafile'),
+            '/usr/local/etc/ca-certificates/cert.pem',
+            '/etc/ssl/cert.pem',
+            '/Applications/XAMPP/xamppfiles/phpmyadmin/vendor/composer/ca-bundle/res/cacert.pem',
+        ] as $path) {
+            if (is_string($path) && $path !== '' && is_file($path)) {
+                return $path;
+            }
+        }
+
+        return true;
     }
 }

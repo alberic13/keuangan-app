@@ -32,6 +32,7 @@ Konfigurasi default local (lihat file `.env`) sekarang mengarah ke:
 ## Struktur Penting
 
 - `docs/`: PRD, workflow, ERD, API spec, backlog
+- `docs/kebijakan-akademik-keuangan.md`: kebijakan tipe siswa, biaya, tunggakan, dan akses akademik
 - `docs/mockups/`: HTML mockup asli yang dijadikan acuan UI
 - `app/`, `resources/views/`, `routes/`: source utama Laravel
 - `/Applications/XAMPP/xamppfiles/htdocs/e-keuangan-man-app`: copy source untuk runtime Apache lokal
