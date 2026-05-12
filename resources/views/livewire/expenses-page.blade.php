@@ -34,11 +34,10 @@
         <div class="lg:col-span-8 space-y-8">
             <div class="bg-surface-container-lowest rounded-xl shadow-sm p-6">
                 <h3 class="text-lg font-headline font-bold mb-4">Tambah Kategori Pengeluaran</h3>
-                <form action="{{ route('expense-categories.store') }}" class="grid grid-cols-1 md:grid-cols-3 gap-4" method="POST">
+                <form action="{{ route('expense-categories.store') }}" class="grid grid-cols-1 md:grid-cols-2 gap-4" method="POST">
                     @csrf
-                    <input class="rounded-xl border-none bg-surface-container-low px-4 py-3 text-sm" name="code" placeholder="Kode" required type="text">
                     <input class="rounded-xl border-none bg-surface-container-low px-4 py-3 text-sm" name="name" placeholder="Nama kategori" required type="text">
-                    <button class="rounded-xl bg-primary text-white font-semibold px-5 py-3" type="submit">Tambah Kategori</button>
+                    <button class="rounded-xl bg-primary text-white font-semibold px-5 py-3 md:col-span-2" type="submit">Tambah Kategori</button>
                 </form>
             </div>
 

@@ -33,10 +33,17 @@ class StudentImportService
     public function preview(UploadedFile $file): array
     {
         $previousErrorReporting = error_reporting(E_ALL & ~E_DEPRECATED);
+        $extension = strtolower($file->getClientOriginalExtension());
 
         try {
-            $spreadsheet = IOFactory::load($file->getRealPath());
-            $rows = $spreadsheet->getActiveSheet()->toArray(null, false, false, false);
+            if ($extension === 'csv') {
+                $rows = $this->readCsvRows($file->getRealPath());
+            } else {
+                $this->ensureZipArchiveAvailable();
+
+                $spreadsheet = IOFactory::load($file->getRealPath());
+                $rows = $spreadsheet->getActiveSheet()->toArray(null, false, false, false);
+            }
         } finally {
             error_reporting($previousErrorReporting);
         }
@@ -126,11 +133,31 @@ class StudentImportService
         ];
     }
 
+    public function templateFilename(): string
+    {
+        return $this->templateFormat() === 'csv'
+            ? 'template_import_siswa.csv'
+            : 'template_import_siswa.xlsx';
+    }
+
+    public function templateContentType(): string
+    {
+        return $this->templateFormat() === 'csv'
+            ? 'text/csv; charset=UTF-8'
+            : 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+    }
+
     public function writeTemplate(string $target = 'php://output'): void
     {
         $previousErrorReporting = error_reporting(E_ALL & ~E_DEPRECATED);
 
         try {
+            if ($this->templateFormat() === 'csv') {
+                $this->writeCsvTemplate($target);
+
+                return;
+            }
+
             $headers = ['nis', 'nisn', 'full_name', 'class', 'major', 'batch', 'student_type', 'is_active'];
             $classes = AcademicClass::query()->orderBy('level')->orderBy('name')->pluck('name')->values()->all();
             $majors = Major::query()->where('is_active', true)->orderBy('name')->pluck('code')->values()->all();
@@ -216,6 +243,23 @@ class StudentImportService
             (new Xlsx($spreadsheet))->save($target);
         } finally {
             error_reporting($previousErrorReporting);
+        }
+    }
+
+    protected function writeCsvTemplate(string $target): void
+    {
+        $handle = fopen($target, 'wb');
+
+        if ($handle === false) {
+            throw ValidationException::withMessages([
+                'file' => 'Template import tidak bisa dibuat karena storage target tidak dapat ditulis.',
+            ]);
+        }
+
+        try {
+            fputcsv($handle, ['nis', 'nisn', 'full_name', 'class', 'major', 'batch', 'student_type', 'is_active']);
+        } finally {
+            fclose($handle);
         }
     }
 
@@ -364,10 +408,53 @@ class StudentImportService
     protected function normalizeHeaders(array $headers): array
     {
         return array_map(function ($header) {
-            $header = Str::lower(trim((string) $header));
+            $header = preg_replace('/^\xEF\xBB\xBF/', '', (string) $header);
+            $header = Str::lower(trim($header));
 
             return str_replace([' ', '-'], '_', $header);
         }, $headers);
+    }
+
+    protected function readCsvRows(string $path): array
+    {
+        $handle = fopen($path, 'rb');
+
+        if ($handle === false) {
+            throw ValidationException::withMessages([
+                'file' => 'File CSV tidak dapat dibaca.',
+            ]);
+        }
+
+        $rows = [];
+
+        try {
+            while (($row = fgetcsv($handle)) !== false) {
+                $rows[] = $row;
+            }
+        } finally {
+            fclose($handle);
+        }
+
+        return $rows;
+    }
+
+    protected function templateFormat(): string
+    {
+        return $this->zipArchiveAvailable() ? 'xlsx' : 'csv';
+    }
+
+    protected function ensureZipArchiveAvailable(): void
+    {
+        if (! $this->zipArchiveAvailable()) {
+            throw ValidationException::withMessages([
+                'file' => 'File XLSX memerlukan ekstensi PHP zip. Aktifkan extension zip di XAMPP atau unggah file CSV dari template yang disediakan aplikasi.',
+            ]);
+        }
+    }
+
+    protected function zipArchiveAvailable(): bool
+    {
+        return class_exists(\ZipArchive::class);
     }
 
     protected function validateRow(array $payload, array $batches, array $classes, array $majors, array $studentTypes, array &$seenNis, array &$seenNisn): array

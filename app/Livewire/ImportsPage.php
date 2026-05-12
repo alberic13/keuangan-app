@@ -24,6 +24,7 @@ class ImportsPage extends Component
 
         return view('livewire.imports-page', [
             'preview' => $preview,
+            'zipArchiveAvailable' => class_exists(\ZipArchive::class),
             'logs' => ImportLog::query()
                 ->with('importer')
                 ->when($search !== '', function (Builder $query) use ($search) {

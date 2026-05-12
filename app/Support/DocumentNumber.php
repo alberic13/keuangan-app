@@ -12,9 +12,15 @@ class DocumentNumber
     {
         $date = $date instanceof CarbonInterface ? $date : Carbon::parse($date);
         $base = sprintf('%s-%s', strtoupper($prefix), $date->format('Ym'));
-        $sequence = $modelClass::query()
+        $latestNumber = $modelClass::query()
             ->where($column, 'like', $base.'-%')
-            ->count() + 1;
+            ->max($column);
+
+        $sequence = 1;
+
+        if (is_string($latestNumber) && preg_match('/-(\d+)$/', $latestNumber, $matches)) {
+            $sequence = ((int) $matches[1]) + 1;
+        }
 
         return sprintf('%s-%06d', $base, $sequence);
     }

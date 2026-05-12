@@ -10,6 +10,7 @@ use App\Models\PaymentItem;
 use App\Models\Student;
 use App\Models\User;
 use App\Support\DocumentNumber;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
@@ -219,8 +220,7 @@ class PaymentService
             ->where('source_id', $payment->id)
             ->delete();
 
-        CashLedgerEntry::query()->create([
-            'entry_no' => DocumentNumber::next('LED', CashLedgerEntry::class, 'entry_no', $payment->payment_date),
+        $this->createLedgerEntryWithRetry([
             'transaction_date' => $payment->payment_date,
             'account_id' => $payment->cash_account_id,
             'direction' => 'in',
@@ -230,7 +230,35 @@ class PaymentService
             'description' => 'Penerimaan '.$payment->payment_no.' - '.$payment->student->full_name,
             'status' => 'posted',
             'created_by' => $actor->id,
-        ]);
+        ], $payment->payment_date);
+    }
+
+    protected function createLedgerEntryWithRetry(array $attributes, string $date, int $attempts = 5): void
+    {
+        $lastException = null;
+
+        for ($attempt = 1; $attempt <= $attempts; $attempt++) {
+            try {
+                CashLedgerEntry::query()->create($attributes + [
+                    'entry_no' => DocumentNumber::next('LED', CashLedgerEntry::class, 'entry_no', $date),
+                ]);
+
+                return;
+            } catch (QueryException $exception) {
+                if (! $this->isDuplicateEntryNumberException($exception)) {
+                    throw $exception;
+                }
+
+                $lastException = $exception;
+            }
+        }
+
+        throw $lastException;
+    }
+
+    protected function isDuplicateEntryNumberException(QueryException $exception): bool
+    {
+        return (string) $exception->getCode() === '23000' && str_contains($exception->getMessage(), 'cash_ledger_entries_entry_no_unique');
     }
 
     protected function recalculateInvoices(array $invoiceIds): void

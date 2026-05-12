@@ -12,6 +12,7 @@ class UsersPage extends Component
     public function render()
     {
         $search = trim((string) request('search'));
+        $showInactive = request()->boolean('show_inactive');
         $canManageUsers = auth()->user()?->hasRole('admin_keuangan') ?? false;
         $editingUser = $canManageUsers
             ? User::query()->with('roles')->find(request('edit_user'))
@@ -20,6 +21,7 @@ class UsersPage extends Component
         return view('livewire.users-page', [
             'users' => User::query()
                 ->with('roles')
+                ->when(! $showInactive, fn (Builder $query) => $query->where('is_active', true))
                 ->when($search !== '', function (Builder $query) use ($search) {
                     $query->where(function (Builder $userQuery) use ($search) {
                         $userQuery
@@ -37,6 +39,7 @@ class UsersPage extends Component
             'editingUser' => $editingUser,
             'canManageUsers' => $canManageUsers,
             'baseQuery' => request()->except(['edit_user']),
+            'showInactive' => $showInactive,
         ])->layout('layouts.app', [
             'pageTitle' => 'Manajemen Pengguna',
             'pageHeading' => 'Manajemen Pengguna',

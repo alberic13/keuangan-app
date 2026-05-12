@@ -42,28 +42,37 @@ class GoogleDrivePaymentProofService
                     'mime_type' => $mimeType,
                 ]);
         } catch (ConnectionException $exception) {
-            throw ValidationException::withMessages([
-                'payment_proof' => 'Koneksi ke Google Apps Script gagal: '.$exception->getMessage(),
-            ]);
+            return $this->fallbackOrFail(
+                $file,
+                $paymentNo,
+                $studentName,
+                'Koneksi ke Google Apps Script gagal: '.$exception->getMessage()
+            );
         }
 
         if ($response->failed()) {
-            if (in_array($response->status(), [401, 403], true)) {
-                throw ValidationException::withMessages([
-                    'payment_proof' => 'Google Apps Script belum bisa diakses publik. Deploy ulang sebagai Web app dengan Execute as: Me dan Who has access: Anyone.',
-                ]);
+            $responseMessage = $this->extractResponseMessage($response->json(), $response->body());
+
+            if ($this->shouldFallbackToLocalUpload($response->status(), $responseMessage)) {
+                return $this->uploadLocally($file, $paymentNo, $studentName);
             }
 
             throw ValidationException::withMessages([
-                'payment_proof' => 'Upload bukti pembayaran ke Google Apps Script gagal. Status: '.$response->status(),
+                'payment_proof' => $responseMessage ?: 'Upload bukti pembayaran ke Google Apps Script gagal. Status: '.$response->status(),
             ]);
         }
 
         $payload = $response->json();
 
         if (! is_array($payload) || ! ($payload['success'] ?? false)) {
+            $responseMessage = $this->extractResponseMessage($payload, $response->body());
+
+            if ($this->shouldFallbackToLocalUpload(null, $responseMessage)) {
+                return $this->uploadLocally($file, $paymentNo, $studentName);
+            }
+
             throw ValidationException::withMessages([
-                'payment_proof' => $payload['error'] ?? 'Google Apps Script tidak mengembalikan respons upload yang valid.',
+                'payment_proof' => $responseMessage ?: 'Google Apps Script tidak mengembalikan respons upload yang valid.',
             ]);
         }
 
@@ -84,6 +93,17 @@ class GoogleDrivePaymentProofService
             'payment_proof_mime_type' => $payload['mimeType'] ?? $mimeType,
             'payment_proof_url' => $url,
         ];
+    }
+
+    protected function fallbackOrFail(UploadedFile $file, string $paymentNo, ?string $studentName, string $message): array
+    {
+        if ($this->shouldFallbackToLocalUpload(null, $message)) {
+            return $this->uploadLocally($file, $paymentNo, $studentName);
+        }
+
+        throw ValidationException::withMessages([
+            'payment_proof' => $message,
+        ]);
     }
 
     protected function uploadLocally(UploadedFile $file, string $paymentNo, ?string $studentName = null): array
@@ -124,6 +144,43 @@ class GoogleDrivePaymentProofService
     public function isConfigured(): bool
     {
         return filled($this->config('upload_url'));
+    }
+
+    protected function shouldFallbackToLocalUpload(?int $status, ?string $message): bool
+    {
+        if (! app()->environment(['local', 'testing'])) {
+            return false;
+        }
+
+        if ($status !== null && in_array($status, [401, 403, 404, 500, 502, 503], true)) {
+            return true;
+        }
+
+        $message = Str::lower((string) $message);
+
+        return str_contains($message, 'driveapp')
+            || str_contains($message, 'access denied')
+            || str_contains($message, 'permission denied')
+            || str_contains($message, 'not authorized')
+            || str_contains($message, 'unauthorized')
+            || str_contains($message, 'forbidden');
+    }
+
+    protected function extractResponseMessage(mixed $payload, ?string $rawBody = null): ?string
+    {
+        if (is_array($payload)) {
+            foreach (['error', 'message', 'details'] as $key) {
+                if (! blank($payload[$key] ?? null)) {
+                    return trim((string) $payload[$key]);
+                }
+            }
+        }
+
+        if (is_string($rawBody) && trim($rawBody) !== '') {
+            return trim(strip_tags($rawBody));
+        }
+
+        return null;
     }
 
     protected function config(string $key, mixed $default = null): mixed
