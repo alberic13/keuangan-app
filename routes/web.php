@@ -66,6 +66,7 @@ Route::middleware(['auth', 'active'])->group(function () {
     Route::post('/payments', [PaymentManagementController::class, 'store'])->name('payments.store');
     Route::put('/payments/{payment}', [PaymentManagementController::class, 'update'])->name('payments.update');
     Route::get('/payments/{payment}/receipt', [PaymentManagementController::class, 'printReceipt'])->name('payments.receipt');
+    Route::get('/payments/{payment}/invoices/print', [PaymentManagementController::class, 'printInvoices'])->name('payments.invoices.print');
 
     Route::get('/expenses', ExpensesPage::class)->name('expenses.index');
     Route::get('/cash-ledger', fn () => redirect()->route('expenses.index'))->name('cash-ledger.index');

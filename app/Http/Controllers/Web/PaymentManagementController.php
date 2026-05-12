@@ -40,9 +40,11 @@ class PaymentManagementController extends Controller
             ]);
         }
 
-        $this->paymentService->create($data, $request->user());
+        $payment = $this->paymentService->create($data, $request->user());
 
-        return $this->redirectBackWithMessage($request, 'Pembayaran berhasil disimpan.');
+        return redirect()
+            ->route('payments.receipt', $payment)
+            ->with('status', 'Pembayaran berhasil disimpan.');
     }
 
     public function update(Request $request, Payment $payment): RedirectResponse
@@ -90,14 +92,21 @@ class PaymentManagementController extends Controller
 
     public function printReceipt(Payment $payment)
     {
-        $payment->load(['student.batch', 'student.classRoom', 'student.major', 'cashAccount', 'items.invoice.feeType']);
+        $payment->load(['student.batch', 'student.classRoom', 'student.major', 'cashAccount', 'items.invoice.feeType', 'items.invoice.billingCycle']);
 
-        $quarterA4Landscape = [0, 0, 419.53, 297.64];
+        $receiptPaper = [0, 0, 595.28, 255.12];
 
         return Pdf::loadView('prints.receipt', [
             'payment' => $payment,
         ])
-            ->setPaper($quarterA4Landscape, 'portrait')
+            ->setPaper($receiptPaper, 'portrait')
             ->stream($payment->payment_no.'.pdf');
+    }
+
+    public function printInvoices(Payment $payment)
+    {
+        $this->ensureAnyRole(['admin_keuangan', 'bendahara']);
+
+        return redirect()->route('payments.receipt', $payment);
     }
 }
