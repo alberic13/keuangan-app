@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\BillingCycle;
 use App\Models\Invoice;
 use App\Models\Student;
+use App\Models\StudentType;
 use App\Services\AuditLogService;
 use App\Services\BillingService;
 use Illuminate\Http\Request;
@@ -34,7 +35,7 @@ class BillingController extends Controller
             'month' => ['required', 'integer', 'between:1,12'],
             'year' => ['required', 'integer', 'min:2020'],
             'period_label' => ['required', 'string', 'max:255'],
-            'due_date' => ['nullable', 'date', 'after_or_equal:today'],
+            'due_date' => ['nullable', 'date'],
             'status' => ['nullable', Rule::in(['open', 'closed'])],
         ]);
 
@@ -58,7 +59,7 @@ class BillingController extends Controller
             'month' => ['required', 'integer', 'between:1,12'],
             'year' => ['required', 'integer', 'min:2020'],
             'period_label' => ['required', 'string', 'max:255'],
-            'due_date' => ['required', 'date', 'after_or_equal:today'],
+            'due_date' => ['required', 'date'],
             'status' => ['required', Rule::in(['open', 'closed'])],
         ]);
 
@@ -89,7 +90,7 @@ class BillingController extends Controller
             'filters.batch_id' => ['nullable', 'exists:batches,id'],
             'filters.class_id' => ['nullable', 'exists:classes,id'],
             'filters.major_id' => ['nullable', 'exists:majors,id'],
-            'filters.student_type' => ['nullable', Rule::in(['all', 'regular', 'boarding'])],
+            'filters.student_type' => ['nullable', Rule::in(array_merge(['all'], StudentType::activeSlugs()))],
         ]);
 
         return $this->success(

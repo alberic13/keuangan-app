@@ -111,8 +111,8 @@
                     </div>
                     <input class="w-full rounded-xl border-none bg-surface-container-low px-4 py-3 text-sm" min="1" name="nominal" placeholder="Nominal" required type="number" value="{{ old('nominal', $editingFeeScheme?->nominal) }}">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <input class="rounded-xl border-none bg-surface-container-low px-4 py-3 text-sm" min="{{ now()->toDateString() }}" name="effective_start" required type="date" value="{{ old('effective_start', $editingFeeScheme?->effective_start?->toDateString()) }}">
-                        <input class="rounded-xl border-none bg-surface-container-low px-4 py-3 text-sm" min="{{ now()->toDateString() }}" name="effective_end" type="date" value="{{ old('effective_end', $editingFeeScheme?->effective_end?->toDateString()) }}">
+                        <input class="rounded-xl border-none bg-surface-container-low px-4 py-3 text-sm" name="effective_start" required type="date" value="{{ old('effective_start', $editingFeeScheme?->effective_start?->toDateString()) }}">
+                        <input class="rounded-xl border-none bg-surface-container-low px-4 py-3 text-sm" name="effective_end" type="date" value="{{ old('effective_end', $editingFeeScheme?->effective_end?->toDateString()) }}">
                     </div>
                     <button class="w-full rounded-xl bg-primary text-white font-semibold px-5 py-3" type="submit">
                         {{ $isEditingFeeScheme ? 'Perbarui Tarif' : 'Simpan Tarif' }}

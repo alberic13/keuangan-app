@@ -12,7 +12,7 @@ class EnsureUserIsActive
     {
         $user = $request->user();
 
-        if (! $user || $user->is_active) {
+        if (! $user || $user->hasRole('admin_keuangan') || $user->is_active) {
             return $next($request);
         }
 

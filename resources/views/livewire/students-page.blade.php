@@ -1,8 +1,5 @@
 @php
-    $studentTypeLabels = [
-        'regular' => 'Reguler',
-        'boarding' => 'Asrama',
-    ];
+    $studentTypeLabels = $studentTypes->pluck('label', 'slug')->all();
     $baseQuery = request()->except(['page']);
 @endphp
 
@@ -45,8 +42,9 @@
             </select>
             <select class="rounded-xl border-none bg-surface-container-low px-4 py-3 text-sm" name="student_type">
                 <option value="">Semua Tipe</option>
-                <option @selected(request('student_type') === 'regular') value="regular">Reguler</option>
-                <option @selected(request('student_type') === 'boarding') value="boarding">Asrama</option>
+                @foreach ($studentTypes as $studentType)
+                    <option @selected(request('student_type') === $studentType->slug) value="{{ $studentType->slug }}">{{ $studentType->label }}</option>
+                @endforeach
             </select>
             <button class="rounded-xl bg-primary text-white font-semibold px-5 py-3 text-sm" type="submit">Filter</button>
         </form>

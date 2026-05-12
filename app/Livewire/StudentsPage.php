@@ -6,6 +6,7 @@ use App\Models\AcademicClass;
 use App\Models\Batch;
 use App\Models\Major;
 use App\Models\Student;
+use App\Models\StudentType;
 use Livewire\Component;
 
 class StudentsPage extends Component
@@ -35,6 +36,7 @@ class StudentsPage extends Component
             'batches' => Batch::query()->orderByDesc('academic_year')->get(),
             'classes' => AcademicClass::query()->orderBy('level')->orderBy('name')->get(),
             'majors' => Major::query()->orderBy('name')->get(),
+            'studentTypes' => StudentType::query()->where('is_active', true)->orderBy('label')->get(),
         ])->layout('layouts.app', [
             'pageTitle' => 'Manajemen Siswa',
             'pageHeading' => 'Manajemen Siswa',

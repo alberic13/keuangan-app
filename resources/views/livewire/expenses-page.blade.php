@@ -12,7 +12,7 @@
                 @if ($editingExpense)
                     @method('PUT')
                 @endif
-                <input class="w-full rounded-xl border-none bg-surface-container-low px-4 py-3 text-sm" @if (! $editingExpense) min="{{ now()->toDateString() }}" @endif name="transaction_date" required type="date" value="{{ old('transaction_date', $editingExpense?->transaction_date?->format('Y-m-d') ?? now()->toDateString()) }}">
+                <input class="w-full rounded-xl border-none bg-surface-container-low px-4 py-3 text-sm" name="transaction_date" required type="date" value="{{ old('transaction_date', $editingExpense?->transaction_date?->format('Y-m-d') ?? now()->toDateString()) }}">
                 <select class="w-full rounded-xl border-none bg-surface-container-low px-4 py-3 text-sm" name="category_id" required>
                     <option value="">Pilih kategori</option>
                     @foreach ($categories as $category)

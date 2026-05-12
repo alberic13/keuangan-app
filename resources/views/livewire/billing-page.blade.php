@@ -22,7 +22,7 @@
                     <input class="rounded-xl border-none bg-surface-container-low px-4 py-3 text-sm" min="2020" name="year" placeholder="Tahun" required type="number" value="{{ now()->year }}">
                 </div>
                 <input class="w-full rounded-xl border-none bg-surface-container-low px-4 py-3 text-sm" name="period_label" placeholder="Contoh: April 2026" required type="text">
-                <input class="w-full rounded-xl border-none bg-surface-container-low px-4 py-3 text-sm" min="{{ now()->toDateString() }}" name="due_date" type="date" value="{{ now()->day(10)->toDateString() }}">
+                <input class="w-full rounded-xl border-none bg-surface-container-low px-4 py-3 text-sm" name="due_date" type="date" value="{{ now()->day(10)->toDateString() }}">
                 <button class="w-full rounded-xl bg-primary text-white font-semibold px-5 py-3" type="submit">Simpan Siklus Tagihan</button>
             </form>
         </div>
@@ -69,8 +69,9 @@
                 </select>
                 <select class="rounded-xl border-none bg-surface-container-low px-4 py-3 text-sm" name="filters[student_type]">
                     <option value="all">Semua tipe siswa</option>
-                    <option value="regular">Reguler</option>
-                    <option value="boarding">Asrama</option>
+                    @foreach ($studentTypes as $studentType)
+                        <option value="{{ $studentType->slug }}">{{ $studentType->label }}</option>
+                    @endforeach
                 </select>
                 <input class="md:col-span-2 rounded-xl border-none bg-surface-container-low px-4 py-3 text-sm" name="reference_name" placeholder="Referensi kegiatan, opsional untuk uang kegiatan" type="text">
                 <button class="md:col-span-2 rounded-xl bg-primary text-white font-semibold px-5 py-3" type="submit">Buat Invoice</button>

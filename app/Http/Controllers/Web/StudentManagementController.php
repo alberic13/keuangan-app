@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
 use App\Models\Student;
+use App\Models\StudentType;
 use App\Services\AuditLogService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -27,7 +28,7 @@ class StudentManagementController extends Controller
             'class_id' => ['required', 'exists:classes,id'],
             'major_id' => ['required', 'exists:majors,id'],
             'batch_id' => ['required', 'exists:batches,id'],
-            'student_type' => ['required', Rule::in(['regular', 'boarding'])],
+            'student_type' => ['required', Rule::in(StudentType::activeSlugs())],
             'enrollment_date' => ['nullable', 'date'],
         ]);
 
@@ -50,7 +51,7 @@ class StudentManagementController extends Controller
             'class_id' => ['required', 'exists:classes,id'],
             'major_id' => ['required', 'exists:majors,id'],
             'batch_id' => ['required', 'exists:batches,id'],
-            'student_type' => ['required', Rule::in(['regular', 'boarding'])],
+            'student_type' => ['required', Rule::in(StudentType::activeSlugs())],
             'enrollment_date' => ['nullable', 'date'],
             'exit_date' => ['nullable', 'date'],
         ]);

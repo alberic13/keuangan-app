@@ -100,7 +100,7 @@ class CashController extends Controller
     {
         $this->ensureAnyRole(['admin_keuangan', 'bendahara']);
         $data = $request->validate([
-            'transaction_date' => ['required', 'date', 'after_or_equal:today'],
+            'transaction_date' => ['required', 'date'],
             'category_id' => ['required', 'exists:expense_categories,id'],
             'payment_account_id' => ['required', 'exists:cash_accounts,id'],
             'amount' => ['required', 'integer', 'min:1'],
@@ -114,7 +114,7 @@ class CashController extends Controller
     {
         $this->ensureAnyRole(['admin_keuangan', 'bendahara']);
         $data = $request->validate([
-            'transaction_date' => ['required', 'date', 'after_or_equal:today'],
+            'transaction_date' => ['required', 'date'],
             'category_id' => ['required', 'exists:expense_categories,id'],
             'payment_account_id' => ['required', 'exists:cash_accounts,id'],
             'amount' => ['required', 'integer', 'min:1'],

@@ -115,7 +115,7 @@
                 <h3 class="text-lg font-headline font-bold mb-4">Catat Kas Keluar</h3>
                 <form action="{{ route('expenses.store') }}" class="space-y-4" method="POST">
                     @csrf
-                    <input class="w-full rounded-xl border-none bg-surface-container-low px-4 py-3 text-sm" min="{{ now()->toDateString() }}" name="transaction_date" required type="date" value="{{ now()->toDateString() }}">
+                    <input class="w-full rounded-xl border-none bg-surface-container-low px-4 py-3 text-sm" name="transaction_date" required type="date" value="{{ now()->toDateString() }}">
                     <select class="w-full rounded-xl border-none bg-surface-container-low px-4 py-3 text-sm" name="category_id" required>
                         <option value="">Pilih kategori</option>
                         @foreach ($categories as $category)

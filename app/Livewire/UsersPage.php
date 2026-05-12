@@ -12,6 +12,10 @@ class UsersPage extends Component
     public function render()
     {
         $search = trim((string) request('search'));
+        $canManageUsers = auth()->user()?->hasRole('admin_keuangan') ?? false;
+        $editingUser = $canManageUsers
+            ? User::query()->with('roles')->find(request('edit_user'))
+            : null;
 
         return view('livewire.users-page', [
             'users' => User::query()
@@ -30,6 +34,9 @@ class UsersPage extends Component
                 ->orderBy('name')
                 ->get(),
             'roles' => Role::query()->orderBy('name')->get(),
+            'editingUser' => $editingUser,
+            'canManageUsers' => $canManageUsers,
+            'baseQuery' => request()->except(['edit_user']),
         ])->layout('layouts.app', [
             'pageTitle' => 'Manajemen Pengguna',
             'pageHeading' => 'Manajemen Pengguna',

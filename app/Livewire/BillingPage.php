@@ -8,6 +8,7 @@ use App\Models\BillingCycle;
 use App\Models\FeeType;
 use App\Models\Invoice;
 use App\Models\Major;
+use App\Models\StudentType;
 use Illuminate\Database\Eloquent\Builder;
 use Livewire\Component;
 
@@ -72,6 +73,7 @@ class BillingPage extends Component
             'batches' => Batch::query()->orderByDesc('academic_year')->get(),
             'classes' => AcademicClass::query()->orderBy('level')->orderBy('name')->get(),
             'majors' => Major::query()->orderBy('name')->get(),
+            'studentTypes' => StudentType::query()->where('is_active', true)->orderBy('label')->get(),
         ])->layout('layouts.app', [
             'pageTitle' => 'Manajemen Tagihan',
             'pageHeading' => 'Manajemen Tagihan',

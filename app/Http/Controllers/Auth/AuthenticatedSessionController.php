@@ -36,7 +36,7 @@ class AuthenticatedSessionController extends Controller
             ->orWhere('email', $credentials['login'])
             ->first();
 
-        if (! $user || ! Hash::check($credentials['password'], $user->password) || ! $user->is_active) {
+        if (! $user || ! Hash::check($credentials['password'], $user->password) || (! $user->hasRole('admin_keuangan') && ! $user->is_active)) {
             throw ValidationException::withMessages([
                 'login' => 'Username/email atau kata sandi tidak valid.',
             ]);

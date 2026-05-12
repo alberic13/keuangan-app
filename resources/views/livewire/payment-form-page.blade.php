@@ -62,7 +62,7 @@
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <input class="rounded-xl border-none bg-surface-container-low px-4 py-3 text-sm" min="{{ now()->toDateString() }}" name="payment_date" required type="date" value="{{ old('payment_date', now()->toDateString()) }}">
+                <input class="rounded-xl border-none bg-surface-container-low px-4 py-3 text-sm" name="payment_date" required type="date" value="{{ old('payment_date', now()->toDateString()) }}">
 
                 <select class="rounded-xl border-none bg-surface-container-low px-4 py-3 text-sm" name="method" required>
                     <option @selected(old('method', 'cash') === 'cash') value="cash">Tunai</option>

@@ -7,6 +7,7 @@ use App\Models\Batch;
 use App\Models\ImportLog;
 use App\Models\ImportLogRow;
 use App\Models\Major;
+use App\Models\StudentType;
 use App\Models\Student;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
@@ -53,6 +54,7 @@ class StudentImportService
                 Str::lower(trim($major->name)) => $major->id,
                 Str::lower(trim($major->code)) => $major->id,
             ]);
+        $studentTypes = $this->studentTypeMap();
 
         $seenNis = [];
         $seenNisn = [];
@@ -63,7 +65,7 @@ class StudentImportService
         foreach ($rows as $index => $row) {
             $rowNumber = $index + 2;
             $payload = $this->rowToPayload($headers, $row);
-            $rowErrors = $this->validateRow($payload, $batches->all(), $classes->all(), $majors->all(), $seenNis, $seenNisn);
+            $rowErrors = $this->validateRow($payload, $batches->all(), $classes->all(), $majors->all(), $studentTypes, $seenNis, $seenNisn);
 
             $previewRows[] = [
                 'row_number' => $rowNumber,
@@ -127,8 +129,9 @@ class StudentImportService
                 Str::lower(trim($major->name)) => $major->id,
                 Str::lower(trim($major->code)) => $major->id,
             ])->all();
+        $studentTypeMap = $this->studentTypeMap();
 
-        return DB::transaction(function () use ($preview, $previewPath, $actor, $batchMap, $classMap, $majorMap) {
+        return DB::transaction(function () use ($preview, $previewPath, $actor, $batchMap, $classMap, $majorMap, $studentTypeMap) {
             $importLog = ImportLog::query()->create([
                 'type' => 'students_import',
                 'file_name' => $preview['file_name'],
@@ -166,7 +169,7 @@ class StudentImportService
                     'class_id' => $classMap[Str::lower($payload['class'])],
                     'major_id' => $majorMap[Str::lower($payload['major'])],
                     'batch_id' => $batchMap[Str::lower($payload['batch'])],
-                    'student_type' => $payload['student_type'],
+                    'student_type' => $studentTypeMap[Str::lower($payload['student_type'])],
                     'is_active' => $payload['is_active'],
                 ];
 
@@ -246,7 +249,7 @@ class StudentImportService
         }, $headers);
     }
 
-    protected function validateRow(array $payload, array $batches, array $classes, array $majors, array &$seenNis, array &$seenNisn): array
+    protected function validateRow(array $payload, array $batches, array $classes, array $majors, array $studentTypes, array &$seenNis, array &$seenNisn): array
     {
         $errors = [];
 
@@ -270,8 +273,8 @@ class StudentImportService
             $errors['batch'] = 'Angkatan tidak ditemukan.';
         }
 
-        if (! in_array($payload['student_type'], ['regular', 'boarding'], true)) {
-            $errors['student_type'] = 'student_type harus regular atau boarding.';
+        if (! array_key_exists(Str::lower($payload['student_type']), $studentTypes)) {
+            $errors['student_type'] = 'student_type harus '.implode(' atau ', array_unique(array_values($studentTypes))).'.';
         }
 
         if ($payload['nis'] !== '') {
@@ -304,6 +307,18 @@ class StudentImportService
     protected function parseBoolean(string $value): bool
     {
         return ! in_array(Str::lower(trim($value)), ['0', 'false', 'tidak', 'inactive', 'nonaktif'], true);
+    }
+
+    protected function studentTypeMap(): array
+    {
+        return StudentType::query()
+            ->where('is_active', true)
+            ->get(['slug', 'label'])
+            ->flatMap(fn (StudentType $studentType) => [
+                Str::lower(trim($studentType->slug)) => $studentType->slug,
+                Str::lower(trim($studentType->label)) => $studentType->slug,
+            ])
+            ->all();
     }
 
     protected function previewDirectory(): string
