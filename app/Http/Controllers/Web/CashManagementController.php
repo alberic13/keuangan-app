@@ -60,11 +60,14 @@ class CashManagementController extends Controller
         $this->ensureAnyRole(['admin_keuangan']);
 
         $data = $request->validate([
-            'code' => ['required', 'string', 'max:30', 'unique:expense_categories,code'],
             'name' => ['required', 'string', 'max:255'],
         ]);
 
-        $category = ExpenseCategory::query()->create($data + ['is_active' => true]);
+        $category = ExpenseCategory::query()->create([
+            'code' => ExpenseCategory::generateCode($data['name']),
+            'name' => $data['name'],
+            'is_active' => true,
+        ]);
         $this->auditLogs->log('expense_category.created', $category, null, $category->toArray(), null, $request->user());
 
         return $this->redirectBackWithMessage($request, 'Kategori pengeluaran berhasil ditambahkan.');

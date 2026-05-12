@@ -50,7 +50,12 @@
 
         <div class="lg:col-span-8 bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden">
             <div class="px-8 py-6 border-b border-surface-container">
-                <h3 class="text-lg font-headline font-bold">Daftar Pengguna</h3>
+                <div class="flex items-center justify-between gap-4">
+                    <h3 class="text-lg font-headline font-bold">Daftar Pengguna</h3>
+                    <a class="text-sm font-semibold text-emerald-700 hover:text-emerald-800" href="{{ route('users.index', array_merge(request()->except('page', 'edit_user'), ['show_inactive' => $showInactive ? 0 : 1])) }}">
+                        {{ $showInactive ? 'Tampilkan aktif saja' : 'Tampilkan nonaktif' }}
+                    </a>
+                </div>
             </div>
             <div class="overflow-x-auto">
                 <table class="w-full text-left">
@@ -113,17 +118,6 @@
                                                 <path d="M4 20h4l10.5-10.5-4-4L4 16v4zm13.7-12.3 1.6-1.6a1.4 1.4 0 0 0 0-2l-1.4-1.4a1.4 1.4 0 0 0-2 0l-1.6 1.6 3.4 3.4z" fill="currentColor"/>
                                             </svg>
                                         </a>
-                                        @if (auth()->id() !== $user->id)
-                                            <form action="{{ route('users.destroy', $user) }}" method="POST" onsubmit="return confirm('Hapus pengguna ini?');">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button class="inline-flex h-9 w-9 items-center justify-center rounded-full border border-rose-200 text-rose-600 hover:bg-rose-50" title="Hapus pengguna" aria-label="Hapus pengguna" type="submit">
-                                                    <svg viewBox="0 0 24 24" class="h-4 w-4" aria-hidden="true">
-                                                        <path d="M9 3h6l1 2h4v2H4V5h4l1-2zm1 7h2v8h-2v-8zm4 0h2v8h-2v-8zM7 8h10l-1 12H8L7 8z" fill="currentColor"/>
-                                                    </svg>
-                                                </button>
-                                            </form>
-                                        @endif
                                     </div>
                                 </td>
                             @endif

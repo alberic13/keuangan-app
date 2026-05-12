@@ -18,8 +18,8 @@ class StudentImportController extends Controller
     {
         return response()->streamDownload(function () {
             $this->studentImportService->writeTemplate();
-        }, 'template_import_siswa.xlsx', [
-            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        }, $this->studentImportService->templateFilename(), [
+            'Content-Type' => $this->studentImportService->templateContentType(),
         ]);
     }
 
@@ -28,7 +28,7 @@ class StudentImportController extends Controller
         $this->ensureAnyRole(['admin_keuangan']);
 
         $request->validate([
-            'file' => ['required', 'file', 'mimes:xlsx,xls'],
+            'file' => ['required', 'file', 'mimes:xlsx,xls,csv'],
         ]);
 
         $preview = $this->studentImportService->preview($request->file('file'));

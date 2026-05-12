@@ -2,12 +2,23 @@
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
         <div class="lg:col-span-4 bg-surface-container-lowest rounded-xl shadow-sm p-6">
             <h3 class="text-lg font-headline font-bold mb-4">Upload Import Siswa</h3>
-            <p class="text-sm text-on-surface-variant mb-4">Gunakan file Excel untuk tambah siswa baru atau pembaruan massal saat kenaikan kelas. Baris dengan NIS/NISN yang sudah ada akan memperbarui data siswa tersebut.</p>
+            <p class="text-sm text-on-surface-variant mb-4">
+                @if ($zipArchiveAvailable)
+                    Gunakan file Excel atau CSV untuk tambah siswa baru atau pembaruan massal saat kenaikan kelas. Baris dengan NIS/NISN yang sudah ada akan memperbarui data siswa tersebut.
+                @else
+                    PHP di server ini belum punya ekstensi zip, jadi import memakai CSV saja. Unduh template CSV lalu unggah kembali file CSV itu setelah diisi.
+                @endif
+            </p>
+            @unless ($zipArchiveAvailable)
+                <div class="mb-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+                    Template dan unggahan sementara dibatasi CSV karena ekstensi PHP zip belum aktif di XAMPP.
+                </div>
+            @endunless
             <div class="flex flex-col gap-3">
                 <a class="inline-flex items-center justify-center rounded-xl bg-surface-container-low px-5 py-3 text-sm font-semibold text-on-surface" href="{{ route('imports.students.template') }}">Unduh Template</a>
                 <form action="{{ route('imports.students.preview') }}" class="space-y-3" enctype="multipart/form-data" method="POST">
                     @csrf
-                    <input class="w-full rounded-xl bg-surface-container-low px-4 py-3 text-sm" name="file" required type="file">
+                    <input class="w-full rounded-xl bg-surface-container-low px-4 py-3 text-sm" @if ($zipArchiveAvailable) accept=".xlsx,.xls,.csv" @else accept=".csv,text/csv" @endif name="file" required type="file">
                     <button class="w-full rounded-xl bg-primary text-white font-semibold px-5 py-3" type="submit">Pratinjau Import</button>
                 </form>
 

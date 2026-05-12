@@ -77,11 +77,11 @@ class UserManagementController extends Controller
         abort_if($request->user()?->is($user), 422, 'Tidak bisa menghapus akun sendiri.');
 
         $before = $user->toArray();
-        $user->delete();
+        $user->update(['is_active' => false]);
 
-        $this->auditLogs->log('user.deleted', $user, $before, null, null, $request->user());
+        $this->auditLogs->log('user.status_changed', $user, $before, $user->fresh()->toArray(), 'Nonaktifkan pengguna', $request->user());
 
-        return $this->redirectBackWithMessage($request, 'User berhasil dihapus.');
+        return $this->redirectBackWithMessage($request, 'User berhasil dinonaktifkan.');
     }
 
     public function updateStatus(Request $request, User $user): RedirectResponse

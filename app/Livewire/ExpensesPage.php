@@ -39,9 +39,7 @@ class ExpensesPage extends Component
                             ->orWhere('description', 'like', "%{$search}%")
                             ->orWhere('status', 'like', "%{$search}%")
                             ->orWhereHas('category', function (Builder $categoryQuery) use ($search) {
-                                $categoryQuery
-                                    ->where('code', 'like', "%{$search}%")
-                                    ->orWhere('name', 'like', "%{$search}%");
+                                $categoryQuery->where('name', 'like', "%{$search}%");
                             })
                             ->orWhereHas('paymentAccount', function (Builder $accountQuery) use ($search) {
                                 $accountQuery
