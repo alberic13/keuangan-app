@@ -207,16 +207,26 @@ class DatabaseSeeder extends Seeder
             return [$record->nis => $record];
         });
 
-        $cashAccounts = collect([
-            ['name' => 'Kas Utama', 'type' => 'cash', 'account_number' => null, 'account_holder' => 'MAN 2 Surakarta', 'is_active' => true],
-            ['name' => 'Bank BSI Operasional', 'type' => 'bank', 'account_number' => '7123456789', 'account_holder' => 'MAN 2 Surakarta', 'is_active' => true],
-            ['name' => 'Bank Mandiri Komite', 'type' => 'bank', 'account_number' => '1450099990', 'account_holder' => 'Komite MAN 2 Surakarta', 'is_active' => true],
-        ])->mapWithKeys(fn (array $item) => [
-            $item['name'] => CashAccount::query()->updateOrCreate(
-                ['name' => $item['name']],
-                $item,
-            ),
-        ]);
+        $cashAccountDefinitions = [
+            [
+                'lookup' => ['name' => 'Kas Utama'],
+                'data' => ['name' => 'Kas Utama', 'type' => 'cash', 'account_number' => null, 'account_holder' => 'MAN 2 Surakarta', 'is_active' => true],
+            ],
+            [
+                'lookup' => ['account_number' => '5250005255'],
+                'data' => ['name' => 'BSI - 5250005255', 'type' => 'bank', 'account_number' => '5250005255', 'account_holder' => 'Komite MAN 2 Surakarta', 'is_active' => true],
+            ],
+            [
+                'lookup' => ['account_number' => '003640599068'],
+                'data' => ['name' => 'Danamon - 003640599068', 'type' => 'bank', 'account_number' => '003640599068', 'account_holder' => 'Komite Madrasah aliyah negeri 2 surakarta', 'is_active' => true],
+            ],
+        ];
+
+        $cashAccounts = collect($cashAccountDefinitions)->mapWithKeys(function (array $definition) {
+            $account = CashAccount::query()->updateOrCreate($definition['lookup'], $definition['data']);
+
+            return [$definition['data']['name'] => $account];
+        });
 
         $expenseCategories = collect([
             ['code' => 'ATK', 'name' => 'ATK', 'is_active' => true],
@@ -392,8 +402,8 @@ class DatabaseSeeder extends Seeder
             'student_id' => $students['2025001']->id,
             'payment_date' => now()->subDays(5)->toDateString(),
             'method' => 'bank_transfer',
-            'cash_account_id' => $cashAccounts['Bank BSI Operasional']->id,
-            'bank_reference' => 'TRF-BSI-240001',
+            'cash_account_id' => $cashAccounts['BSI - 5250005255']->id,
+            'bank_reference' => 'TRF-BSI-5250005255',
             'notes' => 'Transfer manual diverifikasi bendahara.',
             'items' => [
                 [
@@ -429,7 +439,7 @@ class DatabaseSeeder extends Seeder
         $expenseService->create([
             'transaction_date' => now()->subDays(1)->toDateString(),
             'category_id' => $expenseCategories['UTIL']->id,
-            'payment_account_id' => $cashAccounts['Bank BSI Operasional']->id,
+            'payment_account_id' => $cashAccounts['BSI - 5250005255']->id,
             'amount' => 950000,
             'description' => 'Pembayaran listrik dan internet operasional.',
         ], $bendahara);

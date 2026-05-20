@@ -27,6 +27,7 @@ class ReportsPage extends Component
                 'reference' => $payment->payment_no,
                 'description' => $payment->student?->full_name ?? '-',
                 'account' => $payment->cashAccount?->name ?? '-',
+                'method' => $payment->method === 'bank_transfer' ? 'Transfer' : 'Tunai',
                 'income' => (int) $payment->total_amount,
                 'expense' => 0,
             ];
@@ -39,6 +40,7 @@ class ReportsPage extends Component
                 'reference' => $expense->expense_no,
                 'description' => $expense->description,
                 'account' => $expense->paymentAccount?->name ?? '-',
+                'method' => '-',
                 'income' => 0,
                 'expense' => (int) $expense->amount,
             ];
