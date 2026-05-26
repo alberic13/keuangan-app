@@ -37,6 +37,8 @@ Catatan: Apps Script di bawah akan membuat subfolder otomatis kalau belum ada. L
 9. Hapus isi bawaan tersebut.
 10. Tempel kode berikut ke `Code.gs`.
 
+Catatan: pastikan konstanta `ROOT_FOLDER_NAME` tetap ada di bagian paling atas file. Kalau konstanta ini dihapus atau salah tulis, Apps Script akan menolak upload dan Laravel akan menampilkan error seperti `ROOT_FOLDER_NAME is not defined`.
+
 ```javascript
 const ROOT_FOLDER_NAME = 'E-Keuangan MAN 2 Surakarta';
 

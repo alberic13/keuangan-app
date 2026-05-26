@@ -159,6 +159,8 @@ class GoogleDrivePaymentProofService
         $message = Str::lower((string) $message);
 
         return str_contains($message, 'driveapp')
+            || str_contains($message, 'referenceerror')
+            || str_contains($message, 'is not defined')
             || str_contains($message, 'access denied')
             || str_contains($message, 'permission denied')
             || str_contains($message, 'not authorized')
