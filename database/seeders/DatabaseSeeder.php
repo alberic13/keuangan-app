@@ -55,14 +55,9 @@ class DatabaseSeeder extends Seeder
         $roles = [
             'admin_keuangan' => $permissions,
             'bendahara' => [
-                'view_dashboard',
-                'manage_students',
-                'manage_fees',
-                'manage_billing',
                 'manage_payments',
                 'manage_cash',
                 'view_reports',
-                'view_audit_logs',
             ],
             'kepala_madrasah' => [
                 'view_dashboard',

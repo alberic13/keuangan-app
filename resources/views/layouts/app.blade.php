@@ -194,6 +194,15 @@
             ['key' => 'reports', 'label' => 'Laporan', 'href' => route('reports.index'), 'icon' => 'analytics'],
         ];
 
+        // Filter navigation items based on user role
+        $user = auth()->user();
+        if ($user && $user->hasRole('bendahara')) {
+            // Bendahara can only see: payments, expenses, and reports
+            $navItems = array_filter($navItems, function($item) {
+                return in_array($item['key'], ['payments', 'expenses', 'reports']);
+            });
+        }
+
         $roleLabels = [
             'admin_keuangan' => 'Admin Keuangan',
             'bendahara' => 'Bendahara',
