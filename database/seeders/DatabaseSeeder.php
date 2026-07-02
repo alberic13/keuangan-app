@@ -10,7 +10,6 @@ use App\Models\ExpenseCategory;
 use App\Models\FeeScheme;
 use App\Models\FeeType;
 use App\Models\Invoice;
-use App\Models\Major;
 use App\Models\Student;
 use App\Models\User;
 use App\Services\BillingService;
@@ -161,36 +160,24 @@ class DatabaseSeeder extends Seeder
             ),
         ]);
 
-        $majors = collect([
-            ['code' => 'MIPA', 'name' => 'MIPA', 'is_active' => true],
-            ['code' => 'IPS', 'name' => 'IPS', 'is_active' => true],
-            ['code' => 'KAG', 'name' => 'Keagamaan', 'is_active' => true],
-        ])->mapWithKeys(fn (array $item) => [
-            $item['code'] => Major::query()->updateOrCreate(
-                ['code' => $item['code']],
-                $item,
-            ),
-        ]);
-
         $studentRows = [
-            ['nis' => '2026001', 'nisn' => '9981000001', 'full_name' => 'Ahmad Fulan', 'class' => 'X-A', 'major' => 'MIPA', 'batch' => '2026', 'student_type' => 'boarding', 'is_active' => true],
-            ['nis' => '2026002', 'nisn' => '9981000002', 'full_name' => 'Siti Nur Aini', 'class' => 'X-A', 'major' => 'MIPA', 'batch' => '2026', 'student_type' => 'regular', 'is_active' => true],
-            ['nis' => '2025001', 'nisn' => '9981000003', 'full_name' => 'Rizky Setiawan', 'class' => 'XI-MIPA 1', 'major' => 'MIPA', 'batch' => '2025', 'student_type' => 'boarding', 'is_active' => true],
-            ['nis' => '2025002', 'nisn' => '9981000004', 'full_name' => 'Aulia Rahmah', 'class' => 'XI-IPS 1', 'major' => 'IPS', 'batch' => '2025', 'student_type' => 'full_day', 'is_active' => true],
-            ['nis' => '2024001', 'nisn' => '9981000005', 'full_name' => 'Bima Pradana', 'class' => 'XII-MIPA 1', 'major' => 'MIPA', 'batch' => '2024', 'student_type' => 'regular', 'is_active' => true],
-            ['nis' => '2024002', 'nisn' => '9981000006', 'full_name' => 'Laila Zahra', 'class' => 'XII-IPS 1', 'major' => 'IPS', 'batch' => '2024', 'student_type' => 'boarding', 'is_active' => true],
-            ['nis' => '2025003', 'nisn' => '9981000007', 'full_name' => 'Muhammad Naufal', 'class' => 'XI-MIPA 1', 'major' => 'KAG', 'batch' => '2025', 'student_type' => 'boarding', 'is_active' => true],
-            ['nis' => '2023001', 'nisn' => '9981000008', 'full_name' => 'Dewi Puspitasari', 'class' => 'XII-IPS 1', 'major' => 'IPS', 'batch' => '2024', 'student_type' => 'regular', 'is_active' => false],
+            ['nis' => '2026001', 'nisn' => '9981000001', 'full_name' => 'Ahmad Fulan', 'class' => 'X-A', 'batch' => '2026', 'student_type' => 'boarding', 'is_active' => true],
+            ['nis' => '2026002', 'nisn' => '9981000002', 'full_name' => 'Siti Nur Aini', 'class' => 'X-A', 'batch' => '2026', 'student_type' => 'regular', 'is_active' => true],
+            ['nis' => '2025001', 'nisn' => '9981000003', 'full_name' => 'Rizky Setiawan', 'class' => 'XI-MIPA 1', 'batch' => '2025', 'student_type' => 'boarding', 'is_active' => true],
+            ['nis' => '2025002', 'nisn' => '9981000004', 'full_name' => 'Aulia Rahmah', 'class' => 'XI-IPS 1', 'batch' => '2025', 'student_type' => 'full_day', 'is_active' => true],
+            ['nis' => '2024001', 'nisn' => '9981000005', 'full_name' => 'Bima Pradana', 'class' => 'XII-MIPA 1', 'batch' => '2024', 'student_type' => 'regular', 'is_active' => true],
+            ['nis' => '2024002', 'nisn' => '9981000006', 'full_name' => 'Laila Zahra', 'class' => 'XII-IPS 1', 'batch' => '2024', 'student_type' => 'boarding', 'is_active' => true],
+            ['nis' => '2025003', 'nisn' => '9981000007', 'full_name' => 'Muhammad Naufal', 'class' => 'XI-MIPA 1', 'batch' => '2025', 'student_type' => 'boarding', 'is_active' => true],
+            ['nis' => '2023001', 'nisn' => '9981000008', 'full_name' => 'Dewi Puspitasari', 'class' => 'XII-IPS 1', 'batch' => '2024', 'student_type' => 'regular', 'is_active' => false],
         ];
 
-        $students = collect($studentRows)->mapWithKeys(function (array $student) use ($batches, $classes, $majors) {
+        $students = collect($studentRows)->mapWithKeys(function (array $student) use ($batches, $classes) {
             $record = Student::query()->updateOrCreate(
                 ['nis' => $student['nis']],
                 [
                     'nisn' => $student['nisn'],
                     'full_name' => $student['full_name'],
                     'class_id' => $classes[$student['class']]->id,
-                    'major_id' => $majors[$student['major']]->id,
                     'batch_id' => $batches[$student['batch']]->id,
                     'student_type' => $student['student_type'],
                     'is_active' => $student['is_active'],

@@ -5,7 +5,6 @@ namespace App\Livewire;
 use App\Models\AcademicClass;
 use App\Models\Batch;
 use App\Models\Invoice;
-use App\Models\Major;
 use App\Models\Student;
 use App\Models\StudentType;
 use Illuminate\Validation\Rule;
@@ -22,9 +21,7 @@ class StudentCreatePage extends Component
 
     public ?string $classLevel = null;
 
-    public string $majorCode = '';
 
-    public string $majorName = '';
 
     public string $studentTypeLabel = '';
 
@@ -33,7 +30,6 @@ class StudentCreatePage extends Component
         return view('livewire.student-create-page', [
             'batches' => Batch::query()->orderByDesc('academic_year')->get(),
             'classes' => AcademicClass::query()->orderBy('level')->orderBy('name')->get(),
-            'majors' => Major::query()->where('is_active', true)->orderBy('name')->get(),
             'studentTypes' => StudentType::query()->where('is_active', true)->orderBy('label')->get(),
         ])->layout('layouts.app', [
             'pageTitle' => 'Tambah Siswa Manual',
@@ -78,22 +74,7 @@ class StudentCreatePage extends Component
         session()->flash('status', 'Kelas baru berhasil ditambahkan.');
     }
 
-    public function addMajor(): void
-    {
-        $data = $this->validate([
-            'majorCode' => ['required', 'string', 'max:30', Rule::unique('majors', 'code')],
-            'majorName' => ['required', 'string', 'max:100', Rule::unique('majors', 'name')],
-        ]);
 
-        Major::query()->create([
-            'code' => $data['majorCode'],
-            'name' => $data['majorName'],
-            'is_active' => true,
-        ]);
-
-        $this->reset(['majorCode', 'majorName']);
-        session()->flash('status', 'Jurusan baru berhasil ditambahkan.');
-    }
 
     public function addStudentType(): void
     {
@@ -136,20 +117,7 @@ class StudentCreatePage extends Component
         session()->flash('status', 'Kelas berhasil dihapus.');
     }
 
-    public function deleteMajor(int $majorId): void
-    {
-        $major = Major::query()->findOrFail($majorId);
 
-        if (Student::query()->where('major_id', $major->id)->exists()) {
-            $major->update(['is_active' => false]);
-            session()->flash('status', 'Jurusan masih dipakai data siswa, jadi dinonaktifkan dan disembunyikan dari pilihan.');
-
-            return;
-        }
-
-        $major->delete();
-        session()->flash('status', 'Jurusan berhasil dihapus.');
-    }
 
     public function deleteStudentType(int $studentTypeId): void
     {

@@ -42,14 +42,10 @@
                     </span>
                 </div>
 
-                <div class="mt-4 grid grid-cols-1 gap-3 md:grid-cols-4 text-sm">
+                <div class="mt-4 grid grid-cols-1 gap-3 md:grid-cols-3 text-sm">
                     <div class="rounded-xl bg-surface-container-low px-4 py-3">
                         <p class="text-xs uppercase tracking-widest text-on-surface-variant">Kelas</p>
                         <p class="mt-1 font-semibold text-on-surface">{{ $selectedStudent->classRoom->name ?? '-' }}</p>
-                    </div>
-                    <div class="rounded-xl bg-surface-container-low px-4 py-3">
-                        <p class="text-xs uppercase tracking-widest text-on-surface-variant">Jurusan</p>
-                        <p class="mt-1 font-semibold text-on-surface">{{ $selectedStudent->major->name ?? '-' }}</p>
                     </div>
                     <div class="rounded-xl bg-surface-container-low px-4 py-3">
                         <p class="text-xs uppercase tracking-widest text-on-surface-variant">Angkatan</p>

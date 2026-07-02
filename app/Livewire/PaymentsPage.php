@@ -25,7 +25,7 @@ class PaymentsPage extends Component
         $studentBatchId = request('student_batch_id');
 
         $students = Student::query()
-            ->with(['batch', 'classRoom', 'major'])
+            ->with(['batch', 'classRoom'])
             ->where('is_active', true)
             ->when($studentSearch !== '', fn (Builder $query) => $this->applyStudentSearch($query, $studentSearch))
             ->when($studentClassId, fn (Builder $query) => $query->where('class_id', $studentClassId))
@@ -93,10 +93,6 @@ class PaymentsPage extends Component
                 ->orWhereHas('classRoom', function (Builder $classQuery) use ($search) {
                     $classQuery->where('name', 'like', "%{$search}%")
                         ->orWhere('level', 'like', "%{$search}%");
-                })
-                ->orWhereHas('major', function (Builder $majorQuery) use ($search) {
-                    $majorQuery->where('name', 'like', "%{$search}%")
-                        ->orWhere('code', 'like', "%{$search}%");
                 });
         });
     }

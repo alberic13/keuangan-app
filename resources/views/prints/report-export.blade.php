@@ -327,9 +327,7 @@
                     </tr>
                     <tr>
                         <td><strong>Kelas</strong></td>
-                        <td>{{ $rows['student']->classRoom->name ?? '-' }}</td>
-                        <td><strong>Jurusan</strong></td>
-                        <td>{{ $rows['student']->major->name ?? '-' }}</td>
+                        <td colspan="3">{{ $rows['student']->classRoom->name ?? '-' }}</td>
                     </tr>
                     <tr>
                         <td><strong>Angkatan</strong></td>

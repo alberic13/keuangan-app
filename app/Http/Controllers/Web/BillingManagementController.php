@@ -86,7 +86,6 @@ class BillingManagementController extends Controller
             'reference_name' => ['nullable', 'string', 'max:255'],
             'filters.batch_id' => ['nullable', 'exists:batches,id'],
             'filters.class_id' => ['nullable', 'exists:classes,id'],
-            'filters.major_id' => ['nullable', Rule::exists('majors', 'id')->where(fn (Builder $query) => $query->where('is_active', true))],
             'filters.student_type' => ['nullable', Rule::in(array_merge(['all'], StudentType::activeSlugs()))],
         ]);
 
@@ -113,7 +112,7 @@ class BillingManagementController extends Controller
         $invoice->load([
             'student.batch',
             'student.classRoom',
-            'student.major',
+
             'feeType',
             'billingCycle',
             'paymentItems.payment',

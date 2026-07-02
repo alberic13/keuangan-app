@@ -90,7 +90,6 @@ class BillingController extends Controller
             'reference_name' => ['nullable', 'string', 'max:255'],
             'filters.batch_id' => ['nullable', 'exists:batches,id'],
             'filters.class_id' => ['nullable', 'exists:classes,id'],
-            'filters.major_id' => ['nullable', Rule::exists('majors', 'id')->where(fn (Builder $query) => $query->where('is_active', true))],
             'filters.student_type' => ['nullable', Rule::in(array_merge(['all'], StudentType::activeSlugs()))],
         ]);
 
@@ -103,7 +102,7 @@ class BillingController extends Controller
     public function invoicesIndex(Request $request)
     {
         $invoices = Invoice::query()
-            ->with(['student.batch', 'student.classRoom', 'student.major', 'feeType', 'billingCycle'])
+            ->with(['student.batch', 'student.classRoom', 'feeType', 'billingCycle'])
             ->when($request->filled('student_id'), fn ($query) => $query->where('student_id', $request->integer('student_id')))
             ->when($request->filled('fee_type_id'), fn ($query) => $query->where('fee_type_id', $request->integer('fee_type_id')))
             ->when($request->filled('billing_cycle_id'), fn ($query) => $query->where('billing_cycle_id', $request->integer('billing_cycle_id')))
@@ -116,7 +115,7 @@ class BillingController extends Controller
 
     public function showInvoice(Invoice $invoice)
     {
-        return $this->success($invoice->load(['student.batch', 'student.classRoom', 'student.major', 'feeType', 'billingCycle', 'paymentItems.payment']));
+        return $this->success($invoice->load(['student.batch', 'student.classRoom', 'feeType', 'billingCycle', 'paymentItems.payment']));
     }
 
     public function openByStudent(Student $student)

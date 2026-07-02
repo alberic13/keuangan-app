@@ -16,7 +16,6 @@ class Student extends Model
         'nisn',
         'full_name',
         'class_id',
-        'major_id',
         'batch_id',
         'student_type',
         'is_active',
@@ -41,11 +40,6 @@ class Student extends Model
     public function classRoom(): BelongsTo
     {
         return $this->belongsTo(AcademicClass::class, 'class_id');
-    }
-
-    public function major(): BelongsTo
-    {
-        return $this->belongsTo(Major::class);
     }
 
     public function invoices(): HasMany
