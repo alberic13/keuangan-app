@@ -149,9 +149,31 @@
                             <td class="px-8 py-4 text-sm">{{ $feeType->installment_allowed ? 'Ya' : 'Tidak' }}</td>
                             <td class="px-8 py-4 text-sm">
                                 @if ($canManageFees)
-                                    <a class="inline-flex items-center rounded-lg bg-surface-container-low px-3 py-2 font-semibold text-primary hover:bg-surface-container-high" href="{{ route('fees.index', array_merge($baseQuery, ['edit_fee_type' => $feeType->id])) }}">
-                                        Edit
-                                    </a>
+                                    <div class="flex items-center gap-2">
+                                        @if ($editingFeeType?->id === $feeType->id)
+                                            <a class="inline-flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 transition hover:border-slate-300 hover:text-slate-700" href="{{ route('fees.index', $baseQuery) }}" title="Batal Edit">
+                                                <svg viewBox="0 0 24 24" aria-hidden="true" class="h-4 w-4">
+                                                    <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" fill="currentColor"/>
+                                                </svg>
+                                            </a>
+                                        @else
+                                            <a class="inline-flex h-9 w-9 items-center justify-center rounded-full border border-blue-200 bg-white text-blue-600 transition hover:border-blue-300 hover:text-blue-700" href="{{ route('fees.index', array_merge($baseQuery, ['edit_fee_type' => $feeType->id])) }}" title="Edit jenis biaya">
+                                                <svg viewBox="0 0 24 24" aria-hidden="true" class="h-4 w-4">
+                                                    <path d="M4 20h4l10.5-10.5-4-4L4 16v4zm13.7-12.3 1.6-1.6a1.4 1.4 0 0 0 0-2l-1.4-1.4a1.4 1.4 0 0 0-2 0l-1.6 1.6 3.4 3.4z" fill="currentColor"/>
+                                                </svg>
+                                            </a>
+                                        @endif
+
+                                        <form action="{{ route('fee-types.destroy', $feeType) }}" method="POST" onsubmit="return confirm('Hapus jenis biaya ini?');" class="inline">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="inline-flex h-9 w-9 items-center justify-center rounded-full border border-red-200 bg-white text-red-600 transition hover:border-red-300 hover:text-red-700" title="Hapus jenis biaya">
+                                                <svg viewBox="0 0 24 24" aria-hidden="true" class="h-4 w-4">
+                                                    <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" fill="currentColor"/>
+                                                </svg>
+                                            </button>
+                                        </form>
+                                    </div>
                                 @else
                                     <span class="text-sm text-on-surface-variant">Lihat saja</span>
                                 @endif
@@ -187,9 +209,31 @@
                             <td class="px-8 py-4 text-sm">{{ $scheme->effective_start->format('d/m/Y') }} - {{ $scheme->effective_end?->format('d/m/Y') ?? 'aktif' }}</td>
                             <td class="px-8 py-4 text-sm">
                                 @if ($canManageFees)
-                                    <a class="inline-flex items-center rounded-lg bg-surface-container-low px-3 py-2 font-semibold text-primary hover:bg-surface-container-high" href="{{ route('fees.index', array_merge($baseQuery, ['edit_fee_scheme' => $scheme->id])) }}">
-                                        Edit
-                                    </a>
+                                    <div class="flex items-center gap-2">
+                                        @if ($editingFeeScheme?->id === $scheme->id)
+                                            <a class="inline-flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 transition hover:border-slate-300 hover:text-slate-700" href="{{ route('fees.index', $baseQuery) }}" title="Batal Edit">
+                                                <svg viewBox="0 0 24 24" aria-hidden="true" class="h-4 w-4">
+                                                    <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" fill="currentColor"/>
+                                                </svg>
+                                            </a>
+                                        @else
+                                            <a class="inline-flex h-9 w-9 items-center justify-center rounded-full border border-blue-200 bg-white text-blue-600 transition hover:border-blue-300 hover:text-blue-700" href="{{ route('fees.index', array_merge($baseQuery, ['edit_fee_scheme' => $scheme->id])) }}" title="Edit skema tarif">
+                                                <svg viewBox="0 0 24 24" aria-hidden="true" class="h-4 w-4">
+                                                    <path d="M4 20h4l10.5-10.5-4-4L4 16v4zm13.7-12.3 1.6-1.6a1.4 1.4 0 0 0 0-2l-1.4-1.4a1.4 1.4 0 0 0-2 0l-1.6 1.6 3.4 3.4z" fill="currentColor"/>
+                                                </svg>
+                                            </a>
+                                        @endif
+
+                                        <form action="{{ route('fee-schemes.destroy', $scheme) }}" method="POST" onsubmit="return confirm('Hapus skema tarif ini?');" class="inline">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="inline-flex h-9 w-9 items-center justify-center rounded-full border border-red-200 bg-white text-red-600 transition hover:border-red-300 hover:text-red-700" title="Hapus skema tarif">
+                                                <svg viewBox="0 0 24 24" aria-hidden="true" class="h-4 w-4">
+                                                    <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" fill="currentColor"/>
+                                                </svg>
+                                            </button>
+                                        </form>
+                                    </div>
                                 @else
                                     <span class="text-sm text-on-surface-variant">Lihat saja</span>
                                 @endif

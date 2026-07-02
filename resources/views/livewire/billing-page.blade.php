@@ -105,10 +105,13 @@
                             @if ($cycle->status === 'open')
                                 <form action="{{ route('billing-cycles.close', $cycle) }}" method="POST">
                                     @csrf
-                                    <button class="font-semibold text-tertiary" type="submit">Tutup Siklus</button>
+                                    <button class="font-semibold text-red-800 transition-colors hover:text-red-900" type="submit">Tutup Siklus</button>
                                 </form>
                             @else
-                                <span class="text-on-surface-variant">Tertutup</span>
+                                <form action="{{ route('billing-cycles.open', $cycle) }}" method="POST">
+                                    @csrf
+                                    <button class="font-semibold text-emerald-800 transition-colors hover:text-emerald-900" type="submit">Buka Siklus</button>
+                                </form>
                             @endif
                         </td>
                     </tr>
