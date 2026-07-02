@@ -193,9 +193,9 @@
                             <td>{{ $payment->student->nis ?: '-' }} / {{ $payment->student->nisn ?: '-' }}</td>
                         </tr>
                         <tr>
-                            <td class="label">Kelas / Jurusan</td>
+                            <td class="label">Kelas</td>
                             <td class="separator">:</td>
-                            <td>{{ ($payment->student->classRoom->name ?? '-') . ' / ' . ($payment->student->major->name ?? '-') }}</td>
+                            <td>{{ $payment->student->classRoom->name ?? '-' }}</td>
                         </tr>
                         <tr>
                             <td class="label">Metode</td>

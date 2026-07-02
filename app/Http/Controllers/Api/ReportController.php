@@ -52,7 +52,7 @@ class ReportController extends Controller
 
     public function arrears(Request $request)
     {
-        return $this->success($this->reportService->arrears($request->only(['batch_id', 'class_id', 'major_id'])));
+        return $this->success($this->reportService->arrears($request->only(['batch_id', 'class_id'])));
     }
 
     public function bku(Request $request)
@@ -102,7 +102,7 @@ class ReportController extends Controller
             'student-ledger' => $request->filled('student_id')
                 ? $this->reportService->studentLedger(Student::query()->findOrFail($request->integer('student_id')))
                 : null,
-            'arrears' => $this->reportService->arrears($request->only(['batch_id', 'class_id', 'major_id'])),
+            'arrears' => $this->reportService->arrears($request->only(['batch_id', 'class_id'])),
             'bku' => $this->reportService->bku($request->only(['account_id', 'direction', 'date_from', 'date_to', 'source_type'])),
             'cash-book' => $this->reportService->cashBook($request->only(['account_id', 'date_from', 'date_to'])),
             'cash-receipt-book' => $this->reportService->cashReceiptBook($request->only(['account_id', 'date_from', 'date_to'])),
@@ -275,7 +275,7 @@ class ReportController extends Controller
                         'invoice_no' => $invoice->invoice_no,
                         'nama_siswa' => $invoice->student->full_name,
                         'kelas' => $invoice->student->classRoom->name ?? '-',
-                        'jurusan' => $invoice->student->major->name ?? '-',
+                        'jurusan' => '',
                         'jenis_biaya' => $invoice->feeType->name,
                         'periode' => $invoice->billingCycle?->period_label ?? '-',
                         'status' => strtoupper($invoice->status),
@@ -312,7 +312,7 @@ class ReportController extends Controller
             'bagian' => 'Profil',
             'dokumen' => $student->full_name,
             'tanggal' => $student->enrollment_date?->format('Y-m-d') ?? '-',
-            'keterangan' => trim(($student->classRoom->name ?? '-').' / '.($student->major->name ?? '-').' / '.($student->batch->academic_year ?? '-')),
+            'keterangan' => trim(($student->classRoom->name ?? '-').' / '.($student->batch->academic_year ?? '-')),
             'status' => ucfirst($student->student_type),
             'nominal' => '',
             'saldo' => '',

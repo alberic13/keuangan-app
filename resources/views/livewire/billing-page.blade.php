@@ -61,12 +61,7 @@
                         <option value="{{ $class->id }}">{{ $class->name }}</option>
                     @endforeach
                 </select>
-                <select class="rounded-xl border-none bg-surface-container-low px-4 py-3 text-sm" name="filters[major_id]">
-                    <option value="">Semua jurusan</option>
-                    @foreach ($majors as $major)
-                        <option value="{{ $major->id }}">{{ $major->name }}</option>
-                    @endforeach
-                </select>
+
                 <select class="rounded-xl border-none bg-surface-container-low px-4 py-3 text-sm" name="filters[student_type]">
                     <option value="all">Semua tipe siswa</option>
                     @foreach ($studentTypes as $studentType)

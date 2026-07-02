@@ -26,8 +26,6 @@ Route::middleware('web')->group(function () {
         Route::post('/batches', [ReferenceController::class, 'storeBatch']);
         Route::get('/classes', [ReferenceController::class, 'classes']);
         Route::post('/classes', [ReferenceController::class, 'storeClass']);
-        Route::get('/majors', [ReferenceController::class, 'majors']);
-        Route::post('/majors', [ReferenceController::class, 'storeMajor']);
 
         Route::get('/students', [StudentController::class, 'index']);
         Route::post('/students', [StudentController::class, 'store']);

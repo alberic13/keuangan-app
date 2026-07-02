@@ -4,7 +4,6 @@ namespace App\Livewire;
 
 use App\Models\AcademicClass;
 use App\Models\Batch;
-use App\Models\Major;
 use App\Models\Student;
 use App\Models\StudentType;
 use Livewire\Component;
@@ -14,7 +13,7 @@ class StudentsPage extends Component
     public function render()
     {
         $students = Student::query()
-            ->with(['batch', 'classRoom', 'major'])
+            ->with(['batch', 'classRoom'])
             ->when(request('search'), function ($query) {
                 $search = (string) request('search');
                 $query->where(function ($builder) use ($search) {
@@ -25,7 +24,7 @@ class StudentsPage extends Component
             })
             ->when(request('batch_id'), fn ($query) => $query->where('batch_id', request('batch_id')))
             ->when(request('class_id'), fn ($query) => $query->where('class_id', request('class_id')))
-            ->when(request('major_id'), fn ($query) => $query->where('major_id', request('major_id')))
+
             ->when(request('student_type'), fn ($query) => $query->where('student_type', request('student_type')))
             ->latest()
             ->limit(50)
@@ -35,7 +34,6 @@ class StudentsPage extends Component
             'students' => $students,
             'batches' => Batch::query()->orderByDesc('academic_year')->get(),
             'classes' => AcademicClass::query()->orderBy('level')->orderBy('name')->get(),
-            'majors' => Major::query()->where('is_active', true)->orderBy('name')->get(),
             'studentTypes' => StudentType::query()->where('is_active', true)->orderBy('label')->get(),
         ])->layout('layouts.app', [
             'pageTitle' => 'Manajemen Siswa',

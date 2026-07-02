@@ -27,7 +27,7 @@ class StudentManagementController extends Controller
             'nisn' => ['nullable', 'string', 'max:50', 'unique:students,nisn'],
             'full_name' => ['required', 'string', 'max:255'],
             'class_id' => ['required', 'exists:classes,id'],
-            'major_id' => ['required', Rule::exists('majors', 'id')->where(fn (Builder $query) => $query->where('is_active', true))],
+
             'batch_id' => ['required', 'exists:batches,id'],
             'student_type' => ['required', Rule::in(StudentType::activeSlugs())],
             'enrollment_date' => ['nullable', 'date'],
@@ -50,7 +50,7 @@ class StudentManagementController extends Controller
             'nisn' => ['nullable', 'string', 'max:50', Rule::unique('students', 'nisn')->ignore($student->id)],
             'full_name' => ['required', 'string', 'max:255'],
             'class_id' => ['required', 'exists:classes,id'],
-            'major_id' => ['required', Rule::exists('majors', 'id')->where(fn (Builder $query) => $query->where('is_active', true))],
+
             'batch_id' => ['required', 'exists:batches,id'],
             'student_type' => ['required', Rule::in(StudentType::activeSlugs())],
             'enrollment_date' => ['nullable', 'date'],

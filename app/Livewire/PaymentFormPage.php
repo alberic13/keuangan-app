@@ -14,7 +14,7 @@ class PaymentFormPage extends Component
     {
         $selectedStudent = request('student_id')
             ? Student::query()
-                ->with(['batch', 'classRoom', 'major'])
+                ->with(['batch', 'classRoom'])
                 ->find(request('student_id'))
             : null;
 

@@ -36,7 +36,7 @@
                     <input name="{{ $filterName }}" type="hidden" value="{{ $filterValue }}">
                 @endforeach
 
-                <input class="rounded-xl border-none bg-surface-container-low px-4 py-3 text-sm lg:col-span-4" name="student_search" placeholder="Cari nama siswa, NIS, angkatan, atau jurusan" type="text" value="{{ request('student_search', request('search')) }}">
+                <input class="rounded-xl border-none bg-surface-container-low px-4 py-3 text-sm lg:col-span-4" name="student_search" placeholder="Cari nama siswa, NIS, atau angkatan" type="text" value="{{ request('student_search', request('search')) }}">
 
                 <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:col-span-4">
                     <select class="rounded-xl border-none bg-surface-container-low px-4 py-3 text-sm" name="student_class_id">

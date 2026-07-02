@@ -271,9 +271,7 @@
             <tbody>
                 <tr>
                     <td style="width: 18%;"><strong>Kelas</strong></td>
-                    <td style="width: 32%;">{{ $invoice->student->classRoom->name ?? '-' }}</td>
-                    <td style="width: 18%;"><strong>Jurusan</strong></td>
-                    <td style="width: 32%;">{{ $invoice->student->major->name ?? '-' }}</td>
+                    <td style="width: 32%;" colspan="3">{{ $invoice->student->classRoom->name ?? '-' }}</td>
                 </tr>
                 <tr>
                     <td><strong>Angkatan</strong></td>

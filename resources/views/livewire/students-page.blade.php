@@ -20,7 +20,7 @@
             </div>
         </div>
 
-        <form class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6" method="GET">
+        <form class="grid grid-cols-1 md:grid-cols-6 gap-4 mb-6" method="GET">
             <input class="md:col-span-2 rounded-xl border-none bg-surface-container-low px-4 py-3 text-sm" name="search" placeholder="Cari nama/NIS/NISN" type="text" value="{{ request('search') }}">
             <select class="rounded-xl border-none bg-surface-container-low px-4 py-3 text-sm" name="batch_id">
                 <option value="">Semua Angkatan</option>
@@ -32,12 +32,6 @@
                 <option value="">Semua Kelas</option>
                 @foreach ($classes as $class)
                     <option @selected((string) request('class_id') === (string) $class->id) value="{{ $class->id }}">{{ $class->name }}</option>
-                @endforeach
-            </select>
-            <select class="rounded-xl border-none bg-surface-container-low px-4 py-3 text-sm" name="major_id">
-                <option value="">Semua Jurusan</option>
-                @foreach ($majors as $major)
-                    <option @selected((string) request('major_id') === (string) $major->id) value="{{ $major->id }}">{{ $major->name }}</option>
                 @endforeach
             </select>
             <select class="rounded-xl border-none bg-surface-container-low px-4 py-3 text-sm" name="student_type">
@@ -57,7 +51,6 @@
                     <th class="px-8 py-4 text-xs uppercase tracking-widest text-slate-500">NISN</th>
                     <th class="px-8 py-4 text-xs uppercase tracking-widest text-slate-500">Nama</th>
                     <th class="px-8 py-4 text-xs uppercase tracking-widest text-slate-500">Kelas</th>
-                    <th class="px-8 py-4 text-xs uppercase tracking-widest text-slate-500">Jurusan</th>
                     <th class="px-8 py-4 text-xs uppercase tracking-widest text-slate-500">Angkatan</th>
                     <th class="px-8 py-4 text-xs uppercase tracking-widest text-slate-500">Tipe</th>
                     <th class="px-8 py-4 text-xs uppercase tracking-widest text-slate-500">Status</th>
@@ -71,7 +64,6 @@
                         <td class="px-8 py-4 text-sm">{{ $student->nisn ?: '-' }}</td>
                         <td class="px-8 py-4 text-sm font-semibold">{{ $student->full_name }}</td>
                         <td class="px-8 py-4 text-sm">{{ $student->classRoom->name }}</td>
-                        <td class="px-8 py-4 text-sm">{{ $student->major->name }}</td>
                         <td class="px-8 py-4 text-sm">{{ $student->batch->academic_year }}</td>
                         <td class="px-8 py-4 text-sm">{{ $studentTypeLabels[$student->student_type] ?? ucfirst($student->student_type) }}</td>
                         <td class="px-8 py-4 text-sm">
@@ -98,7 +90,7 @@
                         </td>
                     </tr>
                 @empty
-                    <tr><td class="px-8 py-6 text-sm text-on-surface-variant" colspan="9">Belum ada data siswa.</td></tr>
+                    <tr><td class="px-8 py-6 text-sm text-on-surface-variant" colspan="8">Belum ada data siswa.</td></tr>
                 @endforelse
                 </tbody>
             </table>

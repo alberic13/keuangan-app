@@ -221,7 +221,7 @@ class ReportService
     public function studentLedger(Student $student): array
     {
         return [
-            'student' => $student->load(['batch', 'classRoom', 'major']),
+            'student' => $student->load(['batch', 'classRoom']),
             'invoices' => $student->invoices()->with(['feeType', 'billingCycle'])->latest()->get(),
             'payments' => $student->payments()->with(['items.invoice', 'cashAccount'])->latest('payment_date')->get(),
         ];
@@ -230,7 +230,7 @@ class ReportService
     public function arrears(array $filters = []): Collection
     {
         return Invoice::query()
-            ->with(['student.batch', 'student.classRoom', 'student.major', 'feeType', 'billingCycle'])
+            ->with(['student.batch', 'student.classRoom', 'feeType', 'billingCycle'])
             ->whereIn('status', ['unpaid', 'partial'])
             ->when(! empty($filters['billing_month']), function (Builder $query) use ($filters) {
                 [$monthStart, $monthEnd] = $this->monthRange($filters['billing_month']);
@@ -241,7 +241,7 @@ class ReportService
             })
             ->when(! empty($filters['batch_id']), fn (Builder $query) => $query->whereHas('student', fn (Builder $studentQuery) => $studentQuery->where('batch_id', $filters['batch_id'])))
             ->when(! empty($filters['class_id']), fn (Builder $query) => $query->whereHas('student', fn (Builder $studentQuery) => $studentQuery->where('class_id', $filters['class_id'])))
-            ->when(! empty($filters['major_id']), fn (Builder $query) => $query->whereHas('student', fn (Builder $studentQuery) => $studentQuery->where('major_id', $filters['major_id'])))
+
             ->orderByDesc('outstanding_amount')
             ->get();
     }

@@ -166,7 +166,7 @@ class BillingService
     {
         $query = Student::query()
             ->where('is_active', true)
-            ->with(['batch', 'classRoom', 'major']);
+            ->with(['batch', 'classRoom']);
 
         if (! empty($filters['batch_id'])) {
             $query->where('batch_id', $filters['batch_id']);
@@ -176,9 +176,7 @@ class BillingService
             $query->where('class_id', $filters['class_id']);
         }
 
-        if (! empty($filters['major_id'])) {
-            $query->where('major_id', $filters['major_id']);
-        }
+
 
         if (($filters['student_type'] ?? 'all') !== 'all') {
             $query->where('student_type', $filters['student_type']);
