@@ -6,7 +6,6 @@ use App\Models\AcademicClass;
 use App\Models\Batch;
 use App\Models\ImportLog;
 use App\Models\ImportLogRow;
-use App\Models\Major;
 use App\Models\StudentType;
 use App\Models\Student;
 use App\Models\User;
@@ -54,25 +53,24 @@ class StudentImportService
             ]);
         }
 
-        $headers = $this->normalizeHeaders(array_shift($rows));
-        $requiredHeaders = ['nis', 'nisn', 'full_name', 'class', 'major', 'batch', 'student_type'];
+        $headers = $this->translateHeaders($this->normalizeHeaders(array_shift($rows)));
+        $requiredHeaders = ['nis', 'nisn', 'full_name', 'class', 'batch', 'student_type'];
         $missingHeaders = array_values(array_diff($requiredHeaders, $headers));
 
         if ($missingHeaders !== []) {
+            $indonesianRequiredHeaders = ['nis', 'nisn', 'nama_lengkap', 'kelas', 'angkatan', 'tipe_siswa'];
             throw ValidationException::withMessages([
-                'file' => 'Header template tidak sesuai. Header wajib: '.implode(', ', $requiredHeaders),
+                'file' => 'Header template tidak sesuai. Header wajib: '.implode(', ', $indonesianRequiredHeaders),
             ]);
         }
 
-        $batches = Batch::query()->pluck('id', 'year_label')->mapWithKeys(fn ($id, $label) => [Str::lower(trim((string) $label)) => $id]);
-        $classes = AcademicClass::query()->pluck('id', 'name')->mapWithKeys(fn ($id, $name) => [Str::lower(trim((string) $name)) => $id]);
-        $majors = Major::query()
-            ->where('is_active', true)
-            ->get(['id', 'name', 'code'])
-            ->flatMap(fn (Major $major) => [
-                Str::lower(trim($major->name)) => $major->id,
-                Str::lower(trim($major->code)) => $major->id,
+        $batches = Batch::query()
+            ->get()
+            ->flatMap(fn ($b) => [
+                Str::lower(trim((string) $b->year_label)) => $b->id,
+                Str::lower(trim((string) $b->academic_year)) => $b->id,
             ]);
+        $classes = AcademicClass::query()->pluck('id', 'name')->mapWithKeys(fn ($id, $name) => [Str::lower(trim((string) $name)) => $id]);
         $studentTypes = $this->studentTypeMap();
 
         $seenNis = [];
@@ -88,7 +86,7 @@ class StudentImportService
 
             $rowNumber = $index + 2;
             $payload = $this->rowToPayload($headers, $row);
-            $rowErrors = $this->validateRow($payload, $batches->all(), $classes->all(), $majors->all(), $studentTypes, $seenNis, $seenNisn);
+            $rowErrors = $this->validateRow($payload, $batches->all(), $classes->all(), $studentTypes, $seenNis, $seenNisn);
 
             $previewRows[] = [
                 'row_number' => $rowNumber,
@@ -158,12 +156,11 @@ class StudentImportService
                 return;
             }
 
-            $headers = ['nis', 'nisn', 'full_name', 'class', 'major', 'batch', 'student_type', 'is_active'];
+            $headers = ['nis', 'nisn', 'nama_lengkap', 'kelas', 'angkatan', 'tipe_siswa', 'aktif'];
             $classes = AcademicClass::query()->orderBy('level')->orderBy('name')->pluck('name')->values()->all();
-            $majors = Major::query()->where('is_active', true)->orderBy('name')->pluck('code')->values()->all();
-            $batches = Batch::query()->orderByDesc('academic_year')->pluck('year_label')->values()->all();
-            $studentTypes = StudentType::query()->where('is_active', true)->orderBy('slug')->pluck('slug')->values()->all();
-            $activeOptions = ['true', 'false'];
+            $batches = Batch::query()->orderByDesc('academic_year')->pluck('academic_year')->values()->all();
+            $studentTypes = StudentType::query()->where('is_active', true)->orderBy('slug')->pluck('label')->values()->all();
+            $activeOptions = ['aktif', 'nonaktif'];
 
             $spreadsheet = new Spreadsheet();
             $sheet = $spreadsheet->getActiveSheet();
@@ -176,9 +173,9 @@ class StudentImportService
                 'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER],
             ];
 
-            $sheet->getStyle('A1:H1')->applyFromArray($headerStyle);
+            $sheet->getStyle('A1:G1')->applyFromArray($headerStyle);
             $sheet->freezePane('A2');
-            $sheet->setAutoFilter('A1:H1001');
+            $sheet->setAutoFilter('A1:G1001');
 
             foreach ([
                 'A' => 14,
@@ -186,42 +183,39 @@ class StudentImportService
                 'C' => 28,
                 'D' => 16,
                 'E' => 14,
-                'F' => 14,
-                'G' => 16,
-                'H' => 12,
+                'F' => 16,
+                'G' => 12,
             ] as $column => $width) {
                 $sheet->getColumnDimension($column)->setWidth($width);
             }
 
             $referenceSheet = $spreadsheet->createSheet();
             $referenceSheet->setTitle('Referensi');
-            $referenceSheet->fromArray(['class', 'major', 'batch', 'student_type', 'is_active'], null, 'A1');
+            $referenceSheet->fromArray(['kelas', 'angkatan', 'tipe_siswa', 'aktif'], null, 'A1');
 
-            $references = [$classes, $majors, $batches, $studentTypes, $activeOptions];
+            $references = [$classes, $batches, $studentTypes, $activeOptions];
             $maxReferenceRows = max(array_map('count', $references) ?: [1]);
 
             for ($i = 0; $i < $maxReferenceRows; $i++) {
                 $referenceSheet->fromArray([
                     $classes[$i] ?? null,
-                    $majors[$i] ?? null,
                     $batches[$i] ?? null,
                     $studentTypes[$i] ?? null,
                     $activeOptions[$i] ?? null,
                 ], null, 'A'.($i + 2));
             }
 
-            $referenceSheet->getStyle('A1:E1')->applyFromArray($headerStyle);
+            $referenceSheet->getStyle('A1:D1')->applyFromArray($headerStyle);
 
-            foreach (['A', 'B', 'C', 'D', 'E'] as $column) {
+            foreach (['A', 'B', 'C', 'D'] as $column) {
                 $referenceSheet->getColumnDimension($column)->setWidth(18);
             }
 
             $validationColumns = [
                 'D' => ['A', max(count($classes), 1)],
-                'E' => ['B', max(count($majors), 1)],
-                'F' => ['C', max(count($batches), 1)],
-                'G' => ['D', max(count($studentTypes), 1)],
-                'H' => ['E', count($activeOptions)],
+                'E' => ['B', max(count($batches), 1)],
+                'F' => ['C', max(count($studentTypes), 1)],
+                'G' => ['D', count($activeOptions)],
             ];
 
             foreach ($validationColumns as $inputColumn => [$referenceColumn, $count]) {
@@ -257,7 +251,7 @@ class StudentImportService
         }
 
         try {
-            fputcsv($handle, ['nis', 'nisn', 'full_name', 'class', 'major', 'batch', 'student_type', 'is_active']);
+            fputcsv($handle, ['nis', 'nisn', 'nama_lengkap', 'kelas', 'angkatan', 'tipe_siswa', 'aktif']);
         } finally {
             fclose($handle);
         }
@@ -274,18 +268,17 @@ class StudentImportService
         }
 
         $preview = json_decode(File::get($previewPath), true);
-        $batchMap = Batch::query()->pluck('id', 'year_label')->mapWithKeys(fn ($id, $label) => [Str::lower(trim((string) $label)) => $id])->all();
+        $batchMap = Batch::query()
+            ->get()
+            ->flatMap(fn ($b) => [
+                Str::lower(trim((string) $b->year_label)) => $b->id,
+                Str::lower(trim((string) $b->academic_year)) => $b->id,
+            ])
+            ->all();
         $classMap = AcademicClass::query()->pluck('id', 'name')->mapWithKeys(fn ($id, $name) => [Str::lower(trim((string) $name)) => $id])->all();
-        $majorMap = Major::query()
-            ->where('is_active', true)
-            ->get(['id', 'name', 'code'])
-            ->flatMap(fn (Major $major) => [
-                Str::lower(trim($major->name)) => $major->id,
-                Str::lower(trim($major->code)) => $major->id,
-            ])->all();
         $studentTypeMap = $this->studentTypeMap();
 
-        return DB::transaction(function () use ($preview, $previewPath, $actor, $batchMap, $classMap, $majorMap, $studentTypeMap) {
+        return DB::transaction(function () use ($preview, $previewPath, $actor, $batchMap, $classMap, $studentTypeMap) {
             $importLog = ImportLog::query()->create([
                 'type' => 'students_import',
                 'file_name' => $preview['file_name'],
@@ -321,7 +314,6 @@ class StudentImportService
                     'nisn' => $payload['nisn'] ?: null,
                     'full_name' => $payload['full_name'],
                     'class_id' => $classMap[Str::lower($payload['class'])],
-                    'major_id' => $majorMap[Str::lower($payload['major'])],
                     'batch_id' => $batchMap[Str::lower($payload['batch'])],
                     'student_type' => $studentTypeMap[Str::lower($payload['student_type'])],
                     'is_active' => $payload['is_active'],
@@ -387,10 +379,9 @@ class StudentImportService
             'nisn' => $mapped['nisn'] ?? '',
             'full_name' => $mapped['full_name'] ?? '',
             'class' => $mapped['class'] ?? '',
-            'major' => $mapped['major'] ?? '',
             'batch' => $mapped['batch'] ?? '',
             'student_type' => Str::lower($mapped['student_type'] ?? ''),
-            'is_active' => $this->parseBoolean($mapped['is_active'] ?? ''),
+            'is_active' => $this->parseBoolean($mapped['aktif'] ?? $mapped['status_aktif'] ?? $mapped['is_active'] ?? ''),
         ];
     }
 
@@ -413,6 +404,20 @@ class StudentImportService
 
             return str_replace([' ', '-'], '_', $header);
         }, $headers);
+    }
+
+    protected function translateHeaders(array $headers): array
+    {
+        $translation = [
+            'nama_lengkap' => 'full_name',
+            'kelas' => 'class',
+            'angkatan' => 'batch',
+            'tipe_siswa' => 'student_type',
+            'aktif' => 'is_active',
+            'status_aktif' => 'is_active',
+        ];
+
+        return array_map(fn ($h) => $translation[$h] ?? $h, $headers);
     }
 
     protected function readCsvRows(string $path): array
@@ -457,7 +462,7 @@ class StudentImportService
         return class_exists(\ZipArchive::class);
     }
 
-    protected function validateRow(array $payload, array $batches, array $classes, array $majors, array $studentTypes, array &$seenNis, array &$seenNisn): array
+    protected function validateRow(array $payload, array $batches, array $classes, array $studentTypes, array &$seenNis, array &$seenNisn): array
     {
         $errors = [];
 
@@ -473,16 +478,12 @@ class StudentImportService
             $errors['class'] = 'Kelas tidak ditemukan.';
         }
 
-        if ($payload['major'] === '' || ! array_key_exists(Str::lower($payload['major']), $majors)) {
-            $errors['major'] = 'Jurusan tidak ditemukan.';
-        }
-
         if ($payload['batch'] === '' || ! array_key_exists(Str::lower($payload['batch']), $batches)) {
             $errors['batch'] = 'Angkatan tidak ditemukan.';
         }
 
         if (! array_key_exists(Str::lower($payload['student_type']), $studentTypes)) {
-            $errors['student_type'] = 'student_type harus '.implode(' atau ', array_unique(array_values($studentTypes))).'.';
+            $errors['student_type'] = 'tipe_siswa harus '.implode(' atau ', StudentType::query()->where('is_active', true)->orderBy('slug')->pluck('label')->toArray()).'.';
         }
 
         if ($payload['nis'] !== '') {

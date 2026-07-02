@@ -23,7 +23,7 @@ class StudentController extends Controller
     public function index(Request $request)
     {
         $students = Student::query()
-            ->with(['batch', 'classRoom', 'major'])
+            ->with(['batch', 'classRoom'])
             ->when($request->filled('search'), function ($query) use ($request) {
                 $search = $request->string('search')->toString();
                 $query->where(function ($builder) use ($search) {
@@ -34,7 +34,7 @@ class StudentController extends Controller
             })
             ->when($request->filled('batch_id'), fn ($query) => $query->where('batch_id', $request->integer('batch_id')))
             ->when($request->filled('class_id'), fn ($query) => $query->where('class_id', $request->integer('class_id')))
-            ->when($request->filled('major_id'), fn ($query) => $query->where('major_id', $request->integer('major_id')))
+
             ->when($request->filled('student_type'), fn ($query) => $query->where('student_type', $request->string('student_type')))
             ->when($request->filled('is_active'), fn ($query) => $query->where('is_active', $request->boolean('is_active')))
             ->orderBy('full_name')
@@ -52,12 +52,12 @@ class StudentController extends Controller
         $student = Student::query()->create($data);
         $this->auditLogs->log('student.created', $student, null, $student->toArray(), null, $request->user());
 
-        return $this->success($student->load(['batch', 'classRoom', 'major']), 'Success', 201);
+        return $this->success($student->load(['batch', 'classRoom']), 'Success', 201);
     }
 
     public function show(Student $student)
     {
-        return $this->success($student->load(['batch', 'classRoom', 'major', 'invoices.feeType', 'payments.cashAccount']));
+        return $this->success($student->load(['batch', 'classRoom', 'invoices.feeType', 'payments.cashAccount']));
     }
 
     public function update(Request $request, Student $student)
@@ -70,7 +70,7 @@ class StudentController extends Controller
         $student->update($data);
         $this->auditLogs->log('student.updated', $student, $before, $student->fresh()->toArray(), null, $request->user());
 
-        return $this->success($student->load(['batch', 'classRoom', 'major']));
+        return $this->success($student->load(['batch', 'classRoom']));
     }
 
     public function deactivate(Request $request, Student $student)
@@ -95,7 +95,7 @@ class StudentController extends Controller
             'nisn' => ['nullable', 'string', 'max:50', Rule::unique('students', 'nisn')->ignore($student?->id)],
             'full_name' => ['required', 'string', 'max:255'],
             'class_id' => ['required', 'exists:classes,id'],
-            'major_id' => ['required', Rule::exists('majors', 'id')->where(fn (Builder $query) => $query->where('is_active', true))],
+
             'batch_id' => ['required', 'exists:batches,id'],
             'student_type' => ['required', Rule::in(StudentType::activeSlugs())],
             'enrollment_date' => ['nullable', 'date'],

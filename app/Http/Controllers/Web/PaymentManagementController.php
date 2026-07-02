@@ -92,7 +92,7 @@ class PaymentManagementController extends Controller
 
     public function printReceipt(Payment $payment)
     {
-        $payment->load(['student.batch', 'student.classRoom', 'student.major', 'cashAccount', 'items.invoice.feeType', 'items.invoice.billingCycle']);
+        $payment->load(['student.batch', 'student.classRoom', 'cashAccount', 'items.invoice.feeType', 'items.invoice.billingCycle']);
 
         $receiptPaper = [0, 0, 595.28, 255.12];
 

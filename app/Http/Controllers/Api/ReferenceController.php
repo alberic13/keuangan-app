@@ -6,7 +6,7 @@ use App\Http\Controllers\Concerns\ApiResponses;
 use App\Http\Controllers\Controller;
 use App\Models\AcademicClass;
 use App\Models\Batch;
-use App\Models\Major;
+
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
@@ -52,22 +52,4 @@ class ReferenceController extends Controller
         return $this->success($class, 'Success', 201);
     }
 
-    public function majors()
-    {
-        return $this->success(Major::query()->where('is_active', true)->orderBy('name')->get());
-    }
-
-    public function storeMajor(Request $request)
-    {
-        $this->ensureAnyRole(['admin_keuangan']);
-        $data = $request->validate([
-            'code' => ['required', 'string', 'max:30', 'unique:majors,code'],
-            'name' => ['required', 'string', 'max:100'],
-            'is_active' => ['nullable', 'boolean'],
-        ]);
-
-        $major = Major::query()->create($data + ['is_active' => $request->boolean('is_active', true)]);
-
-        return $this->success($major, 'Success', 201);
-    }
 }

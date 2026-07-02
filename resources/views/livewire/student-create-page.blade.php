@@ -43,7 +43,7 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label class="mb-2 block text-sm font-semibold text-on-surface" for="batch_id">Angkatan</label>
                         <select class="w-full rounded-xl border-none bg-surface-container-low px-4 py-3 text-sm" id="batch_id" name="batch_id" required>
@@ -59,15 +59,6 @@
                             <option value="">Pilih kelas</option>
                             @foreach ($classes as $class)
                                 <option @selected((string) old('class_id') === (string) $class->id) value="{{ $class->id }}">{{ $class->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div>
-                        <label class="mb-2 block text-sm font-semibold text-on-surface" for="major_id">Jurusan</label>
-                        <select class="w-full rounded-xl border-none bg-surface-container-low px-4 py-3 text-sm" id="major_id" name="major_id" required>
-                            <option value="">Pilih jurusan</option>
-                            @foreach ($majors as $major)
-                                <option @selected((string) old('major_id') === (string) $major->id) value="{{ $major->id }}">{{ $major->name }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -176,36 +167,7 @@
                         </div>
                     </div>
 
-                    <form class="space-y-3 rounded-xl bg-surface-container-low px-4 py-4" wire:submit.prevent="addMajor">
-                        <div class="flex items-center justify-between gap-3">
-                            <h5 class="text-sm font-semibold text-on-surface">Tambah Jurusan</h5>
-                            <span class="text-xs text-on-surface-variant">major</span>
-                        </div>
-                        <input class="w-full rounded-xl border-none bg-white px-4 py-3 text-sm" placeholder="Kode jurusan, mis. TKJ" type="text" wire:model.defer="majorCode">
-                        <input class="w-full rounded-xl border-none bg-white px-4 py-3 text-sm" placeholder="Nama jurusan, mis. Teknik Komputer Jaringan" type="text" wire:model.defer="majorName">
-                        <button class="w-full rounded-xl bg-primary px-4 py-3 text-sm font-semibold text-white" type="submit">Simpan Jurusan</button>
-                    </form>
-                    <div class="rounded-xl border border-dashed border-surface-container bg-white px-4 py-4">
-                        <div class="mb-3 flex items-center justify-between gap-3">
-                            <h5 class="text-sm font-semibold text-on-surface">Jurusan Tersedia</h5>
-                            <span class="text-xs text-on-surface-variant">{{ $majors->count() }} data</span>
-                        </div>
-                        <div class="space-y-2">
-                            @forelse ($majors as $major)
-                                <div class="flex items-center justify-between gap-3 rounded-lg bg-surface-container-low px-3 py-2 text-sm">
-                                    <div>
-                                        <div class="font-semibold text-on-surface">{{ $major->name }}</div>
-                                        <div class="text-xs text-on-surface-variant">{{ $major->code }}</div>
-                                    </div>
-                                    <button class="inline-flex h-8 w-8 items-center justify-center rounded-full border border-rose-200 text-rose-600 hover:bg-rose-50" title="Hapus jurusan" type="button" wire:click="deleteMajor({{ $major->id }})" wire:confirm="Hapus jurusan ini?">
-                                        <span aria-hidden="true" class="text-lg leading-none">×</span>
-                                    </button>
-                                </div>
-                            @empty
-                                <p class="text-xs text-on-surface-variant">Belum ada jurusan.</p>
-                            @endforelse
-                        </div>
-                    </div>
+
 
                     <div class="space-y-2 rounded-xl bg-surface-container-low px-4 py-4">
                         <div class="flex items-center justify-between gap-3">
@@ -243,7 +205,7 @@
             <div class="bg-surface-container-lowest rounded-xl shadow-sm p-6">
                 <h4 class="text-base font-headline font-bold text-on-surface">Panduan Input</h4>
                 <div class="mt-4 space-y-3 text-sm text-on-surface-variant">
-                    <p>Isi minimal nama lengkap, angkatan, kelas, jurusan, dan tipe siswa.</p>
+                    <p>Isi minimal nama lengkap, angkatan, kelas, dan tipe siswa.</p>
                     <p>NIS dan NISN bersifat unik. Jika salah satu sudah pernah dipakai, sistem akan menolak penyimpanan.</p>
                     <p>Gunakan tipe Reguler, Full Day, atau Asrama sesuai kebijakan biaya siswa.</p>
                 </div>
