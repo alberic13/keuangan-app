@@ -200,7 +200,7 @@ class DatabaseSeeder extends Seeder
             ],
             [
                 'lookup' => ['account_number' => '003640599068'],
-                'data' => ['name' => 'Danamon - 003640599068', 'type' => 'bank', 'account_number' => '003640599068', 'account_holder' => 'Komite Madrasah aliyah negeri 2 surakarta', 'is_active' => true],
+                'data' => ['name' => 'Danamon - 003640599068', 'type' => 'bank', 'account_number' => '003640599068', 'account_holder' => 'Komite Madrasah aliyah negeri 2 surakarta', 'is_active' => false],
             ],
         ];
 
