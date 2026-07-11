@@ -270,46 +270,13 @@
                 </div>
             </div>
             <div class="app-header-actions flex shrink-0 items-center justify-end gap-2 sm:gap-3 md:gap-3">
-                <form action="{{ request()->url() }}" class="app-header-search hidden xl:flex items-center gap-2 rounded-full bg-surface-container-low px-4 py-2" method="GET">
-                    @foreach ($searchQueryParams as $queryKey => $queryValue)
-                        @if (is_array($queryValue))
-                            @foreach ($queryValue as $nestedKey => $nestedValue)
-                                <input name="{{ $queryKey }}[{{ $nestedKey }}]" type="hidden" value="{{ $nestedValue }}">
-                            @endforeach
-                        @else
-                            <input name="{{ $queryKey }}" type="hidden" value="{{ $queryValue }}">
-                        @endif
-                    @endforeach
-                    <span class="material-symbols-outlined text-slate-400 text-lg">search</span>
-                    <input
-                        class="w-full border-none bg-transparent p-0 text-sm text-slate-700 placeholder:text-slate-400 focus:ring-0"
-                        name="search"
-                        placeholder="{{ $searchPlaceholder ?? 'Cari...' }}"
-                        type="text"
-                        value="{{ request('search') }}"
-                    >
-                    @if (filled(request('search')))
-                        <a class="text-xs font-semibold text-slate-500 hover:text-primary" href="{{ request()->url() }}{{ count($searchQueryParams) ? '?'.http_build_query($searchQueryParams) : '' }}">
-                            Atur Ulang
-                        </a>
-                    @endif
-                </form>
-                <div class="flex items-center gap-1.5 sm:gap-2 md:gap-3">
-                    <button class="rounded-full p-2 text-slate-500 transition-colors hover:bg-emerald-50/50" type="button">
-                        <span class="material-symbols-outlined">notifications</span>
-                    </button>
-                    <button class="rounded-full p-2 text-slate-500 transition-colors hover:bg-emerald-50/50" type="button">
-                        <span class="material-symbols-outlined">settings</span>
-                    </button>
-                    <div class="mx-1 hidden h-8 w-px bg-slate-200 sm:block"></div>
-                    <div class="flex items-center gap-2 sm:gap-3">
-                        <div class="text-right hidden sm:block">
-                            <p class="text-xs font-bold text-emerald-900">{{ auth()->user()?->name }}</p>
-                            <p class="text-[10px] text-slate-500 uppercase">{{ $roleLabels[auth()->user()?->getRoleNames()->first()] ?? auth()->user()?->getRoleNames()->first() }}</p>
-                        </div>
-                        <div class="flex h-9 w-9 items-center justify-center rounded-full bg-primary font-bold text-white">
-                            {{ str(auth()->user()?->name ?? 'A')->substr(0, 1) }}
-                        </div>
+                <div class="flex items-center gap-2 sm:gap-3">
+                    <div class="text-right hidden sm:block">
+                        <p class="text-xs font-bold text-emerald-900">{{ auth()->user()?->name }}</p>
+                        <p class="text-[10px] text-slate-500 uppercase">{{ $roleLabels[auth()->user()?->getRoleNames()->first()] ?? auth()->user()?->getRoleNames()->first() }}</p>
+                    </div>
+                    <div class="flex h-9 w-9 items-center justify-center rounded-full bg-primary font-bold text-white">
+                        {{ str(auth()->user()?->name ?? 'A')->substr(0, 1) }}
                     </div>
                 </div>
             </div>

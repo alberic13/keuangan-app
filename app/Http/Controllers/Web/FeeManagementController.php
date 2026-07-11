@@ -121,12 +121,6 @@ class FeeManagementController extends Controller
 
     protected function normalizeFeeScheme(array $data): array
     {
-        $feeType = FeeType::query()->find($data['fee_type_id']);
-
-        if ($feeType?->category === 'spp') {
-            $data['batch_id'] = null;
-        }
-
         return $data;
     }
 
@@ -152,5 +146,48 @@ class FeeManagementController extends Controller
                 'effective_start' => 'Tarif aktif overlap dengan periode yang sudah ada.',
             ]);
         }
+    }
+
+    public function destroyFeeType(Request $request, FeeType $feeType): RedirectResponse
+    {
+        $this->ensureAnyRole(['admin_keuangan']);
+
+        if ($feeType->schemes()->exists() || $feeType->invoices()->exists()) {
+            throw ValidationException::withMessages([
+                'error' => 'Tidak dapat menghapus jenis biaya karena memiliki tarif atau invoice aktif.',
+            ]);
+        }
+
+        $before = $feeType->toArray();
+        $feeType->delete();
+        $this->auditLogs->log('fee_type.deleted', $feeType, $before, null, null, $request->user());
+
+        return $this->redirectBackWithMessage($request, 'Jenis biaya berhasil dihapus.');
+    }
+
+    public function destroyFeeScheme(Request $request, FeeScheme $feeScheme): RedirectResponse
+    {
+        $this->ensureAnyRole(['admin_keuangan']);
+
+        $hasInvoices = \App\Models\Invoice::query()
+            ->where('fee_type_id', $feeScheme->fee_type_id)
+            ->when($feeScheme->batch_id, function ($query) use ($feeScheme) {
+                $query->whereHas('student', function ($q) use ($feeScheme) {
+                    $q->where('batch_id', $feeScheme->batch_id);
+                });
+            })
+            ->exists();
+
+        if ($hasInvoices) {
+            throw ValidationException::withMessages([
+                'error' => 'Tidak dapat menghapus tarif karena memiliki tagihan/invoice aktif.',
+            ]);
+        }
+
+        $before = $feeScheme->toArray();
+        $feeScheme->delete();
+        $this->auditLogs->log('fee_scheme.deleted', $feeScheme, $before, null, null, $request->user());
+
+        return $this->redirectBackWithMessage($request, 'Tarif berhasil dihapus.');
     }
 }

@@ -118,12 +118,6 @@ class FeeController extends Controller
 
     protected function normalizeFeeScheme(array $data): array
     {
-        $feeType = FeeType::query()->find($data['fee_type_id']);
-
-        if ($feeType?->category === 'spp') {
-            $data['batch_id'] = null;
-        }
-
         return $data;
     }
 

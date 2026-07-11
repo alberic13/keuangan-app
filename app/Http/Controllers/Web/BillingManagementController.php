@@ -76,6 +76,17 @@ class BillingManagementController extends Controller
         return $this->redirectBackWithMessage($request, 'Billing cycle berhasil ditutup.');
     }
 
+    public function openCycle(Request $request, BillingCycle $billingCycle): RedirectResponse
+    {
+        $this->ensureAnyRole(['admin_keuangan']);
+
+        $before = $billingCycle->toArray();
+        $billingCycle->update(['status' => 'open']);
+        $this->auditLogs->log('billing_cycle.opened', $billingCycle, $before, $billingCycle->fresh()->toArray(), 'Open cycle', $request->user());
+
+        return $this->redirectBackWithMessage($request, 'Billing cycle berhasil dibuka kembali.');
+    }
+
     public function generate(Request $request): RedirectResponse
     {
         $this->ensureAnyRole(['admin_keuangan']);

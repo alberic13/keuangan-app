@@ -91,6 +91,17 @@
                         <td class="px-8 py-4 text-sm">
                             <div class="flex items-center gap-2">
                                 <a
+                                    href="{{ route('expenses.print', $expense) }}"
+                                    target="_blank"
+                                    class="inline-flex h-9 w-9 items-center justify-center rounded-full border border-emerald-200 bg-white text-emerald-600 transition hover:border-emerald-300 hover:text-emerald-700"
+                                    title="Cetak bukti pengeluaran"
+                                    aria-label="Cetak bukti pengeluaran"
+                                >
+                                    <svg viewBox="0 0 24 24" aria-hidden="true" class="h-4 w-4">
+                                        <path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z" fill="currentColor"/>
+                                    </svg>
+                                </a>
+                                <a
                                     href="{{ route('expenses.index', array_merge(request()->except('edit', 'page'), ['edit' => $expense->id])) }}"
                                     class="inline-flex h-9 w-9 items-center justify-center rounded-full border border-blue-200 bg-white text-blue-600 transition hover:border-blue-300 hover:text-blue-700"
                                     title="Edit pengeluaran"

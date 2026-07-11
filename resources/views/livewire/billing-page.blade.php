@@ -22,7 +22,10 @@
                     <input class="rounded-xl border-none bg-surface-container-low px-4 py-3 text-sm" min="2020" name="year" placeholder="Tahun" required type="number" value="{{ now()->year }}">
                 </div>
                 <input class="w-full rounded-xl border-none bg-surface-container-low px-4 py-3 text-sm" name="period_label" placeholder="Contoh: April 2026" required type="text">
-                <input class="w-full rounded-xl border-none bg-surface-container-low px-4 py-3 text-sm" name="due_date" type="date" value="{{ now()->day(10)->toDateString() }}">
+                <div class="space-y-1">
+                    <label class="block text-xs font-bold text-on-surface-variant px-1" for="due_date">JATUH TEMPO PADA :</label>
+                    <input class="w-full rounded-xl border-none bg-surface-container-low px-4 py-3 text-sm" id="due_date" name="due_date" type="date" value="{{ now()->day(10)->toDateString() }}">
+                </div>
                 <button class="w-full rounded-xl bg-primary text-white font-semibold px-5 py-3" type="submit">Simpan Siklus Tagihan</button>
             </form>
         </div>
@@ -102,10 +105,13 @@
                             @if ($cycle->status === 'open')
                                 <form action="{{ route('billing-cycles.close', $cycle) }}" method="POST">
                                     @csrf
-                                    <button class="font-semibold text-tertiary" type="submit">Tutup Siklus</button>
+                                    <button class="font-semibold text-red-800 transition-colors hover:text-red-900" type="submit">Tutup Siklus</button>
                                 </form>
                             @else
-                                <span class="text-on-surface-variant">Tertutup</span>
+                                <form action="{{ route('billing-cycles.open', $cycle) }}" method="POST">
+                                    @csrf
+                                    <button class="font-semibold text-emerald-800 transition-colors hover:text-emerald-900" type="submit">Buka Siklus</button>
+                                </form>
                             @endif
                         </td>
                     </tr>
