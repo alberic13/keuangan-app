@@ -115,4 +115,17 @@ class CashManagementController extends Controller
 
         return $this->redirectBackWithMessage($request, 'Pengeluaran berhasil dihapus.');
     }
+
+    public function printReceipt(Expense $expense)
+    {
+        $this->ensureAnyRole(['admin_keuangan', 'bendahara', 'kepala_madrasah', 'waka']);
+
+        $expense->load(['category', 'paymentAccount']);
+
+        return \Barryvdh\DomPDF\Facade\Pdf::loadView('prints.expense', [
+            'expense' => $expense,
+        ])
+            ->setPaper([0, 0, 595.28, 283.46], 'portrait')
+            ->stream($expense->expense_no.'.pdf');
+    }
 }

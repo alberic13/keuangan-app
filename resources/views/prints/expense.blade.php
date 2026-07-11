@@ -2,10 +2,10 @@
 <html lang="id">
 <head>
     <meta charset="utf-8">
-    <title>Kwitansi {{ $payment->payment_no }}</title>
+    <title>Bukti Pengeluaran {{ $expense->expense_no }}</title>
     <style>
         @page {
-            size: 21cm 9.5cm;
+            size: 21cm 10cm;
             margin: 0.3cm 0.4cm;
         }
 
@@ -55,7 +55,7 @@
             font-size: 12px;
             font-weight: bold;
             text-transform: uppercase;
-            letter-spacing: 1.5px;
+            letter-spacing: 1px;
             border-bottom: 1px solid #111827;
             display: inline-block;
             padding-bottom: 1px;
@@ -79,20 +79,18 @@
             width: 36%;
         }
 
-        .meta,
-        .items {
+        .meta {
             width: 100%;
             border-collapse: collapse;
         }
 
-        .meta td,
-        .items td {
-            padding: 2px 0;
+        .meta td {
+            padding: 3px 0;
             vertical-align: top;
         }
 
         .label {
-            width: 90px;
+            width: 100px;
             white-space: nowrap;
             color: #4b5563;
         }
@@ -129,44 +127,30 @@
             color: #111827;
         }
 
-        .section-title {
-            margin: 5px 0 2px;
-            font-size: 8px;
-            font-weight: bold;
-            color: #111827;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+        .signatures {
+            margin-top: 20px;
+            width: 100%;
+            border-collapse: collapse;
         }
 
-        .footer {
-            text-align: right;
+        .signatures td {
+            text-align: center;
             font-size: 8px;
+            width: 50%;
         }
 
-        .footer .spacer {
-            height: 35px;
+        .signatures .spacer {
+            height: 32px;
         }
     </style>
 </head>
 <body>
-    @php
-        $paymentFor = $payment->items
-            ->map(function ($item) {
-                $name = $item->invoice->feeType->name ?? 'Pembayaran';
-                $period = $item->invoice->billingCycle?->period_label;
-
-                return $period ? $name.' '.$period : $name;
-            })
-            ->take(3)
-            ->values();
-    @endphp
-
     <div class="receipt">
         <!-- Top Number -->
         <table style="width: 100%; margin-bottom: -4px;">
             <tr>
                 <td style="text-align: right; font-size: 7.5px; font-weight: bold; font-family: DejaVu Sans, sans-serif;">
-                    No : {{ $payment->payment_no }}
+                    No : {{ $expense->expense_no }}
                 </td>
             </tr>
         </table>
@@ -191,7 +175,7 @@
 
         <!-- Title -->
         <div class="title-container">
-            <h1 class="title-text">KWITANSI</h1>
+            <h1 class="title-text">BUKTI PENGELUARAN KAS</h1>
         </div>
 
         <table class="content">
@@ -199,59 +183,49 @@
                 <td class="left">
                     <table class="meta">
                         <tr>
-                            <td class="label">Tanggal</td>
+                            <td class="label">Tanggal Transaksi</td>
                             <td class="separator">:</td>
-                            <td class="value">{{ $payment->payment_date?->translatedFormat('d F Y') }}</td>
+                            <td class="value">{{ $expense->transaction_date?->translatedFormat('d F Y') }}</td>
                         </tr>
                         <tr>
-                            <td class="label">Diterima dari</td>
+                            <td class="label">Kategori Pengeluaran</td>
                             <td class="separator">:</td>
-                            <td class="value">{{ $payment->student->full_name }}</td>
+                            <td class="value">{{ $expense->category->name }}</td>
                         </tr>
                         <tr>
-                            <td class="label">NIS / NISN</td>
+                            <td class="label">Sumber Dana / Kas</td>
                             <td class="separator">:</td>
-                            <td>{{ $payment->student->nis ?: '-' }} / {{ $payment->student->nisn ?: '-' }}</td>
+                            <td class="value">{{ $expense->paymentAccount->name }}</td>
                         </tr>
                         <tr>
-                            <td class="label">Kelas</td>
+                            <td class="label">Uraian / Deskripsi</td>
                             <td class="separator">:</td>
-                            <td>{{ $payment->student->classRoom->name ?? '-' }}</td>
+                            <td class="value" style="font-weight: normal; text-align: justify;">{{ $expense->description }}</td>
                         </tr>
-                        <tr>
-                            <td class="label">Metode</td>
-                            <td class="separator">:</td>
-                            <td>{{ $payment->method === 'bank_transfer' ? 'Transfer Manual' : 'Tunai' }}</td>
-                        </tr>
-                    </table>
-
-                    <div class="section-title">Untuk Pembayaran</div>
-                    <table class="items">
-                        @foreach ($paymentFor as $itemLabel)
-                            <tr>
-                                <td style="width: 10px; color: #4b5563;">-</td>
-                                <td>{{ $itemLabel }}</td>
-                            </tr>
-                        @endforeach
-                        @if ($payment->items->count() > $paymentFor->count())
-                            <tr>
-                                <td style="width: 10px; color: #4b5563;">-</td>
-                                <td>dan {{ $payment->items->count() - $paymentFor->count() }} item lainnya</td>
-                            </tr>
-                        @endif
                     </table>
                 </td>
                 <td class="right">
                     <div class="amount-box">
-                        <div class="amount-label">Jumlah Diterima</div>
-                        <div class="amount-value">Rp {{ number_format($payment->total_amount, 0, ',', '.') }}</div>
+                        <div class="amount-label">Jumlah Pengeluaran</div>
+                        <div class="amount-value">Rp {{ number_format($expense->amount, 0, ',', '.') }}</div>
                     </div>
 
-                    <div class="footer">
-                        <div>Surakarta, {{ $payment->payment_date?->translatedFormat('d F Y') }}</div>
-                        <div class="spacer"></div>
-                        <div style="font-weight: bold;">( {{ auth()->user()->name }} )</div>
-                    </div>
+                    <table class="signatures">
+                        <tr>
+                            <td>
+                                Mengetahui,<br>
+                                Kepala Madrasah
+                                <div class="spacer"></div>
+                                ( .................................... )
+                            </td>
+                            <td>
+                                Surakarta, {{ $expense->transaction_date?->translatedFormat('d F Y') }}<br>
+                                Bendahara
+                                <div class="spacer"></div>
+                                ( {{ auth()->user()->name }} )
+                            </td>
+                        </tr>
+                    </table>
                 </td>
             </tr>
         </table>

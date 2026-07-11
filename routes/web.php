@@ -50,13 +50,16 @@ Route::middleware(['auth', 'active'])->group(function () {
     Route::get('/fees', FeesPage::class)->name('fees.index');
     Route::post('/fee-types', [FeeManagementController::class, 'storeFeeType'])->name('fee-types.store');
     Route::put('/fee-types/{feeType}', [FeeManagementController::class, 'updateFeeType'])->name('fee-types.update');
+    Route::delete('/fee-types/{feeType}', [FeeManagementController::class, 'destroyFeeType'])->name('fee-types.destroy');
     Route::post('/fee-schemes', [FeeManagementController::class, 'storeFeeScheme'])->name('fee-schemes.store');
     Route::put('/fee-schemes/{feeScheme}', [FeeManagementController::class, 'updateFeeScheme'])->name('fee-schemes.update');
+    Route::delete('/fee-schemes/{feeScheme}', [FeeManagementController::class, 'destroyFeeScheme'])->name('fee-schemes.destroy');
 
     Route::get('/billing', BillingPage::class)->name('billing.index');
     Route::post('/billing-cycles', [BillingManagementController::class, 'storeCycle'])->name('billing-cycles.store');
     Route::put('/billing-cycles/{billingCycle}', [BillingManagementController::class, 'updateCycle'])->name('billing-cycles.update');
     Route::post('/billing-cycles/{billingCycle}/close', [BillingManagementController::class, 'closeCycle'])->name('billing-cycles.close');
+    Route::post('/billing-cycles/{billingCycle}/open', [BillingManagementController::class, 'openCycle'])->name('billing-cycles.open');
     Route::post('/billing/generate', [BillingManagementController::class, 'generate'])->name('billing.generate');
     Route::post('/invoices/{invoice}/void', [BillingManagementController::class, 'voidInvoice'])->name('invoices.void');
     Route::get('/invoices/{invoice}/print', [BillingManagementController::class, 'printInvoice'])->name('invoices.print');
@@ -76,6 +79,7 @@ Route::middleware(['auth', 'active'])->group(function () {
     Route::post('/expenses', [CashManagementController::class, 'storeExpense'])->name('expenses.store');
     Route::put('/expenses/{expense}', [CashManagementController::class, 'updateExpense'])->name('expenses.update');
     Route::delete('/expenses/{expense}', [CashManagementController::class, 'destroyExpense'])->name('expenses.destroy');
+    Route::get('/expenses/{expense}/print', [CashManagementController::class, 'printReceipt'])->name('expenses.print');
 
     Route::get('/users', UsersPage::class)->name('users.index');
     Route::post('/users', [UserManagementController::class, 'store'])->name('users.store');
