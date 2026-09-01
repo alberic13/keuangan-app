@@ -64,7 +64,8 @@
 
                     <div class="field">
                         <label for="nominal">Nominal (Rp)</label>
-                        <input type="number" id="nominal" name="nominal" min="1" step="0.01" value="{{ old('nominal', (float) $transaction->nominal) }}" required>
+                        <input type="text" value="Rp {{ number_format($transaction->nominal, 0, ',', '.') }}" disabled>
+                        <div class="muted">Nominal tidak bisa diedit.</div>
                     </div>
 
                     <div class="field">

@@ -53,6 +53,8 @@ class ExpenseController extends Controller
     {
         $data = $request->validated();
 
+        $data['nominal'] = $transaction->nominal;
+
         if ($request->hasFile('bukti_nota')) {
             if ($transaction->bukti_nota) {
                 Storage::disk('public')->delete($transaction->bukti_nota);
