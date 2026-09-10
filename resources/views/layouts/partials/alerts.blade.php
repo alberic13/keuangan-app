@@ -4,7 +4,7 @@
     </div>
 @endif
 
-@if ($errors->any())
+@if (isset($errors) && $errors->any())
     <div class="mb-6 rounded-xl border border-red-200 bg-red-50 px-5 py-4 text-sm text-red-900">
         <p class="font-semibold mb-1">Ada input yang perlu diperbaiki:</p>
         <ul class="list-disc pl-5 space-y-1">
