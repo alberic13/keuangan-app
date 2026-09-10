@@ -38,6 +38,7 @@ class GoogleDrivePaymentProofService
                 ->post($this->config('upload_url'), [
                     'file' => base64_encode(file_get_contents($file->getRealPath())),
                     'filename' => $filename,
+                    'root_folder' => $this->config('root_folder', 'E-Keuangan MAN 2 Surakarta'),
                     'subfolder' => $this->config('subfolder', 'Bukti Pembayaran'),
                     'mime_type' => $mimeType,
                 ]);

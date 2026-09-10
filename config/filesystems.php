@@ -64,6 +64,7 @@ return [
 
     'apps_script' => [
         'upload_url' => env('GOOGLE_APPS_SCRIPT_UPLOAD_URL'),
+        'root_folder' => env('GOOGLE_APPS_SCRIPT_ROOT_FOLDER', 'E-Keuangan MAN 2 Surakarta'),
         'subfolder' => env('GOOGLE_APPS_SCRIPT_SUBFOLDER', 'Bukti Pembayaran'),
         'ca_bundle' => env('GOOGLE_APPS_SCRIPT_CA_BUNDLE'),
     ],

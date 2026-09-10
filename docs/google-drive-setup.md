@@ -6,6 +6,7 @@ Yang dipakai aplikasi:
 
 - Upload dikirim Laravel ke Google Apps Script lewat `GOOGLE_APPS_SCRIPT_UPLOAD_URL`.
 - Apps Script menyimpan file ke Google Drive akun yang membuat/deploy script.
+- Nama root folder diambil dari `GOOGLE_APPS_SCRIPT_ROOT_FOLDER`, default: `E-Keuangan MAN 2 Surakarta`.
 - Nama subfolder diambil dari `GOOGLE_APPS_SCRIPT_SUBFOLDER`, default: `Bukti Pembayaran`.
 
 ## 1. Siapkan folder Google Drive
@@ -40,7 +41,7 @@ Catatan: Apps Script di bawah akan membuat subfolder otomatis kalau belum ada. L
 Catatan: pastikan konstanta `ROOT_FOLDER_NAME` tetap ada di bagian paling atas file. Kalau konstanta ini dihapus atau salah tulis, Apps Script akan menolak upload dan Laravel akan menampilkan error seperti `ROOT_FOLDER_NAME is not defined`.
 
 ```javascript
-const ROOT_FOLDER_NAME = 'E-Keuangan MAN 2 Surakarta';
+const ROOT_FOLDER_NAME = 'E-keuangan'
 
 function doGet() {
   return jsonResponse({
@@ -56,6 +57,7 @@ function doPost(e) {
     const encodedFile = params.file;
     const filename = params.filename || `bukti-${Date.now()}.bin`;
     const mimeType = params.mime_type || 'application/octet-stream';
+    const rootFolderName = params.root_folder || ROOT_FOLDER_NAME;
     const subfolderName = params.subfolder || 'Bukti Pembayaran';
 
     if (!encodedFile) {
@@ -65,7 +67,7 @@ function doPost(e) {
     const bytes = Utilities.base64Decode(encodedFile);
     const blob = Utilities.newBlob(bytes, mimeType, filename);
 
-    const rootFolder = getOrCreateFolder_(DriveApp.getRootFolder(), ROOT_FOLDER_NAME);
+    const rootFolder = getOrCreateFolder_(DriveApp.getRootFolder(), rootFolderName);
     const targetFolder = getOrCreateFolder_(rootFolder, subfolderName);
     const file = targetFolder.createFile(blob);
 

@@ -19,6 +19,7 @@ Artisan::command('google-drive:test', function (GoogleDrivePaymentProofService $
     $config = config('filesystems.apps_script', []);
 
     $this->line('Upload URL: '.(filled($config['upload_url'] ?? null) ? 'terisi' : 'kosong'));
+    $this->line('Root Folder: '.($config['root_folder'] ?? '-'));
     $this->line('Subfolder : '.($config['subfolder'] ?? '-'));
 
     if (! $paymentProofs->isConfigured()) {
