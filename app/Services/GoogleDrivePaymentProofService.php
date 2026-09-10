@@ -17,24 +17,13 @@ class GoogleDrivePaymentProofService
             return $this->uploadLocally($file, $paymentNo, $studentName);
         }
 
-        $safeStudentName = Str::slug($studentName ?: 'siswa');
-        $extension = strtolower($file->getClientOriginalExtension() ?: $file->extension() ?: 'bin');
-        $filename = sprintf(
-            '%s-%s-%s.%s',
-            $paymentNo,
-            $safeStudentName,
-            now()->format('YmdHis'),
-            $extension
-        );
-
+        $safeName = Str::slug($studentName ?: 'siswa');
+        $ext = strtolower($file->getClientOriginalExtension() ?: $file->extension() ?: 'bin');
+        $filename = sprintf('%s-%s-%s.%s', $paymentNo, $safeName, now()->format('YmdHis'), $ext);
         $mimeType = $file->getMimeType() ?: 'application/octet-stream';
 
         try {
-            $response = Http::asForm()
-                ->timeout(60)
-                ->withOptions([
-                    'verify' => $this->caBundle(),
-                ])
+            $response = Http::asForm()->timeout(60)->withOptions(['verify' => $this->caBundle()])
                 ->post($this->config('upload_url'), [
                     'file' => base64_encode(file_get_contents($file->getRealPath())),
                     'filename' => $filename,
@@ -42,51 +31,37 @@ class GoogleDrivePaymentProofService
                     'subfolder' => $this->config('subfolder', 'Bukti Pembayaran'),
                     'mime_type' => $mimeType,
                 ]);
-        } catch (ConnectionException $exception) {
-            return $this->fallbackOrFail(
-                $file,
-                $paymentNo,
-                $studentName,
-                'Koneksi ke Google Apps Script gagal: '.$exception->getMessage()
-            );
+        } catch (ConnectionException $e) {
+            return $this->fallbackOrFail($file, $paymentNo, $studentName, 'Koneksi ke Google Apps Script gagal: '.$e->getMessage());
         }
 
         if ($response->failed()) {
-            $responseMessage = $this->extractResponseMessage($response->json(), $response->body());
-
-            if ($this->shouldFallbackToLocalUpload($response->status(), $responseMessage)) {
+            $msg = $this->extractResponseMessage($response->json(), $response->body());
+            if ($this->shouldFallbackToLocalUpload($response->status(), $msg)) {
                 return $this->uploadLocally($file, $paymentNo, $studentName);
             }
-
             throw ValidationException::withMessages([
-                'payment_proof' => $responseMessage ?: 'Upload bukti pembayaran ke Google Apps Script gagal. Status: '.$response->status(),
+                'payment_proof' => $msg ?: 'Upload bukti pembayaran ke Google Apps Script gagal. Status: '.$response->status(),
             ]);
         }
 
         $payload = $response->json();
-
         if (! is_array($payload) || ! ($payload['success'] ?? false)) {
-            $responseMessage = $this->extractResponseMessage($payload, $response->body());
-
-            if ($this->shouldFallbackToLocalUpload(null, $responseMessage)) {
+            $msg = $this->extractResponseMessage($payload, $response->body());
+            if ($this->shouldFallbackToLocalUpload(null, $msg)) {
                 return $this->uploadLocally($file, $paymentNo, $studentName);
             }
-
             throw ValidationException::withMessages([
-                'payment_proof' => $responseMessage ?: 'Google Apps Script tidak mengembalikan respons upload yang valid.',
+                'payment_proof' => $msg ?: 'Google Apps Script tidak mengembalikan respons upload yang valid.',
             ]);
         }
 
         if (blank($payload['fileId'] ?? null) && blank($payload['url'] ?? null)) {
-            throw ValidationException::withMessages([
-                'payment_proof' => 'Google Apps Script berhasil dipanggil, tetapi ID/URL file tidak dikembalikan.',
-            ]);
+            throw ValidationException::withMessages(['payment_proof' => 'Google Apps Script berhasil dipanggil, tetapi ID/URL file tidak dikembalikan.']);
         }
 
         $fileId = filled($payload['fileId'] ?? null) ? trim((string) $payload['fileId']) : null;
-        $url = $fileId
-            ? 'https://drive.google.com/file/d/'.rawurlencode($fileId).'/view'
-            : trim((string) $payload['url']);
+        $url = $fileId ? 'https://drive.google.com/file/d/'.rawurlencode($fileId).'/view' : trim((string) $payload['url']);
 
         return [
             'payment_proof_drive_id' => $fileId,
@@ -102,23 +77,14 @@ class GoogleDrivePaymentProofService
             return $this->uploadLocally($file, $paymentNo, $studentName);
         }
 
-        throw ValidationException::withMessages([
-            'payment_proof' => $message,
-        ]);
+        throw ValidationException::withMessages(['payment_proof' => $message]);
     }
 
     protected function uploadLocally(UploadedFile $file, string $paymentNo, ?string $studentName = null): array
     {
-        $safeStudentName = Str::slug($studentName ?: 'siswa');
-        $extension = strtolower($file->getClientOriginalExtension() ?: $file->extension() ?: 'bin');
-        $filename = sprintf(
-            '%s-%s-%s.%s',
-            $paymentNo,
-            $safeStudentName,
-            now()->format('YmdHis'),
-            $extension
-        );
-
+        $safeName = Str::slug($studentName ?: 'siswa');
+        $ext = strtolower($file->getClientOriginalExtension() ?: $file->extension() ?: 'bin');
+        $filename = sprintf('%s-%s-%s.%s', $paymentNo, $safeName, now()->format('YmdHis'), $ext);
         $path = $file->storeAs('payment-proofs', $filename, 'public');
 
         return [
@@ -138,8 +104,6 @@ class GoogleDrivePaymentProofService
         if (str_starts_with($driveFileId, 'local:')) {
             Storage::disk('public')->delete(Str::after($driveFileId, 'local:'));
         }
-
-        // Apps Script upload mode does not expose a delete endpoint yet.
     }
 
     public function isConfigured(): bool
@@ -157,16 +121,10 @@ class GoogleDrivePaymentProofService
             return true;
         }
 
-        $message = Str::lower((string) $message);
+        $msg = Str::lower((string) $message);
+        $keywords = ['driveapp', 'referenceerror', 'is not defined', 'access denied', 'permission denied', 'not authorized', 'unauthorized', 'forbidden'];
 
-        return str_contains($message, 'driveapp')
-            || str_contains($message, 'referenceerror')
-            || str_contains($message, 'is not defined')
-            || str_contains($message, 'access denied')
-            || str_contains($message, 'permission denied')
-            || str_contains($message, 'not authorized')
-            || str_contains($message, 'unauthorized')
-            || str_contains($message, 'forbidden');
+        return Str::contains($msg, $keywords);
     }
 
     protected function extractResponseMessage(mixed $payload, ?string $rawBody = null): ?string
@@ -179,11 +137,7 @@ class GoogleDrivePaymentProofService
             }
         }
 
-        if (is_string($rawBody) && trim($rawBody) !== '') {
-            return trim(strip_tags($rawBody));
-        }
-
-        return null;
+        return (is_string($rawBody) && trim($rawBody) !== '') ? trim(strip_tags($rawBody)) : null;
     }
 
     protected function config(string $key, mixed $default = null): mixed
@@ -196,18 +150,12 @@ class GoogleDrivePaymentProofService
     protected function caBundle(): string|bool
     {
         $configured = $this->config('ca_bundle');
-
         if (is_string($configured) && $configured !== '' && is_file($configured)) {
             return $configured;
         }
 
-        foreach ([
-            ini_get('curl.cainfo'),
-            ini_get('openssl.cafile'),
-            '/usr/local/etc/ca-certificates/cert.pem',
-            '/etc/ssl/cert.pem',
-            '/Applications/XAMPP/xamppfiles/phpmyadmin/vendor/composer/ca-bundle/res/cacert.pem',
-        ] as $path) {
+        $paths = [ini_get('curl.cainfo'), ini_get('openssl.cafile'), '/usr/local/etc/ca-certificates/cert.pem', '/etc/ssl/cert.pem', '/Applications/XAMPP/xamppfiles/phpmyadmin/vendor/composer/ca-bundle/res/cacert.pem'];
+        foreach ($paths as $path) {
             if (is_string($path) && $path !== '' && is_file($path)) {
                 return $path;
             }

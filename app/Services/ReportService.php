@@ -35,23 +35,21 @@ class ReportService
 
     public function incomePayments(array $filters = []): Collection
     {
-        return Payment::query()
-            ->with(['student', 'cashAccount'])
-            ->when(! empty($filters['date_from']), fn (Builder $query) => $query->whereDate('payment_date', '>=', $filters['date_from']))
-            ->when(! empty($filters['date_to']), fn (Builder $query) => $query->whereDate('payment_date', '<=', $filters['date_to']))
+        return Payment::query()->with(['student', 'cashAccount'])
+            ->when(! empty($filters['date_from']), fn (Builder $q) => $q->whereDate('payment_date', '>=', $filters['date_from']))
+            ->when(! empty($filters['date_to']), fn (Builder $q) => $q->whereDate('payment_date', '<=', $filters['date_to']))
             ->latest('payment_date')
-            ->when(array_key_exists('limit', $filters), fn (Builder $query) => $query->limit((int) $filters['limit']))
+            ->when(array_key_exists('limit', $filters), fn (Builder $q) => $q->limit((int) $filters['limit']))
             ->get();
     }
 
     public function expenseDetails(array $filters = []): Collection
     {
-        return Expense::query()
-            ->with(['category', 'paymentAccount'])
-            ->when(! empty($filters['date_from']), fn (Builder $query) => $query->whereDate('transaction_date', '>=', $filters['date_from']))
-            ->when(! empty($filters['date_to']), fn (Builder $query) => $query->whereDate('transaction_date', '<=', $filters['date_to']))
+        return Expense::query()->with(['category', 'paymentAccount'])
+            ->when(! empty($filters['date_from']), fn (Builder $q) => $q->whereDate('transaction_date', '>=', $filters['date_from']))
+            ->when(! empty($filters['date_to']), fn (Builder $q) => $q->whereDate('transaction_date', '<=', $filters['date_to']))
             ->latest('transaction_date')
-            ->when(array_key_exists('limit', $filters), fn (Builder $query) => $query->limit((int) $filters['limit']))
+            ->when(array_key_exists('limit', $filters), fn (Builder $q) => $q->limit((int) $filters['limit']))
             ->get();
     }
 
@@ -110,57 +108,18 @@ class ReportService
 
     public function recentPayments(int $limit = 10): Collection
     {
-        return Payment::query()
-            ->with(['student', 'cashAccount'])
-            ->latest('payment_date')
-            ->limit($limit)
-            ->get();
+        return Payment::query()->with(['student', 'cashAccount'])->latest('payment_date')->limit($limit)->get();
     }
 
-    public function ledger(array $filters = []): Collection
-    {
-        return $this->cashBookReports->ledger($filters);
-    }
-
-    public function bku(array $filters = []): array
-    {
-        return $this->cashBookReports->bku($filters);
-    }
-
-    public function cashBook(array $filters = []): array
-    {
-        return $this->cashBookReports->cashBook($filters);
-    }
-
-    public function cashReceiptBook(array $filters = []): array
-    {
-        return $this->cashBookReports->cashReceiptBook($filters);
-    }
-
-    public function bankReceiptBook(array $filters = []): array
-    {
-        return $this->cashBookReports->bankReceiptBook($filters);
-    }
-
-    public function cashBankReceiptBook(array $filters = []): array
-    {
-        return $this->cashBookReports->cashBankReceiptBook($filters);
-    }
-
-    public function dailyCash(string $date): array
-    {
-        return $this->cashBookReports->dailyCash($date);
-    }
-
-    public function monthlySummary(int $year): array
-    {
-        return $this->cashBookReports->monthlySummary($year);
-    }
-
-    public function yearlySummary(int $fromYear, int $toYear): array
-    {
-        return $this->cashBookReports->yearlySummary($fromYear, $toYear);
-    }
+    public function ledger(array $filters = []): Collection { return $this->cashBookReports->ledger($filters); }
+    public function bku(array $filters = []): array { return $this->cashBookReports->bku($filters); }
+    public function cashBook(array $filters = []): array { return $this->cashBookReports->cashBook($filters); }
+    public function cashReceiptBook(array $filters = []): array { return $this->cashBookReports->cashReceiptBook($filters); }
+    public function bankReceiptBook(array $filters = []): array { return $this->cashBookReports->bankReceiptBook($filters); }
+    public function cashBankReceiptBook(array $filters = []): array { return $this->cashBookReports->cashBankReceiptBook($filters); }
+    public function dailyCash(string $date): array { return $this->cashBookReports->dailyCash($date); }
+    public function monthlySummary(int $year): array { return $this->cashBookReports->monthlySummary($year); }
+    public function yearlySummary(int $fromYear, int $toYear): array { return $this->cashBookReports->yearlySummary($fromYear, $toYear); }
 
     public function studentLedger(Student $student): array
     {
@@ -179,13 +138,12 @@ class ReportService
             ->when(! empty($filters['billing_month']), function (Builder $query) use ($filters) {
                 [$monthStart, $monthEnd] = $this->monthRange($filters['billing_month']);
                 if ($monthStart && $monthEnd) {
-                    $query->whereHas('billingCycle', fn (Builder $cycleQuery) => $cycleQuery->whereBetween('due_date', [$monthStart, $monthEnd]));
+                    $query->whereHas('billingCycle', fn (Builder $cq) => $cq->whereBetween('due_date', [$monthStart, $monthEnd]));
                 }
             })
-            ->when(! empty($filters['batch_id']), fn (Builder $query) => $query->whereHas('student', fn (Builder $sq) => $sq->where('batch_id', $filters['batch_id'])))
-            ->when(! empty($filters['class_id']), fn (Builder $query) => $query->whereHas('student', fn (Builder $sq) => $sq->where('class_id', $filters['class_id'])))
-            ->orderByDesc('outstanding_amount')
-            ->get();
+            ->when(! empty($filters['batch_id']), fn (Builder $q) => $q->whereHas('student', fn (Builder $sq) => $sq->where('batch_id', $filters['batch_id'])))
+            ->when(! empty($filters['class_id']), fn (Builder $q) => $q->whereHas('student', fn (Builder $sq) => $sq->where('class_id', $filters['class_id'])))
+            ->orderByDesc('outstanding_amount')->get();
     }
 
     public function monthRange(?string $month): array

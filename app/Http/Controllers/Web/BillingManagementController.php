@@ -9,7 +9,6 @@ use App\Models\StudentType;
 use App\Services\AuditLogService;
 use App\Services\BillingService;
 use Barryvdh\DomPDF\Facade\Pdf;
-use Illuminate\Database\Query\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -25,22 +24,9 @@ class BillingManagementController extends Controller
     public function storeCycle(Request $request): RedirectResponse
     {
         $this->ensureAnyRole(['admin_keuangan']);
-
-        $data = $request->validate([
-            'month' => ['required', 'integer', 'between:1,12'],
-            'year' => ['required', 'integer', 'min:2020'],
-            'period_label' => ['required', 'string', 'max:255'],
-            'due_date' => ['nullable', 'date'],
-        ]);
-
-        $billingCycle = BillingCycle::query()->create([
-            'month' => $data['month'],
-            'year' => $data['year'],
-            'period_label' => $data['period_label'],
-            'due_date' => $data['due_date'] ?? sprintf('%s-%02d-10', $data['year'], $data['month']),
-            'status' => 'open',
-        ]);
-
+        $data = $this->validateCycle($request, false);
+        $data['due_date'] = $data['due_date'] ?? sprintf('%s-%02d-10', $data['year'], $data['month']);
+        $billingCycle = BillingCycle::query()->create($data + ['status' => 'open']);
         $this->auditLogs->log('billing_cycle.created', $billingCycle, null, $billingCycle->toArray(), null, $request->user());
 
         return $this->redirectBackWithMessage($request, 'Billing cycle berhasil dibuat.');
@@ -49,15 +35,7 @@ class BillingManagementController extends Controller
     public function updateCycle(Request $request, BillingCycle $billingCycle): RedirectResponse
     {
         $this->ensureAnyRole(['admin_keuangan']);
-
-        $data = $request->validate([
-            'month' => ['required', 'integer', 'between:1,12'],
-            'year' => ['required', 'integer', 'min:2020'],
-            'period_label' => ['required', 'string', 'max:255'],
-            'due_date' => ['required', 'date'],
-            'status' => ['required', Rule::in(['open', 'closed'])],
-        ]);
-
+        $data = $this->validateCycle($request, true);
         $before = $billingCycle->toArray();
         $billingCycle->update($data);
         $this->auditLogs->log('billing_cycle.updated', $billingCycle, $before, $billingCycle->fresh()->toArray(), null, $request->user());
@@ -68,7 +46,6 @@ class BillingManagementController extends Controller
     public function closeCycle(Request $request, BillingCycle $billingCycle): RedirectResponse
     {
         $this->ensureAnyRole(['admin_keuangan']);
-
         $before = $billingCycle->toArray();
         $billingCycle->update(['status' => 'closed']);
         $this->auditLogs->log('billing_cycle.closed', $billingCycle, $before, $billingCycle->fresh()->toArray(), 'Close cycle', $request->user());
@@ -79,7 +56,6 @@ class BillingManagementController extends Controller
     public function openCycle(Request $request, BillingCycle $billingCycle): RedirectResponse
     {
         $this->ensureAnyRole(['admin_keuangan']);
-
         $before = $billingCycle->toArray();
         $billingCycle->update(['status' => 'open']);
         $this->auditLogs->log('billing_cycle.opened', $billingCycle, $before, $billingCycle->fresh()->toArray(), 'Open cycle', $request->user());
@@ -90,7 +66,6 @@ class BillingManagementController extends Controller
     public function generate(Request $request): RedirectResponse
     {
         $this->ensureAnyRole(['admin_keuangan']);
-
         $data = $request->validate([
             'fee_type_id' => ['required', 'exists:fee_types,id'],
             'billing_cycle_id' => ['required', 'exists:billing_cycles,id'],
@@ -100,14 +75,9 @@ class BillingManagementController extends Controller
             'filters.student_type' => ['nullable', Rule::in(array_merge(['all'], StudentType::activeSlugs()))],
         ]);
 
-        $result = $this->billingService->generate($data, $request->user());
+        $res = $this->billingService->generate($data, $request->user());
 
-        return back()->with('status', sprintf(
-            'Generate selesai. Generated: %d, Skipped: %d, Failed: %d.',
-            $result['generated'],
-            $result['skipped'],
-            $result['failed'],
-        ));
+        return back()->with('status', sprintf('Generate selesai. Generated: %d, Skipped: %d, Failed: %d.', $res['generated'], $res['skipped'], $res['failed']));
     }
 
     public function voidInvoice(Request $request, Invoice $invoice): RedirectResponse
@@ -120,17 +90,19 @@ class BillingManagementController extends Controller
 
     public function printInvoice(Invoice $invoice)
     {
-        $invoice->load([
-            'student.batch',
-            'student.classRoom',
+        $invoice->load(['student.batch', 'student.classRoom', 'feeType', 'billingCycle', 'paymentItems.payment']);
 
-            'feeType',
-            'billingCycle',
-            'paymentItems.payment',
+        return Pdf::loadView('prints.invoice', ['invoice' => $invoice])->stream($invoice->invoice_no.'.pdf');
+    }
+
+    protected function validateCycle(Request $request, bool $isUpdate): array
+    {
+        return $request->validate([
+            'month' => ['required', 'integer', 'between:1,12'],
+            'year' => ['required', 'integer', 'min:2020'],
+            'period_label' => ['required', 'string', 'max:255'],
+            'due_date' => [$isUpdate ? 'required' : 'nullable', 'date'],
+            'status' => [$isUpdate ? 'required' : 'nullable', Rule::in(['open', 'closed'])],
         ]);
-
-        return Pdf::loadView('prints.invoice', [
-            'invoice' => $invoice,
-        ])->stream($invoice->invoice_no.'.pdf');
     }
 }

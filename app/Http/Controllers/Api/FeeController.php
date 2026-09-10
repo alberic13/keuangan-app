@@ -7,15 +7,16 @@ use App\Http\Controllers\Controller;
 use App\Models\FeeScheme;
 use App\Models\FeeType;
 use App\Services\AuditLogService;
+use App\Services\FeeService;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
-use Illuminate\Validation\ValidationException;
 
 class FeeController extends Controller
 {
     use ApiResponses;
 
     public function __construct(
+        protected FeeService $feeService,
         protected AuditLogService $auditLogs,
     ) {
     }
@@ -29,7 +30,7 @@ class FeeController extends Controller
     {
         $this->ensureAnyRole(['admin_keuangan']);
         $data = $this->validatedFeeType($request);
-        $feeType = FeeType::query()->create($this->normalizeFeeType($data, $request));
+        $feeType = FeeType::query()->create($this->feeService->normalizeFeeType($data, $request->boolean('installment_allowed')));
         $this->auditLogs->log('fee_type.created', $feeType, null, $feeType->toArray(), null, $request->user());
 
         return $this->success($feeType, 'Success', 201);
@@ -39,7 +40,7 @@ class FeeController extends Controller
     {
         $this->ensureAnyRole(['admin_keuangan']);
         $before = $feeType->toArray();
-        $feeType->update($this->normalizeFeeType($this->validatedFeeType($request, $feeType), $request));
+        $feeType->update($this->feeService->normalizeFeeType($this->validatedFeeType($request, $feeType), $request->boolean('installment_allowed')));
         $this->auditLogs->log('fee_type.updated', $feeType, $before, $feeType->fresh()->toArray(), null, $request->user());
 
         return $this->success($feeType);
@@ -50,8 +51,8 @@ class FeeController extends Controller
         $schemes = FeeScheme::query()
             ->with('feeType')
             ->where('is_active', true)
-            ->when($request->filled('fee_type_id'), fn ($query) => $query->where('fee_type_id', $request->integer('fee_type_id')))
-            ->when($request->filled('batch_id'), fn ($query) => $query->where('batch_id', $request->integer('batch_id')))
+            ->when($request->filled('fee_type_id'), fn ($q) => $q->where('fee_type_id', $request->integer('fee_type_id')))
+            ->when($request->filled('batch_id'), fn ($q) => $q->where('batch_id', $request->integer('batch_id')))
             ->latest('effective_start')
             ->get();
 
@@ -62,8 +63,7 @@ class FeeController extends Controller
     {
         $this->ensureAnyRole(['admin_keuangan']);
         $data = $this->validatedFeeScheme($request);
-        $data = $this->normalizeFeeScheme($data);
-        $this->ensureSchemeDoesNotOverlap($data);
+        $this->feeService->ensureSchemeDoesNotOverlap($data);
         $scheme = FeeScheme::query()->create($data);
         $this->auditLogs->log('fee_scheme.created', $scheme, null, $scheme->toArray(), null, $request->user());
 
@@ -74,8 +74,7 @@ class FeeController extends Controller
     {
         $this->ensureAnyRole(['admin_keuangan']);
         $data = $this->validatedFeeScheme($request);
-        $data = $this->normalizeFeeScheme($data);
-        $this->ensureSchemeDoesNotOverlap($data, $feeScheme);
+        $this->feeService->ensureSchemeDoesNotOverlap($data, $feeScheme);
         $before = $feeScheme->toArray();
         $feeScheme->update($data);
         $this->auditLogs->log('fee_scheme.updated', $feeScheme, $before, $feeScheme->fresh()->toArray(), null, $request->user());
@@ -94,16 +93,6 @@ class FeeController extends Controller
         ]);
     }
 
-    protected function normalizeFeeType(array $data, Request $request): array
-    {
-        return match ($data['category']) {
-            'spp' => array_merge($data, ['installment_allowed' => false, 'billing_frequency' => 'monthly', 'applies_to' => 'all', 'is_active' => true]),
-            'meal' => array_merge($data, ['installment_allowed' => false, 'billing_frequency' => 'monthly', 'applies_to' => 'boarding', 'is_active' => true]),
-            'activity' => array_merge($data, ['installment_allowed' => true, 'billing_frequency' => 'one_time', 'is_active' => true]),
-            default => array_merge($data, ['installment_allowed' => $request->boolean('installment_allowed'), 'is_active' => true]),
-        };
-    }
-
     protected function validatedFeeScheme(Request $request): array
     {
         return $request->validate([
@@ -114,34 +103,5 @@ class FeeController extends Controller
             'effective_end' => ['nullable', 'date', 'after_or_equal:effective_start'],
             'is_active' => ['nullable', 'boolean'],
         ]);
-    }
-
-    protected function normalizeFeeScheme(array $data): array
-    {
-        return $data;
-    }
-
-    protected function ensureSchemeDoesNotOverlap(array $data, ?FeeScheme $feeScheme = null): void
-    {
-        $overlapExists = FeeScheme::query()
-            ->where('fee_type_id', $data['fee_type_id'])
-            ->where('batch_id', $data['batch_id'] ?? null)
-            ->when($feeScheme, fn ($query) => $query->whereKeyNot($feeScheme->id))
-            ->where(function ($query) use ($data) {
-                $query->whereNull('effective_end')
-                    ->orWhereDate('effective_end', '>=', $data['effective_start']);
-            })
-            ->where(function ($query) use ($data) {
-                if (! empty($data['effective_end'])) {
-                    $query->whereDate('effective_start', '<=', $data['effective_end']);
-                }
-            })
-            ->exists();
-
-        if ($overlapExists) {
-            throw ValidationException::withMessages([
-                'effective_start' => 'Tarif aktif overlap dengan periode yang sudah ada.',
-            ]);
-        }
     }
 }

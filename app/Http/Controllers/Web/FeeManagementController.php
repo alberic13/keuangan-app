@@ -6,14 +6,15 @@ use App\Http\Controllers\Controller;
 use App\Models\FeeScheme;
 use App\Models\FeeType;
 use App\Services\AuditLogService;
+use App\Services\FeeService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
-use Illuminate\Validation\ValidationException;
 
 class FeeManagementController extends Controller
 {
     public function __construct(
+        protected FeeService $feeService,
         protected AuditLogService $auditLogs,
     ) {
     }
@@ -21,9 +22,8 @@ class FeeManagementController extends Controller
     public function storeFeeType(Request $request): RedirectResponse
     {
         $this->ensureAnyRole(['admin_keuangan']);
-
         $data = $this->validatedFeeType($request);
-        $feeType = FeeType::query()->create($this->normalizeFeeType($data, $request));
+        $feeType = FeeType::query()->create($this->feeService->normalizeFeeType($data, $request->boolean('installment_allowed')));
         $this->auditLogs->log('fee_type.created', $feeType, null, $feeType->toArray(), null, $request->user());
 
         return $this->redirectBackWithMessage($request, 'Jenis biaya berhasil ditambahkan.');
@@ -32,10 +32,9 @@ class FeeManagementController extends Controller
     public function updateFeeType(Request $request, FeeType $feeType): RedirectResponse
     {
         $this->ensureAnyRole(['admin_keuangan']);
-
         $data = $this->validatedFeeType($request, $feeType);
         $before = $feeType->toArray();
-        $feeType->update($this->normalizeFeeType($data, $request));
+        $feeType->update($this->feeService->normalizeFeeType($data, $request->boolean('installment_allowed')));
         $this->auditLogs->log('fee_type.updated', $feeType, $before, $feeType->fresh()->toArray(), null, $request->user());
 
         return $this->redirectBackWithMessage($request, 'Jenis biaya berhasil diperbarui.');
@@ -44,10 +43,8 @@ class FeeManagementController extends Controller
     public function storeFeeScheme(Request $request): RedirectResponse
     {
         $this->ensureAnyRole(['admin_keuangan']);
-
         $data = $this->validatedFeeScheme($request);
-        $data = $this->normalizeFeeScheme($data);
-        $this->ensureSchemeDoesNotOverlap($data);
+        $this->feeService->ensureSchemeDoesNotOverlap($data);
         $scheme = FeeScheme::query()->create($data);
         $this->auditLogs->log('fee_scheme.created', $scheme, null, $scheme->toArray(), null, $request->user());
 
@@ -57,16 +54,33 @@ class FeeManagementController extends Controller
     public function updateFeeScheme(Request $request, FeeScheme $feeScheme): RedirectResponse
     {
         $this->ensureAnyRole(['admin_keuangan']);
-
         $data = $this->validatedFeeScheme($request);
-        $data = $this->normalizeFeeScheme($data);
-        $this->ensureSchemeDoesNotOverlap($data, $feeScheme);
-
+        $this->feeService->ensureSchemeDoesNotOverlap($data, $feeScheme);
         $before = $feeScheme->toArray();
         $feeScheme->update($data);
         $this->auditLogs->log('fee_scheme.updated', $feeScheme, $before, $feeScheme->fresh()->toArray(), null, $request->user());
 
         return $this->redirectBackWithMessage($request, 'Tarif berhasil diperbarui.');
+    }
+
+    public function destroyFeeType(Request $request, FeeType $feeType): RedirectResponse
+    {
+        $this->ensureAnyRole(['admin_keuangan']);
+        $before = $feeType->toArray();
+        $this->feeService->deleteFeeType($feeType);
+        $this->auditLogs->log('fee_type.deleted', $feeType, $before, null, null, $request->user());
+
+        return $this->redirectBackWithMessage($request, 'Jenis biaya berhasil dihapus.');
+    }
+
+    public function destroyFeeScheme(Request $request, FeeScheme $feeScheme): RedirectResponse
+    {
+        $this->ensureAnyRole(['admin_keuangan']);
+        $before = $feeScheme->toArray();
+        $this->feeService->deleteFeeScheme($feeScheme);
+        $this->auditLogs->log('fee_scheme.deleted', $feeScheme, $before, null, null, $request->user());
+
+        return $this->redirectBackWithMessage($request, 'Tarif berhasil dihapus.');
     }
 
     protected function validatedFeeType(Request $request, ?FeeType $feeType = null): array
@@ -80,33 +94,6 @@ class FeeManagementController extends Controller
         ]);
     }
 
-    protected function normalizeFeeType(array $data, Request $request): array
-    {
-        return match ($data['category']) {
-            'spp' => array_merge($data, [
-                'installment_allowed' => false,
-                'billing_frequency' => 'monthly',
-                'applies_to' => 'all',
-                'is_active' => true,
-            ]),
-            'meal' => array_merge($data, [
-                'installment_allowed' => false,
-                'billing_frequency' => 'monthly',
-                'applies_to' => 'boarding',
-                'is_active' => true,
-            ]),
-            'activity' => array_merge($data, [
-                'installment_allowed' => true,
-                'billing_frequency' => 'one_time',
-                'is_active' => true,
-            ]),
-            default => array_merge($data, [
-                'installment_allowed' => $request->boolean('installment_allowed'),
-                'is_active' => true,
-            ]),
-        };
-    }
-
     protected function validatedFeeScheme(Request $request): array
     {
         return $request->validate([
@@ -117,77 +104,5 @@ class FeeManagementController extends Controller
             'effective_end' => ['nullable', 'date', 'after_or_equal:effective_start'],
             'is_active' => ['nullable', 'boolean'],
         ]);
-    }
-
-    protected function normalizeFeeScheme(array $data): array
-    {
-        return $data;
-    }
-
-    protected function ensureSchemeDoesNotOverlap(array $data, ?FeeScheme $feeScheme = null): void
-    {
-        $overlapExists = FeeScheme::query()
-            ->where('fee_type_id', $data['fee_type_id'])
-            ->where('batch_id', $data['batch_id'] ?? null)
-            ->when($feeScheme, fn ($query) => $query->whereKeyNot($feeScheme->id))
-            ->where(function ($query) use ($data) {
-                $query->whereNull('effective_end')
-                    ->orWhereDate('effective_end', '>=', $data['effective_start']);
-            })
-            ->where(function ($query) use ($data) {
-                if (! empty($data['effective_end'])) {
-                    $query->whereDate('effective_start', '<=', $data['effective_end']);
-                }
-            })
-            ->exists();
-
-        if ($overlapExists) {
-            throw ValidationException::withMessages([
-                'effective_start' => 'Tarif aktif overlap dengan periode yang sudah ada.',
-            ]);
-        }
-    }
-
-    public function destroyFeeType(Request $request, FeeType $feeType): RedirectResponse
-    {
-        $this->ensureAnyRole(['admin_keuangan']);
-
-        if ($feeType->schemes()->exists() || $feeType->invoices()->exists()) {
-            throw ValidationException::withMessages([
-                'error' => 'Tidak dapat menghapus jenis biaya karena memiliki tarif atau invoice aktif.',
-            ]);
-        }
-
-        $before = $feeType->toArray();
-        $feeType->delete();
-        $this->auditLogs->log('fee_type.deleted', $feeType, $before, null, null, $request->user());
-
-        return $this->redirectBackWithMessage($request, 'Jenis biaya berhasil dihapus.');
-    }
-
-    public function destroyFeeScheme(Request $request, FeeScheme $feeScheme): RedirectResponse
-    {
-        $this->ensureAnyRole(['admin_keuangan']);
-
-        $hasInvoices = \App\Models\Invoice::query()
-            ->where('fee_type_id', $feeScheme->fee_type_id)
-            ->when($feeScheme->batch_id, function ($query) use ($feeScheme) {
-                $query->whereHas('student', function ($q) use ($feeScheme) {
-                    $q->where('batch_id', $feeScheme->batch_id);
-                });
-            })
-            ->exists();
-
-        if ($hasInvoices) {
-            throw ValidationException::withMessages([
-                'error' => 'Tidak dapat menghapus tarif karena memiliki tagihan/invoice aktif.',
-            ]);
-        }
-
-        $before = $feeScheme->toArray();
-        $feeScheme->delete();
-        $this->auditLogs->log('fee_scheme.deleted', $feeScheme, $before, null, null, $request->user());
-
-        return $this->redirectBackWithMessage($request, 'Tarif berhasil dihapus.');
     }
 }

@@ -10,7 +10,6 @@ use App\Models\Student;
 use App\Models\StudentType;
 use App\Services\AuditLogService;
 use App\Services\BillingService;
-use Illuminate\Database\Query\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
@@ -32,22 +31,9 @@ class BillingController extends Controller
     public function storeCycle(Request $request)
     {
         $this->ensureAnyRole(['admin_keuangan']);
-        $data = $request->validate([
-            'month' => ['required', 'integer', 'between:1,12'],
-            'year' => ['required', 'integer', 'min:2020'],
-            'period_label' => ['required', 'string', 'max:255'],
-            'due_date' => ['nullable', 'date'],
-            'status' => ['nullable', Rule::in(['open', 'closed'])],
-        ]);
-
-        $billingCycle = BillingCycle::query()->create([
-            'month' => $data['month'],
-            'year' => $data['year'],
-            'period_label' => $data['period_label'],
-            'due_date' => $data['due_date'] ?? sprintf('%s-%02d-10', $data['year'], $data['month']),
-            'status' => $data['status'] ?? 'open',
-        ]);
-
+        $data = $this->validateCycle($request, false);
+        $data['due_date'] = $data['due_date'] ?? sprintf('%s-%02d-10', $data['year'], $data['month']);
+        $billingCycle = BillingCycle::query()->create($data + ['status' => 'open']);
         $this->auditLogs->log('billing_cycle.created', $billingCycle, null, $billingCycle->toArray(), null, $request->user());
 
         return $this->success($billingCycle, 'Success', 201);
@@ -56,14 +42,7 @@ class BillingController extends Controller
     public function updateCycle(Request $request, BillingCycle $billingCycle)
     {
         $this->ensureAnyRole(['admin_keuangan']);
-        $data = $request->validate([
-            'month' => ['required', 'integer', 'between:1,12'],
-            'year' => ['required', 'integer', 'min:2020'],
-            'period_label' => ['required', 'string', 'max:255'],
-            'due_date' => ['required', 'date'],
-            'status' => ['required', Rule::in(['open', 'closed'])],
-        ]);
-
+        $data = $this->validateCycle($request, true);
         $before = $billingCycle->toArray();
         $billingCycle->update($data);
         $this->auditLogs->log('billing_cycle.updated', $billingCycle, $before, $billingCycle->fresh()->toArray(), null, $request->user());
@@ -93,22 +72,17 @@ class BillingController extends Controller
             'filters.student_type' => ['nullable', Rule::in(array_merge(['all'], StudentType::activeSlugs()))],
         ]);
 
-        return $this->success(
-            $this->billingService->generate($data, $request->user()),
-            'Success',
-        );
+        return $this->success($this->billingService->generate($data, $request->user()), 'Success');
     }
 
     public function invoicesIndex(Request $request)
     {
-        $invoices = Invoice::query()
-            ->with(['student.batch', 'student.classRoom', 'feeType', 'billingCycle'])
-            ->when($request->filled('student_id'), fn ($query) => $query->where('student_id', $request->integer('student_id')))
-            ->when($request->filled('fee_type_id'), fn ($query) => $query->where('fee_type_id', $request->integer('fee_type_id')))
-            ->when($request->filled('billing_cycle_id'), fn ($query) => $query->where('billing_cycle_id', $request->integer('billing_cycle_id')))
-            ->when($request->filled('status'), fn ($query) => $query->where('status', $request->string('status')))
-            ->latest()
-            ->paginate($request->integer('per_page', 15));
+        $invoices = Invoice::query()->with(['student.batch', 'student.classRoom', 'feeType', 'billingCycle'])
+            ->when($request->filled('student_id'), fn ($q) => $q->where('student_id', $request->integer('student_id')))
+            ->when($request->filled('fee_type_id'), fn ($q) => $q->where('fee_type_id', $request->integer('fee_type_id')))
+            ->when($request->filled('billing_cycle_id'), fn ($q) => $q->where('billing_cycle_id', $request->integer('billing_cycle_id')))
+            ->when($request->filled('status'), fn ($q) => $q->where('status', $request->string('status')))
+            ->latest()->paginate($request->integer('per_page', 15));
 
         return $this->success($invoices);
     }
@@ -120,13 +94,8 @@ class BillingController extends Controller
 
     public function openByStudent(Student $student)
     {
-        return $this->success(
-            $student->invoices()
-                ->with(['feeType', 'billingCycle'])
-                ->whereIn('status', ['unpaid', 'partial'])
-                ->orderBy('billing_cycle_id')
-                ->get()
-        );
+        return $this->success($student->invoices()->with(['feeType', 'billingCycle'])
+            ->whereIn('status', ['unpaid', 'partial'])->orderBy('billing_cycle_id')->get());
     }
 
     public function voidInvoice(Request $request, Invoice $invoice)
@@ -134,5 +103,16 @@ class BillingController extends Controller
         $this->ensureAnyRole(['admin_keuangan']);
 
         return $this->success($this->billingService->voidInvoice($invoice, $request->user()));
+    }
+
+    protected function validateCycle(Request $request, bool $isUpdate): array
+    {
+        return $request->validate([
+            'month' => ['required', 'integer', 'between:1,12'],
+            'year' => ['required', 'integer', 'min:2020'],
+            'period_label' => ['required', 'string', 'max:255'],
+            'due_date' => [$isUpdate ? 'required' : 'nullable', 'date'],
+            'status' => [$isUpdate ? 'required' : 'nullable', Rule::in(['open', 'closed'])],
+        ]);
     }
 }

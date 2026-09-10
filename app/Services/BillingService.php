@@ -27,20 +27,12 @@ class BillingService
         $billingCycle = BillingCycle::query()->findOrFail($attributes['billing_cycle_id']);
 
         if ($billingCycle->status !== 'open') {
-            throw ValidationException::withMessages([
-                'billing_cycle_id' => 'Billing cycle sudah ditutup.',
-            ]);
+            throw ValidationException::withMessages(['billing_cycle_id' => 'Billing cycle sudah ditutup.']);
         }
 
         $referenceName = $attributes['reference_name'] ?: null;
         $students = $this->studentQuery($feeType, $attributes['filters'] ?? [])->get();
-
-        $result = [
-            'generated' => 0,
-            'skipped' => 0,
-            'failed' => 0,
-            'items' => [],
-        ];
+        $result = ['generated' => 0, 'skipped' => 0, 'failed' => 0, 'items' => []];
 
         DB::transaction(function () use ($students, $feeType, $billingCycle, $referenceName, $actor, &$result) {
             foreach ($students as $student) {
@@ -49,24 +41,18 @@ class BillingService
                 if (! $scheme) {
                     $result['failed']++;
                     $result['items'][] = [
-                        'student_id' => $student->id,
-                        'student_name' => $student->full_name,
-                        'status' => 'failed',
-                        'message' => 'Tarif aktif tidak ditemukan.',
+                        'student_id' => $student->id, 'student_name' => $student->full_name,
+                        'status' => 'failed', 'message' => 'Tarif aktif tidak ditemukan.',
                     ];
-
                     continue;
                 }
 
                 if ($this->invoiceExists($student, $feeType, $billingCycle, $referenceName)) {
                     $result['skipped']++;
                     $result['items'][] = [
-                        'student_id' => $student->id,
-                        'student_name' => $student->full_name,
-                        'status' => 'skipped',
-                        'message' => 'Invoice sudah ada untuk periode ini.',
+                        'student_id' => $student->id, 'student_name' => $student->full_name,
+                        'status' => 'skipped', 'message' => 'Invoice sudah ada untuk periode ini.',
                     ];
-
                     continue;
                 }
 
@@ -89,10 +75,8 @@ class BillingService
 
                 $result['generated']++;
                 $result['items'][] = [
-                    'student_id' => $student->id,
-                    'student_name' => $student->full_name,
-                    'invoice_id' => $invoice->id,
-                    'invoice_no' => $invoice->invoice_no,
+                    'student_id' => $student->id, 'student_name' => $student->full_name,
+                    'invoice_id' => $invoice->id, 'invoice_no' => $invoice->invoice_no,
                     'status' => 'generated',
                 ];
             }
@@ -136,11 +120,7 @@ class BillingService
         }
 
         $before = $invoice->toArray();
-        $invoice->update([
-            'status' => 'void',
-            'updated_by' => $actor->id,
-        ]);
-
+        $invoice->update(['status' => 'void', 'updated_by' => $actor->id]);
         $this->auditLogs->log('invoice.voided', $invoice, $before, $invoice->fresh()->toArray(), 'Void invoice', $actor);
 
         return $invoice->refresh();
@@ -152,10 +132,7 @@ class BillingService
             ->where('fee_type_id', $feeType->id)
             ->where('is_active', true)
             ->whereDate('effective_start', '<=', $date)
-            ->where(function (Builder $builder) use ($date) {
-                $builder->whereNull('effective_end')
-                    ->orWhereDate('effective_end', '>=', $date);
-            })
+            ->where(fn (Builder $b) => $b->whereNull('effective_end')->orWhereDate('effective_end', '>=', $date))
             ->orderByDesc('effective_start');
 
         return (clone $query)->where('batch_id', $student->batch_id)->first()
@@ -164,28 +141,20 @@ class BillingService
 
     protected function studentQuery(FeeType $feeType, array $filters): Builder
     {
-        $query = Student::query()
-            ->where('is_active', true)
-            ->with(['batch', 'classRoom']);
+        $query = Student::query()->where('is_active', true)->with(['batch', 'classRoom']);
 
         if (! empty($filters['batch_id'])) {
             $query->where('batch_id', $filters['batch_id']);
         }
-
         if (! empty($filters['class_id'])) {
             $query->where('class_id', $filters['class_id']);
         }
-
-
-
         if (($filters['student_type'] ?? 'all') !== 'all') {
             $query->where('student_type', $filters['student_type']);
         }
-
         if ($feeType->applies_to !== 'all') {
             $query->where('student_type', $feeType->applies_to);
         }
-
         if ($feeType->category === 'meal') {
             $query->where('student_type', 'boarding');
         }
@@ -199,7 +168,7 @@ class BillingService
             ->where('student_id', $student->id)
             ->where('fee_type_id', $feeType->id)
             ->where('billing_cycle_id', $billingCycle->id)
-            ->when($referenceName, fn (Builder $query) => $query->where('reference_name', $referenceName), fn (Builder $query) => $query->whereNull('reference_name'))
+            ->when($referenceName, fn (Builder $q) => $q->where('reference_name', $referenceName), fn (Builder $q) => $q->whereNull('reference_name'))
             ->exists();
     }
 }

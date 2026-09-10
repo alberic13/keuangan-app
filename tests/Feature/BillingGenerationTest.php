@@ -128,8 +128,23 @@ class BillingGenerationTest extends TestCase
             'created_by' => $this->user->id,
         ]);
 
+        $cashAccount = \App\Models\CashAccount::query()->firstOrCreate(
+            ['name' => 'Kas Uji Coba'],
+            ['type' => 'cash', 'is_active' => true]
+        );
+        $payment = \App\Models\Payment::query()->create([
+            'payment_no' => 'PAY-TEST-'.uniqid(),
+            'student_id' => $this->student->id,
+            'cash_account_id' => $cashAccount->id,
+            'total_amount' => 350000,
+            'payment_date' => now()->toDateString(),
+            'method' => 'cash',
+            'status' => 'success',
+            'created_by' => $this->user->id,
+        ]);
+
         $invoice->paymentItems()->create([
-            'payment_id' => 1,
+            'payment_id' => $payment->id,
             'amount' => 350000,
         ]);
 
