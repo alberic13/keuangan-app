@@ -2,24 +2,26 @@
 
 namespace App\Services;
 
-use App\Models\CashAccount;
 use App\Models\CashLedgerEntry;
 use App\Models\Invoice;
 use App\Models\Payment;
-use App\Models\PaymentItem;
 use App\Models\Student;
 use App\Models\User;
+use App\Services\Concerns\ManagesCashLedger;
+use App\Services\Payments\PaymentItemProcessor;
 use App\Support\DocumentNumber;
-use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
 class PaymentService
 {
+    use ManagesCashLedger;
+
     public function __construct(
         protected BillingService $billingService,
         protected AuditLogService $auditLogs,
         protected GoogleDrivePaymentProofService $paymentProofs,
+        protected PaymentItemProcessor $itemProcessor = new PaymentItemProcessor(),
     ) {
     }
 
@@ -45,19 +47,13 @@ class PaymentService
                     'created_by' => $actor->id,
                 ]);
 
-                [$total, $invoiceIds] = $this->syncItems($payment, $student, $attributes['items'] ?? []);
+                [$total, $invoiceIds] = $this->itemProcessor->sync($payment, $student, $attributes['items'] ?? []);
 
                 if (! empty($attributes['payment_proof'])) {
-                    $uploadedProof = $this->paymentProofs->upload(
-                        $attributes['payment_proof'],
-                        $payment->payment_no,
-                        $student->full_name
-                    );
+                    $uploadedProof = $this->paymentProofs->upload($attributes['payment_proof'], $payment->payment_no, $student->full_name);
                 }
 
-                $payment->update(array_merge([
-                    'total_amount' => $total,
-                ], $uploadedProof ?? []));
+                $payment->update(array_merge(['total_amount' => $total], $uploadedProof ?? []));
 
                 $this->recalculateInvoices($invoiceIds);
                 $this->syncLedger($payment, $actor);
@@ -77,9 +73,7 @@ class PaymentService
     public function update(Payment $payment, array $attributes, User $actor): Payment
     {
         if (empty($attributes['edited_reason'])) {
-            throw ValidationException::withMessages([
-                'edited_reason' => 'Alasan edit wajib diisi.',
-            ]);
+            throw ValidationException::withMessages(['edited_reason' => 'Alasan edit wajib diisi.']);
         }
 
         $uploadedProof = null;
@@ -95,14 +89,10 @@ class PaymentService
                 $payment->items()->delete();
                 $this->recalculateInvoices($oldInvoiceIds);
 
-                [$total, $newInvoiceIds] = $this->syncItems($payment, $student, $attributes['items'] ?? []);
+                [$total, $newInvoiceIds] = $this->itemProcessor->sync($payment, $student, $attributes['items'] ?? []);
 
                 if (! empty($attributes['payment_proof'])) {
-                    $uploadedProof = $this->paymentProofs->upload(
-                        $attributes['payment_proof'],
-                        $payment->payment_no,
-                        $student->full_name
-                    );
+                    $uploadedProof = $this->paymentProofs->upload($attributes['payment_proof'], $payment->payment_no, $student->full_name);
                 }
 
                 $payment->update(array_merge([
@@ -120,14 +110,7 @@ class PaymentService
 
                 $this->recalculateInvoices(array_values(array_unique([...$oldInvoiceIds, ...$newInvoiceIds])));
                 $this->syncLedger($payment, $actor);
-                $this->auditLogs->log(
-                    'payment.updated',
-                    $payment,
-                    $before,
-                    $payment->fresh(['items.invoice'])->toArray(),
-                    $attributes['edited_reason'],
-                    $actor,
-                );
+                $this->auditLogs->log('payment.updated', $payment, $before, $payment->fresh(['items.invoice'])->toArray(), $attributes['edited_reason'], $actor);
 
                 return $payment->fresh(['student', 'cashAccount', 'items.invoice']);
             });
@@ -144,73 +127,6 @@ class PaymentService
 
             throw $exception;
         }
-    }
-
-    protected function syncItems(Payment $payment, Student $student, array $items): array
-    {
-        if ($items === []) {
-            throw ValidationException::withMessages([
-                'items' => 'Pilih minimal satu invoice.',
-            ]);
-        }
-
-        $total = 0;
-        $invoiceIds = [];
-
-        foreach ($items as $item) {
-            $invoice = Invoice::query()
-                ->with('feeType')
-                ->lockForUpdate()
-                ->findOrFail($item['invoice_id']);
-
-            if ((int) $invoice->student_id !== (int) $student->id) {
-                throw ValidationException::withMessages([
-                    'items' => 'Invoice tidak sesuai dengan siswa yang dipilih.',
-                ]);
-            }
-
-            if (in_array($invoice->status, ['paid', 'void'], true) || $invoice->outstanding_amount <= 0) {
-                throw ValidationException::withMessages([
-                    'items' => 'Invoice sudah lunas atau tidak valid.',
-                ]);
-            }
-
-            $amount = (int) ($item['amount'] ?? 0);
-            if ($amount <= 0) {
-                throw ValidationException::withMessages([
-                    'items' => 'Nominal harus lebih dari nol.',
-                ]);
-            }
-
-            if ($amount > (int) $invoice->outstanding_amount) {
-                throw ValidationException::withMessages([
-                    'items' => 'Nominal melebihi outstanding.',
-                ]);
-            }
-
-            if (! $invoice->feeType->installment_allowed && $amount !== (int) $invoice->outstanding_amount) {
-                $message = $invoice->feeType->category === 'spp'
-                    ? 'SPP tidak boleh dibayar parsial.'
-                    : ($invoice->feeType->category === 'meal'
-                        ? 'Uang makan harus dibayar penuh per invoice.'
-                        : 'Invoice ini harus dibayar penuh.');
-
-                throw ValidationException::withMessages([
-                    'items' => $message,
-                ]);
-            }
-
-            PaymentItem::query()->create([
-                'payment_id' => $payment->id,
-                'invoice_id' => $invoice->id,
-                'amount' => $amount,
-            ]);
-
-            $total += $amount;
-            $invoiceIds[] = $invoice->id;
-        }
-
-        return [$total, $invoiceIds];
     }
 
     protected function syncLedger(Payment $payment, User $actor): void
@@ -233,34 +149,6 @@ class PaymentService
         ], $payment->payment_date);
     }
 
-    protected function createLedgerEntryWithRetry(array $attributes, string $date, int $attempts = 5): void
-    {
-        $lastException = null;
-
-        for ($attempt = 1; $attempt <= $attempts; $attempt++) {
-            try {
-                CashLedgerEntry::query()->create($attributes + [
-                    'entry_no' => DocumentNumber::next('LED', CashLedgerEntry::class, 'entry_no', $date),
-                ]);
-
-                return;
-            } catch (QueryException $exception) {
-                if (! $this->isDuplicateEntryNumberException($exception)) {
-                    throw $exception;
-                }
-
-                $lastException = $exception;
-            }
-        }
-
-        throw $lastException;
-    }
-
-    protected function isDuplicateEntryNumberException(QueryException $exception): bool
-    {
-        return (string) $exception->getCode() === '23000' && str_contains($exception->getMessage(), 'cash_ledger_entries_entry_no_unique');
-    }
-
     protected function recalculateInvoices(array $invoiceIds): void
     {
         foreach (array_unique($invoiceIds) as $invoiceId) {
@@ -269,18 +157,5 @@ class PaymentService
                 $this->billingService->recalculateInvoice($invoice);
             }
         }
-    }
-
-    protected function activeAccount(int $accountId): CashAccount
-    {
-        $account = CashAccount::query()->findOrFail($accountId);
-
-        if (! $account->is_active) {
-            throw ValidationException::withMessages([
-                'cash_account_id' => 'Akun kas/bank tidak aktif.',
-            ]);
-        }
-
-        return $account;
     }
 }

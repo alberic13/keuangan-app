@@ -22,7 +22,7 @@ class ExpenseService
     public function create(array $attributes, User $actor): Expense
     {
         return DB::transaction(function () use ($attributes, $actor) {
-            $account = $this->activeAccount($attributes['payment_account_id']);
+            $account = $this->activeAccount($attributes['payment_account_id'], 'payment_account_id');
 
             $expense = Expense::query()->create([
                 'expense_no' => DocumentNumber::next('EXP', Expense::class, 'expense_no', $attributes['transaction_date']),
@@ -47,7 +47,7 @@ class ExpenseService
     {
         return DB::transaction(function () use ($expense, $attributes, $actor) {
             $before = $expense->toArray();
-            $account = $this->activeAccount($attributes['payment_account_id'] ?? $expense->payment_account_id);
+            $account = $this->activeAccount($attributes['payment_account_id'] ?? $expense->payment_account_id, 'payment_account_id');
 
             $expense->update([
                 'transaction_date' => $attributes['transaction_date'] ?? $expense->transaction_date,
@@ -107,44 +107,10 @@ class ExpenseService
         ], $expense->transaction_date);
     }
 
-    protected function createLedgerEntryWithRetry(array $attributes, string $date, int $attempts = 5): void
+    use \App\Services\Concerns\ManagesCashLedger;
+
+    protected function activeExpenseAccount(int $accountId): CashAccount
     {
-        $lastException = null;
-
-        for ($attempt = 1; $attempt <= $attempts; $attempt++) {
-            try {
-                CashLedgerEntry::query()->create($attributes + [
-                    'entry_no' => DocumentNumber::next('LED', CashLedgerEntry::class, 'entry_no', $date),
-                ]);
-
-                return;
-            } catch (QueryException $exception) {
-                if (! $this->isDuplicateEntryNumberException($exception)) {
-                    throw $exception;
-                }
-
-                $lastException = $exception;
-            }
-        }
-
-        throw $lastException;
-    }
-
-    protected function isDuplicateEntryNumberException(QueryException $exception): bool
-    {
-        return (string) $exception->getCode() === '23000' && str_contains($exception->getMessage(), 'cash_ledger_entries_entry_no_unique');
-    }
-
-    protected function activeAccount(int $accountId): CashAccount
-    {
-        $account = CashAccount::query()->findOrFail($accountId);
-
-        if (! $account->is_active) {
-            throw ValidationException::withMessages([
-                'payment_account_id' => 'Akun kas/bank tidak aktif.',
-            ]);
-        }
-
-        return $account;
+        return $this->activeAccount($accountId, 'payment_account_id');
     }
 }
