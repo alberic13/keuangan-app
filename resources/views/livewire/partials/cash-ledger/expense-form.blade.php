@@ -17,6 +17,7 @@
                 @endforeach
             </select>
             <input class="w-full rounded-xl border-none bg-surface-container-low px-4 py-3 text-sm" min="1" name="amount" placeholder="Nominal" required type="number">
+            <input class="w-full rounded-xl border-none bg-surface-container-low px-4 py-3 text-sm" name="supplier" placeholder="Nama supplier / rekanan (opsional)" type="text">
             <textarea class="w-full rounded-xl border-none bg-surface-container-low px-4 py-3 text-sm" name="description" placeholder="Deskripsi pengeluaran" required rows="4"></textarea>
             <button class="w-full rounded-xl bg-primary text-white font-semibold px-5 py-3" type="submit">Simpan Pengeluaran</button>
         </form>

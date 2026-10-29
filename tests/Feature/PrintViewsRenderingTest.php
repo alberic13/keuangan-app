@@ -69,13 +69,14 @@ class PrintViewsRenderingTest extends TestCase
             ]
         );
 
-        $this->billingCycle = BillingCycle::query()->create([
-            'month' => 9,
-            'year' => 2026,
-            'period_label' => 'September 2026',
-            'due_date' => now()->addDays(5),
-            'status' => 'open',
-        ]);
+        $this->billingCycle = BillingCycle::query()->firstOrCreate(
+            ['month' => 9, 'year' => 2026],
+            [
+                'period_label' => 'September 2026',
+                'due_date' => now()->addDays(5),
+                'status' => 'open',
+            ]
+        );
 
         $this->invoice = Invoice::query()->create([
             'invoice_no' => 'INV-PRINT-'.uniqid(),

@@ -16,6 +16,7 @@ class Expense extends Model
         'category_id',
         'payment_account_id',
         'amount',
+        'supplier',
         'description',
         'attachment_path',
         'status',

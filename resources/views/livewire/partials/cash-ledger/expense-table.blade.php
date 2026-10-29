@@ -17,6 +17,7 @@
                 <th class="px-8 py-4 text-xs uppercase tracking-widest text-slate-500">Tanggal</th>
                 <th class="px-8 py-4 text-xs uppercase tracking-widest text-slate-500">Kategori</th>
                 <th class="px-8 py-4 text-xs uppercase tracking-widest text-slate-500">Akun</th>
+                <th class="px-8 py-4 text-xs uppercase tracking-widest text-slate-500">Supplier</th>
                 <th class="px-8 py-4 text-xs uppercase tracking-widest text-slate-500">Deskripsi</th>
                 <th class="px-8 py-4 text-xs uppercase tracking-widest text-slate-500">Nominal</th>
             </tr>
@@ -28,12 +29,13 @@
                     <td class="px-8 py-4 text-sm">{{ $expense->transaction_date?->format('d/m/Y') }}</td>
                     <td class="px-8 py-4 text-sm">{{ $expense->category->name }}</td>
                     <td class="px-8 py-4 text-sm">{{ $expense->paymentAccount->name }}</td>
+                    <td class="px-8 py-4 text-sm text-slate-600">{{ $expense->supplier ?: '-' }}</td>
                     <td class="px-8 py-4 text-sm">{{ $expense->description }}</td>
                     <td class="px-8 py-4 text-sm font-semibold">Rp {{ number_format($expense->amount, 0, ',', '.') }}</td>
                 </tr>
             @empty
                 <tr>
-                    <td class="px-8 py-6 text-sm text-on-surface-variant" colspan="6">Belum ada pengeluaran.</td>
+                    <td class="px-8 py-6 text-sm text-on-surface-variant" colspan="7">Belum ada pengeluaran.</td>
                 </tr>
             @endforelse
             </tbody>

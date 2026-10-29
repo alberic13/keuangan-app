@@ -105,6 +105,7 @@ class CashManagementController extends Controller
             'category_id' => ['required', 'exists:expense_categories,id'],
             'payment_account_id' => ['required', 'exists:cash_accounts,id'],
             'amount' => ['required', 'integer', 'min:1'],
+            'supplier' => ['nullable', 'string', 'max:255'],
             'description' => ['required', 'string'],
         ]);
     }

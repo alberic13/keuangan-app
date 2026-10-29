@@ -40,6 +40,13 @@
                             <td class="separator">:</td>
                             <td class="value">{{ $expense->paymentAccount->name }}</td>
                         </tr>
+                        @if ($expense->supplier)
+                        <tr>
+                            <td class="label">Penerima / Supplier</td>
+                            <td class="separator">:</td>
+                            <td class="value">{{ $expense->supplier }}</td>
+                        </tr>
+                        @endif
                         <tr>
                             <td class="label">Uraian / Deskripsi</td>
                             <td class="separator">:</td>
@@ -65,7 +72,7 @@
                                 Surakarta, {{ $expense->transaction_date?->translatedFormat('d F Y') }}<br>
                                 Bendahara
                                 <div class="spacer"></div>
-                                ( {{ auth()->user()->name }} )
+                                ( {{ auth()->user()?->name ?? 'Bendahara' }} )
                             </td>
                         </tr>
                     </table>

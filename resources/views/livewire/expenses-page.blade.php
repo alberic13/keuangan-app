@@ -26,6 +26,7 @@
                     @endforeach
                 </select>
                 <input class="w-full rounded-xl border-none bg-surface-container-low px-4 py-3 text-sm" min="1" name="amount" placeholder="Nominal" required type="number" value="{{ old('amount', $editingExpense?->amount) }}">
+                <input class="w-full rounded-xl border-none bg-surface-container-low px-4 py-3 text-sm" name="supplier" placeholder="Nama supplier / rekanan (opsional)" type="text" value="{{ old('supplier', $editingExpense?->supplier) }}">
                 <textarea class="w-full rounded-xl border-none bg-surface-container-low px-4 py-3 text-sm" name="description" placeholder="Deskripsi pengeluaran" required rows="4">{{ old('description', $editingExpense?->description) }}</textarea>
                 <button class="w-full rounded-xl bg-primary text-white font-semibold px-5 py-3" type="submit">{{ $editingExpense ? 'Simpan Perubahan' : 'Simpan Pengeluaran' }}</button>
             </form>
@@ -74,6 +75,7 @@
                     <th class="px-8 py-4 text-xs uppercase tracking-widest text-slate-500">Tanggal</th>
                     <th class="px-8 py-4 text-xs uppercase tracking-widest text-slate-500">Kategori</th>
                     <th class="px-8 py-4 text-xs uppercase tracking-widest text-slate-500">Akun</th>
+                    <th class="px-8 py-4 text-xs uppercase tracking-widest text-slate-500">Supplier</th>
                     <th class="px-8 py-4 text-xs uppercase tracking-widest text-slate-500">Deskripsi</th>
                     <th class="px-8 py-4 text-xs uppercase tracking-widest text-slate-500">Nominal</th>
                     <th class="px-8 py-4 text-xs uppercase tracking-widest text-slate-500">Action</th>
@@ -86,6 +88,7 @@
                         <td class="px-8 py-4 text-sm">{{ $expense->transaction_date?->format('d/m/Y') }}</td>
                         <td class="px-8 py-4 text-sm">{{ $expense->category->name }}</td>
                         <td class="px-8 py-4 text-sm">{{ $expense->paymentAccount->name }}</td>
+                        <td class="px-8 py-4 text-sm text-slate-600">{{ $expense->supplier ?: '-' }}</td>
                         <td class="px-8 py-4 text-sm">{{ $expense->description }}</td>
                         <td class="px-8 py-4 text-sm font-semibold">Rp {{ number_format($expense->amount, 0, ',', '.') }}</td>
                         <td class="px-8 py-4 text-sm">
@@ -130,7 +133,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td class="px-8 py-6 text-sm text-on-surface-variant" colspan="7">Belum ada pengeluaran.</td>
+                        <td class="px-8 py-6 text-sm text-on-surface-variant" colspan="8">Belum ada pengeluaran.</td>
                     </tr>
                 @endforelse
                 </tbody>
